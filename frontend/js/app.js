@@ -35,7 +35,9 @@ function setActiveNav() {
 
 function initSidebarToggle() {
   const btn = qs("#sidebarToggle");
+
   if (!btn) return;
+
   btn.addEventListener("click", () => {
     document.body.classList.toggle("is-sidebar-collapsed");
   });
@@ -43,7 +45,9 @@ function initSidebarToggle() {
 
 function initMobileNav() {
   const open = qs("#mobileMenu");
+
   if (!open) return;
+
   open.addEventListener("click", () => {
     document.body.classList.toggle("is-mobile-nav-open");
   });
@@ -63,36 +67,66 @@ function initCommandPalette() {
 
   if (!overlay) return;
 
-  const open = () => {
+  /* FORCE HIDE ON LOAD */
+  overlay.hidden = true;
+  overlay.style.display = "none";
+
+  const openPalette = () => {
     overlay.hidden = false;
-    requestAnimationFrame(() => input && input.focus());
+    overlay.style.display = "flex";
+
+    requestAnimationFrame(() => {
+      if (input) input.focus();
+    });
   };
 
-  const close = () => {
+  const closePalette = () => {
     overlay.hidden = true;
+    overlay.style.display = "none";
   };
 
-  if (openBtn) openBtn.addEventListener("click", open);
-  if (closeBtn) closeBtn.addEventListener("click", close);
+  if (openBtn) {
+    openBtn.addEventListener("click", openPalette);
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closePalette);
+  }
 
   overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) close();
+    if (e.target === overlay) {
+      closePalette();
+    }
   });
 
   document.addEventListener("keydown", (e) => {
-    const isCmdK = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k";
+    const isCmdK =
+      (e.ctrlKey || e.metaKey) &&
+      e.key.toLowerCase() === "k";
+
     if (isCmdK) {
       e.preventDefault();
-      overlay.hidden ? open() : close();
+
+      if (overlay.hidden) {
+        openPalette();
+      } else {
+        closePalette();
+      }
+
       return;
     }
-    if (e.key === "Escape") close();
+
+    if (e.key === "Escape") {
+      closePalette();
+    }
   });
 
   qsa("[data-go]", overlay).forEach((btn) => {
     btn.addEventListener("click", () => {
       const dest = btn.getAttribute("data-go");
+
       if (!dest) return;
+
       window.location.href = dest;
     });
   });
@@ -105,4 +139,3 @@ document.addEventListener("DOMContentLoaded", () => {
   initMobileNav();
   initCommandPalette();
 });
-

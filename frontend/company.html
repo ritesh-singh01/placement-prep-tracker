@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Placement Tracker — Companies</title>
-    <meta name="description" content="Companies — Placement Preparation & Interview Tracker" />
+    <title>Placement Tracker — Company Applications</title>
+    <meta name="description" content="Company applications — Placement Preparation & Interview Tracker" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,6 +17,14 @@
     <link rel="stylesheet" href="css/company.css" />
   </head>
   <body class="theme-dark" data-page="company">
+    <div class="pageLoadOverlay" id="pageLoadOverlay" hidden aria-hidden="true">
+      <div class="pageLoadOverlay__panel glass">
+        <div class="pageLoadSpinner" aria-hidden="true"></div>
+        <p class="pageLoadOverlay__text">Syncing applications…</p>
+      </div>
+    </div>
+    <div class="toastStack" id="toastStack" role="region" aria-label="Notifications"></div>
+
     <div class="appShell">
       <aside class="sidebar" aria-label="Sidebar">
         <div class="sidebar__top">
@@ -71,152 +79,286 @@
       </aside>
 
       <div class="content">
-        <header class="topbar">
+        <header class="topbar companyTopbar">
           <div class="topbar__left">
             <button class="iconBtn topbar__menuBtn" type="button" id="mobileMenu" aria-label="Open menu">
               <i data-lucide="menu"></i>
             </button>
-            <div class="pageTitle">
-              <div class="pageTitle__kicker">Companies</div>
-              <div class="pageTitle__title">Applications</div>
+            <div class="pageTitle companyTopbar__title">
+              <div class="pageTitle__kicker">Workspace</div>
+              <div class="pageTitle__title">Companies</div>
             </div>
           </div>
 
-          <div class="topbar__right">
-            <div class="search">
-              <i data-lucide="search"></i>
-              <input class="search__input" type="search" placeholder="Search companies…" />
-            </div>
-            <button class="btn btn--primary btn--sm" type="button" id="addCompanyBtn">
-              <i data-lucide="plus"></i>
-              <span>Add</span>
-            </button>
-          </div>
         </header>
 
-        <main class="main">
-          <section class="grid grid--company">
-            <article class="card glass">
-              <div class="card__header">
-                <div>
-                  <div class="card__title">Pipeline</div>
-                  <div class="card__subtitle">Status overview</div>
-                </div>
+        <main class="main companyMain">
+          <header class="companyHeader">
+            <nav class="breadcrumbs" aria-label="Breadcrumb">
+              <a class="breadcrumbs__link" href="dashboard.html">Dashboard</a>
+              <span class="breadcrumbs__sep" aria-hidden="true"><i data-lucide="chevron-right"></i></span>
+              <span class="breadcrumbs__current">Companies</span>
+            </nav>
+            <div class="companyHeader__row">
+              <div>
+                <h1 class="companyHeader__title">Company Applications</h1>
+                <p class="companyHeader__desc">
+                  Track roles, dates, and outcomes—keep your placement pipeline organized and actionable.
+                </p>
               </div>
+            </div>
+          </header>
 
-              <div class="pipeline">
-                <div class="pipeline__item glassHover">
-                  <div class="pipeline__label">Applied</div>
-                  <div class="pipeline__value">12</div>
-                </div>
-                <div class="pipeline__item glassHover">
-                  <div class="pipeline__label">OA / Screening</div>
-                  <div class="pipeline__value">6</div>
-                </div>
-                <div class="pipeline__item glassHover">
-                  <div class="pipeline__label">Interview</div>
-                  <div class="pipeline__value">5</div>
-                </div>
-                <div class="pipeline__item glassHover">
-                  <div class="pipeline__label">Selected</div>
-                  <div class="pipeline__value">2</div>
-                </div>
+          <section class="companyStats" aria-label="Application statistics">
+            <article class="companyStat glass glassHover">
+              <div class="companyStat__icon" aria-hidden="true"><i data-lucide="layers"></i></div>
+              <div class="companyStat__meta">
+                <div class="companyStat__label">Total Applications</div>
+                <div class="companyStat__value" id="statTotal">0</div>
               </div>
             </article>
-
-            <article class="card glass">
-              <div class="card__header">
-                <div>
-                  <div class="card__title">Company List</div>
-                  <div class="card__subtitle">A premium table layout (UI only for now)</div>
-                </div>
-                <div class="chips" aria-label="Filters">
-                  <button class="chip is-active" type="button">All</button>
-                  <button class="chip" type="button">Applied</button>
-                  <button class="chip" type="button">Interview</button>
-                  <button class="chip" type="button">Selected</button>
-                  <button class="chip" type="button">Rejected</button>
-                </div>
+            <article class="companyStat glass glassHover">
+              <div class="companyStat__icon companyStat__icon--good" aria-hidden="true"><i data-lucide="badge-check"></i></div>
+              <div class="companyStat__meta">
+                <div class="companyStat__label">Selected</div>
+                <div class="companyStat__value" id="statSelected">0</div>
               </div>
-
-              <div class="tableWrap">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>Company</th>
-                      <th>Role</th>
-                      <th>Status</th>
-                      <th>Last update</th>
-                      <th class="u-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <div class="companyCell">
-                          <div class="companyLogo is-blue" aria-hidden="true">A</div>
-                          <div>
-                            <div class="companyName">Acme Labs</div>
-                            <div class="companyMeta">Off-campus</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td>SDE Intern</td>
-                      <td><span class="badge">Applied</span></td>
-                      <td>Today</td>
-                      <td class="u-right">
-                        <button class="btn btn--ghost btn--sm" type="button">
-                          <i data-lucide="more-horizontal"></i>
-                          <span>Manage</span>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="companyCell">
-                          <div class="companyLogo is-purple" aria-hidden="true">N</div>
-                          <div>
-                            <div class="companyName">Neon</div>
-                            <div class="companyMeta">Referral</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Backend Engineer</td>
-                      <td><span class="badge badge--good">Interview</span></td>
-                      <td>Yesterday</td>
-                      <td class="u-right">
-                        <button class="btn btn--ghost btn--sm" type="button">
-                          <i data-lucide="more-horizontal"></i>
-                          <span>Manage</span>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="companyCell">
-                          <div class="companyLogo is-amber" aria-hidden="true">V</div>
-                          <div>
-                            <div class="companyName">Vanta</div>
-                            <div class="companyMeta">Campus</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Full-stack</td>
-                      <td><span class="badge badge--muted">OA</span></td>
-                      <td>3 days ago</td>
-                      <td class="u-right">
-                        <button class="btn btn--ghost btn--sm" type="button">
-                          <i data-lucide="more-horizontal"></i>
-                          <span>Manage</span>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+            </article>
+            <article class="companyStat glass glassHover">
+              <div class="companyStat__icon companyStat__icon--bad" aria-hidden="true"><i data-lucide="x-circle"></i></div>
+              <div class="companyStat__meta">
+                <div class="companyStat__label">Rejected</div>
+                <div class="companyStat__value" id="statRejected">0</div>
+              </div>
+            </article>
+            <article class="companyStat glass glassHover">
+              <div class="companyStat__icon companyStat__icon--accent" aria-hidden="true"><i data-lucide="calendar-clock"></i></div>
+              <div class="companyStat__meta">
+                <div class="companyStat__label">Upcoming Interviews</div>
+                <div class="companyStat__value" id="statUpcoming">0</div>
               </div>
             </article>
           </section>
+
+          <div class="companyGrid">
+            <div class="companyGrid__main">
+              <section class="companyToolbar glass" aria-label="Search and filters">
+                <button class="btn btn--primary companyToolbar__add glowBtn" type="button" id="addCompanyBtn">
+                  <i data-lucide="plus"></i>
+                  <span>Add Company</span>
+                </button>
+                <div class="companyToolbar__search toolbarField">
+                  <i data-lucide="search" aria-hidden="true"></i>
+                  <label class="u-visuallyHidden" for="companySearch">Search companies</label>
+                  <input
+                    id="companySearch"
+                    class="companyToolbar__input"
+                    type="search"
+                    placeholder="Search by company, role, or notes…"
+                    autocomplete="off"
+                  />
+                </div>
+                <div class="companyToolbar__controls">
+                  <div class="toolbarField toolbarField--select">
+                    <label class="toolbarField__label" for="filterStatus">Filter</label>
+                    <select id="filterStatus" class="companySelect">
+                      <option value="all">All statuses</option>
+                      <option value="Applied">Applied</option>
+                      <option value="Interview Scheduled">Interview Scheduled</option>
+                      <option value="Selected">Selected</option>
+                      <option value="Rejected">Rejected</option>
+                      <option value="Pending">Pending</option>
+                    </select>
+                  </div>
+                  <div class="toolbarField toolbarField--select">
+                    <label class="toolbarField__label" for="sortBy">Sort</label>
+                    <select id="sortBy" class="companySelect">
+                      <option value="applied-desc">Application date (newest)</option>
+                      <option value="applied-asc">Application date (oldest)</option>
+                      <option value="name-asc">Company (A–Z)</option>
+                      <option value="name-desc">Company (Z–A)</option>
+                      <option value="priority">Priority (high first)</option>
+                    </select>
+                  </div>
+                </div>
+              </section>
+
+              <div class="card glass companyTableCard">
+                <div class="card__header companyTableCard__head">
+                  <div>
+                    <div class="card__title">Pipeline</div>
+                    <div class="card__subtitle" id="tableResultCount">Showing all applications</div>
+                  </div>
+                  <div class="tableTabs" role="tablist" aria-label="Company view">
+                    <button class="tableTab is-active" type="button" id="tabActive" data-view="active">
+                      <span>Active</span>
+                      <span class="tableTab__count" id="countActive">0</span>
+                    </button>
+                    <button class="tableTab" type="button" id="tabArchived" data-view="archived">
+                      <span>Archived</span>
+                      <span class="tableTab__count" id="countArchived">0</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="tableWrap companyTableWrap">
+                  <table class="table companyTable" id="companyTable">
+                    <thead>
+                      <tr>
+                        <th>Company Name</th>
+                        <th>Job Role</th>
+                        <th>Application Date</th>
+                        <th>Interview Date</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th class="u-right companyTable__actionsHead">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="companyTableBody"></tbody>
+                  </table>
+                </div>
+                <div class="companyEmpty" id="companyEmpty" hidden>
+                  <div class="companyEmpty__icon" aria-hidden="true"><i data-lucide="inbox"></i></div>
+                  <div class="companyEmpty__title" id="companyEmptyTitle">No applications yet</div>
+                  <p class="companyEmpty__text" id="companyEmptyText">Add your first company to start tracking.</p>
+                </div>
+              </div>
+            </div>
+
+            <aside class="companyGrid__aside" aria-label="Upcoming interviews">
+              <div class="card glass recentPanel">
+                <div class="card__header recentPanel__head">
+                  <div>
+                    <div class="card__title">Recent &amp; Upcoming</div>
+                    <div class="card__subtitle">Interviews &amp; reminders</div>
+                  </div>
+                  <span class="recentPanel__badge" id="reminderBadge">0 upcoming</span>
+                </div>
+                <div class="recentPanel__list" id="recentInterviewsList"></div>
+              </div>
+            </aside>
+          </div>
         </main>
+      </div>
+    </div>
+
+    <div class="modalOverlay" id="companyModal" role="dialog" aria-modal="true" aria-labelledby="companyModalTitle" hidden>
+      <div class="modal glass" id="companyModalPanel">
+        <div class="modal__glow" aria-hidden="true"></div>
+        <header class="modal__header">
+          <div>
+            <h2 class="modal__title" id="companyModalTitle">Add company</h2>
+            <p class="modal__subtitle" id="companyModalSubtitle">Create a new application entry for your pipeline.</p>
+          </div>
+          <button class="iconBtn" type="button" id="companyModalClose" aria-label="Close">
+            <i data-lucide="x"></i>
+          </button>
+        </header>
+        <form class="modalForm" id="companyForm" novalidate>
+          <input type="hidden" id="companyEditId" name="editId" value="" />
+          <div class="modalForm__grid">
+            <label class="modalField">
+              <span class="modalField__label">Company name <span class="req">*</span></span>
+              <input class="modalField__input" type="text" name="companyName" id="fieldName" placeholder="e.g. Acme Labs" required />
+              <span class="modalField__error" id="errName" role="alert"></span>
+            </label>
+            <label class="modalField">
+              <span class="modalField__label">Job role <span class="req">*</span></span>
+              <input class="modalField__input" type="text" name="role" id="fieldRole" placeholder="e.g. SDE Intern" required />
+              <span class="modalField__error" id="errRole" role="alert"></span>
+            </label>
+            <label class="modalField">
+              <span class="modalField__label">Package (LPA)</span>
+              <input class="modalField__input" type="text" name="package" id="fieldPackage" placeholder="e.g. 18–22" inputmode="decimal" />
+            </label>
+            <label class="modalField">
+              <span class="modalField__label">Status <span class="req">*</span></span>
+              <select class="modalField__input modalField__input--select" name="status" id="fieldStatus" required>
+                <option value="Applied">Applied</option>
+                <option value="Interview Scheduled">Interview Scheduled</option>
+                <option value="Selected">Selected</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Pending">Pending</option>
+              </select>
+            </label>
+            <label class="modalField">
+              <span class="modalField__label">Interview date</span>
+              <input class="modalField__input" type="date" name="interviewDate" id="fieldInterview" />
+            </label>
+            <label class="modalField">
+              <span class="modalField__label">Priority <span class="req">*</span></span>
+              <select class="modalField__input modalField__input--select" name="priority" id="fieldPriority" required>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </label>
+            <label class="modalField modalField--full">
+              <span class="modalField__label">Notes</span>
+              <textarea class="modalField__input modalField__input--textarea" name="notes" id="fieldNotes" rows="3" placeholder="Prep focus, links, recruiter details…"></textarea>
+            </label>
+          </div>
+          <footer class="modal__footer">
+            <button class="btn btn--ghost" type="button" id="companyModalCancel">Cancel</button>
+            <button class="btn btn--primary glowBtn" type="submit" id="companyModalSave">
+              <i data-lucide="check"></i>
+              <span>Save</span>
+            </button>
+          </footer>
+        </form>
+      </div>
+    </div>
+
+    <div class="modalOverlay" id="viewModal" role="dialog" aria-modal="true" aria-labelledby="viewModalTitle" hidden>
+      <div class="modal modal--sm glass" id="viewModalPanel">
+        <header class="modal__header">
+          <div class="viewModalHead">
+            <div class="viewModalLogo" id="viewLogo" aria-hidden="true">A</div>
+            <div>
+              <h2 class="modal__title" id="viewModalTitle">Company</h2>
+              <p class="modal__subtitle" id="viewModalRole">Role</p>
+            </div>
+          </div>
+          <button class="iconBtn" type="button" id="viewModalClose" aria-label="Close">
+            <i data-lucide="x"></i>
+          </button>
+        </header>
+        <div class="viewModalBody" id="viewModalBody"></div>
+        <footer class="modal__footer">
+          <button class="btn btn--primary" type="button" id="viewModalEdit">Edit</button>
+        </footer>
+      </div>
+    </div>
+
+    <div class="modalOverlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle" hidden>
+      <div class="modal modal--sm glass" id="deleteModalPanel">
+        <header class="modal__header">
+          <div>
+            <h2 class="modal__title" id="deleteModalTitle">Delete company?</h2>
+            <p class="modal__subtitle" id="deleteModalSubtitle">
+              This will permanently remove the company from your tracker.
+            </p>
+          </div>
+          <button class="iconBtn" type="button" id="deleteModalClose" aria-label="Close">
+            <i data-lucide="x"></i>
+          </button>
+        </header>
+        <div class="deleteBody glass">
+          <div class="deleteBody__row">
+            <div class="deleteBody__label">Company</div>
+            <div class="deleteBody__value" id="deleteCompanyName">—</div>
+          </div>
+          <div class="deleteBody__row">
+            <div class="deleteBody__label">Action</div>
+            <div class="deleteBody__value deleteBody__danger">Permanent delete</div>
+          </div>
+        </div>
+        <footer class="modal__footer">
+          <button class="btn btn--ghost" type="button" id="deleteModalCancel">Cancel</button>
+          <button class="btn btn--primary glowBtn" type="button" id="deleteModalConfirm">
+            <i data-lucide="trash-2"></i>
+            <span>Delete</span>
+          </button>
+        </footer>
       </div>
     </div>
 
@@ -247,6 +389,8 @@
     </div>
 
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="js/config.js"></script>
+    <script src="js/companyApi.js"></script>
     <script src="js/app.js" defer></script>
     <script src="js/company.js" defer></script>
   </body>
