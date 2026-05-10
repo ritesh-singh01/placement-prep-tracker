@@ -1,4 +1,4 @@
-const NOTIF_API_BASE = "http://localhost:5000/api/notifications";
+const NOTIF_API_BASE = (window.APP_API_BASE || "http://localhost:5000/api") + "/notifications";
 
 const NotificationApi = {
   async list() {

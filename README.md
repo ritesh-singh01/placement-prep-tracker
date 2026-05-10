@@ -158,8 +158,11 @@ Example:
 ```env
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
+JWT_SECRET=your_secret_key_here
 ```
+
+> [!IMPORTANT]
+> Make sure to provide a valid `JWT_SECRET` for secure authentication. For local development, you can use a simple string, but use a strong random key for production.
 
 ## 4. Start the Backend Server
 
@@ -183,7 +186,7 @@ Open the frontend HTML files using Live Server in VS Code.
 
 ## Auth Routes
 
-* `POST /api/auth/register`
+* `POST /api/auth/signup`
 * `POST /api/auth/login`
 
 ## Company Routes
