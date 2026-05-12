@@ -4,16 +4,18 @@
  * Opening HTML from file:// falls back to localhost + PORT.
  */
 (function () {
-  var port = "5000";
   if (typeof window === "undefined") return;
 
   function resolve() {
-    var o = window.location && window.location.origin;
-    if (!o || o === "null" || (window.location.protocol && window.location.protocol === "file:")) {
-      return "http://localhost:" + port + "/api";
+    const hostname = window.location.hostname;
+    const isLocal = hostname === "localhost" || hostname === "127.0.0.1" || !hostname;
+    
+    if (isLocal) {
+      return "http://localhost:5000/api";
     }
-    return o + "/api";
+    return "/api";
   }
 
   window.APP_API_BASE = resolve();
 })();
+

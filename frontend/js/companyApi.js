@@ -1,4 +1,4 @@
-const API_BASE = (window.APP_API_BASE || "http://localhost:5000/api") + "/companies";
+const API_BASE = `${window.APP_API_BASE}/companies`;
 
 class ApiError extends Error {
   constructor(message, status, errors = null) {

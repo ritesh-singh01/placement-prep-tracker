@@ -1,4 +1,4 @@
-const API_BASE_NOTES = (window.APP_API_BASE || "http://localhost:5000/api") + "/notes";
+const API_BASE_NOTES = `${window.APP_API_BASE}/notes`;
 
 const NotesApi = {
   async request(url, options = {}) {
@@ -65,7 +65,7 @@ const NotesApi = {
 
 window.NotesApi = NotesApi;
 
-const API_BASE_COLLECTIONS = (window.APP_API_BASE || "http://localhost:5000/api") + "/collections";
+const API_BASE_COLLECTIONS = `${window.APP_API_BASE}/collections`;
 
 const CollectionApi = {
   async request(url, options = {}) {

@@ -57,43 +57,6 @@ Users can:
 
 ---
 
-# Screenshots & Demo
-
-A visual overview of the Placement Prep Tracker platform.
-
-## Dashboard Overview
-![Dashboard](./screenshots/dashboard.png)
-*A high-level view of your placement journey, featuring interactive charts, real-time metrics, and quick actions.*
-
-## Company Pipeline
-![Company Tracker](./screenshots/company-tracker.png)
-*Manage your applications with a powerful filtering system, status tracking, and archived views.*
-
-## Preparation Notes
-![Notes & Collections](./screenshots/notes.png)
-*Organize your interview experiences and prep material into custom collections with a clean card-based layout.*
-
-## Deep Analytics
-![Analytics](./screenshots/analytics.png)
-*Visualize your success rate, priority distribution, and application trends over time.*
-
-## Smart Notifications
-![Notifications](./screenshots/notifications.png)
-*Stay on top of upcoming interviews and reminders with a dedicated notification center.*
-
-## Mobile Experience
-![Mobile View](./screenshots/mobile-responsive.png)
-*Fully responsive design ensuring your preparation tracker is accessible on any device.*
-
-## 🎥 Live Demo
-<!-- Add a link to a walkthrough video or a GIF demo here -->
-<!-- ![Demo GIF](./screenshots/demo.gif) -->
-
-> [!TIP]
-> **Portfolio Tip**: For a professional presentation, capture screenshots in a clean browser window (using Chrome DevTools Device Mode for mobile) and ensure the data populated in your demo account reflects a realistic placement journey.
-
----
-
 # Tech Stack
 
 ## Frontend
@@ -126,7 +89,6 @@ placement-prep-tracker/
 │
 ├── backend/            # Express.js API & MongoDB Models
 ├── frontend/           # Vanilla JS/CSS Dashboard UI
-├── screenshots/        # Project UI/UX Documentation
 ├── .gitignore
 └── README.md
 ```

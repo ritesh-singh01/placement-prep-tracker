@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     toast("Demo mode is disabled. Please create an account.", "error");
   });
 
-  const API_BASE = (window.APP_API_BASE || "http://localhost:5000/api") + "/auth";
+  const API_BASE = `${window.APP_API_BASE}/auth`;
 
   const handleAuth = async (url, body) => {
     try {
