@@ -1007,10 +1007,22 @@
     }
   }
 
+  function wireMobileFilters() {
+    var toggleBtn = qs("#toggleFiltersBtn");
+    var controls = qs("#toolbarControls");
+    if (toggleBtn && controls) {
+      toggleBtn.addEventListener("click", function () {
+        controls.classList.toggle("is-open");
+        toggleBtn.classList.toggle("is-active");
+      });
+    }
+  }
+
   async function init() {
     wireModals();
     wireTableActions();
     wireFilters();
+    wireMobileFilters();
     wireTabs();
     wireDeleteModal();
     wireMiniMenuDismiss();

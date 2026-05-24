@@ -407,7 +407,7 @@ function initUserMenu() {
     pModal.id = "profileModalOverlay";
     pModal.hidden = true;
     pModal.innerHTML = `
-      <div class="modal glass" style="width: min(680px, 100%); max-height: min(92vh, 850px);">
+      <div class="modal glass" style="width: min(680px, 92vw); max-height: min(90vh, 850px);">
         <div class="modal__glow" aria-hidden="true"></div>
         <header class="modal__header">
           <div>

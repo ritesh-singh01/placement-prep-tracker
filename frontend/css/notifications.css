@@ -397,12 +397,58 @@
   100% { box-shadow: 0 0 0 0 rgba(255, 90, 122, 0); }
 }
 
+/* Card click read transition */
+.nc-item.fade-read {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: transparent !important;
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+
+.nc-item__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  gap: 8px;
+}
+
+.nc-item__open-btn {
+  background: rgba(124, 107, 255, 0.12);
+  border: 1px solid rgba(124, 107, 255, 0.2);
+  color: var(--indigo);
+  font-size: 11px;
+  font-weight: 750;
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.nc-item__open-btn:hover {
+  background: var(--indigo);
+  color: #fff;
+  border-color: var(--indigo);
+  transform: translateY(-1px);
+}
+
+.nc-item__open-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
 @media (max-width: 640px) {
   .nc-panel {
-    width: calc(100vw - 20px);
-    right: 10px;
-    top: calc(var(--topbar-h) + 4px);
-    max-height: 80vh;
+    width: min(92vw, 420px) !important;
+    right: 4vw !important;
+    left: auto !important;
+    top: calc(var(--topbar-h) + 6px) !important;
+    max-height: min(75vh, 520px) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6) !important;
   }
   .toast-container {
     top: 10px;

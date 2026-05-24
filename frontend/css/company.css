@@ -172,6 +172,16 @@
   border-radius: var(--radius-xl);
 }
 
+.companyToolbar__actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.companyToolbar__toggle {
+  display: none;
+}
+
 .companyToolbar__add {
   flex: 0 0 auto;
   height: 44px; /* Standardized height */
@@ -986,7 +996,38 @@
 
 @media (max-width: 720px) {
   .companyStats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .companyStat {
+    padding: 10px 12px !important;
+    gap: 10px !important;
+    border-radius: 12px !important;
+  }
+
+  .companyStat__icon {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+  }
+
+  .companyStat__icon svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .companyStat__value {
+    font-size: 20px !important;
+  }
+
+  .companyHeader {
+    margin-bottom: 8px !important;
+  }
+
+  .companyHeader__desc {
+    display: none !important; /* Hide long description to raise pipeline cards */
   }
 
   .modalForm__grid {
@@ -994,22 +1035,77 @@
   }
 
   .companyToolbar {
-    flex-direction: column;
-    align-items: stretch;
+    padding: 12px !important;
+    gap: 10px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .companyToolbar__actions {
+    display: flex !important;
+    gap: 10px !important;
+    width: 100% !important;
   }
 
   .companyToolbar__add {
-    width: 100%;
+    flex: 1 !important;
+    width: auto !important;
+    margin: 0 !important;
+    justify-content: center !important;
+  }
+
+  .companyToolbar__toggle {
+    display: flex !important;
+    align-items: center;
     justify-content: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.88);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .companyToolbar__toggle:hover {
+    border-color: rgba(124, 107, 255, 0.35);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .companyToolbar__toggle.is-active {
+    background: rgba(124, 107, 255, 0.12);
+    border-color: var(--indigo);
+    color: #fff;
+  }
+
+  .companyToolbar__search {
+    width: 100% !important;
+    flex: none !important;
+    margin: 0 !important;
   }
 
   .companyToolbar__controls {
-    width: 100%;
+    display: none !important;
+    width: 100% !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .companyToolbar__controls.is-open {
+    display: flex !important;
   }
 
   .toolbarField--select {
-    width: 100%;
+    width: 100% !important;
     min-width: 0;
+  }
+
+  .companySelect {
+    width: 100% !important;
   }
 
   .companyGrid__main {

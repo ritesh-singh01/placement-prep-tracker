@@ -56,14 +56,12 @@
 
       <div class="content">
         <header class="topbar companyTopbar">
-          <div class="topbar__left">
-            <button class="iconBtn topbar__menuBtn" type="button" id="mobileMenu" aria-label="Open menu">
-              <i data-lucide="menu"></i>
-            </button>
-            <div class="pageTitle companyTopbar__title">
-              <div class="pageTitle__kicker">Workspace</div>
-              <div class="pageTitle__title">Companies</div>
-            </div>
+          <button class="iconBtn topbar__menuBtn" type="button" id="mobileMenu" aria-label="Open menu">
+            <i data-lucide="menu"></i>
+          </button>
+          <div class="pageTitle companyTopbar__title">
+            <div class="pageTitle__kicker">Workspace</div>
+            <div class="pageTitle__title">Companies</div>
           </div>
 
           <div class="topbar__right">
@@ -152,10 +150,16 @@
           <div class="companyGrid">
             <div class="companyGrid__main">
               <section class="companyToolbar glass" aria-label="Search and filters">
-                <button class="btn btn--primary companyToolbar__add glowBtn" type="button" id="addCompanyBtn">
-                  <i data-lucide="plus"></i>
-                  <span>Add Company</span>
-                </button>
+                <div class="companyToolbar__actions">
+                  <button class="btn btn--primary companyToolbar__add glowBtn" type="button" id="addCompanyBtn">
+                    <i data-lucide="plus"></i>
+                    <span>Add Company</span>
+                  </button>
+                  <button class="btn btn--ghost companyToolbar__toggle" type="button" id="toggleFiltersBtn" style="display: none;">
+                    <i data-lucide="sliders"></i>
+                    <span>Filters</span>
+                  </button>
+                </div>
                 <div class="companyToolbar__search toolbarField">
                   <i data-lucide="search" aria-hidden="true"></i>
                   <label class="u-visuallyHidden" for="companySearch">Search companies</label>
@@ -167,7 +171,7 @@
                     autocomplete="off"
                   />
                 </div>
-                <div class="companyToolbar__controls">
+                <div class="companyToolbar__controls" id="toolbarControls">
                   <div class="toolbarField toolbarField--select">
                     <label class="toolbarField__label" for="filterStatus">Filter</label>
                     <select id="filterStatus" class="companySelect">

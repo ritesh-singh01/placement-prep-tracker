@@ -760,45 +760,91 @@ body.is-mobile-nav-open .sidebarOverlay {
 
 @media (max-width: 640px) {
   .topbar {
-    flex-wrap: wrap;
-    height: auto;
-    min-height: var(--topbar-h);
-    padding: 12px 14px;
-    gap: 12px;
-    align-items: center;
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    align-items: center !important;
+    gap: 10px 12px !important;
+    height: auto !important;
+    padding: 12px 14px !important;
   }
-  .topbar__left {
-    flex: 1;
-    min-width: 0;
+  .topbar__menuBtn {
+    display: inline-grid !important;
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    justify-self: start !important;
+    z-index: 2 !important;
+  }
+  .pageTitle {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    text-align: center !important;
+    justify-self: center !important;
+    margin: 0 !important;
+    z-index: 1 !important;
   }
   .topbar__right {
-    display: contents;
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    justify-self: end !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    z-index: 2 !important;
   }
   .search {
-    order: 4;
+    grid-column: 1 / 4 !important;
+    grid-row: 2 !important;
     width: 100% !important;
-    max-width: 100%;
-    margin-top: 4px;
+    max-width: 100% !important;
+    margin: 4px 0 0 0 !important;
   }
   .search__input {
-    display: block; /* Ensure it stays visible */
+    display: block !important;
   }
   .pageTitle__title {
-    font-size: 16px;
+    font-size: 14px !important;
+  }
+  .pageTitle__kicker {
+    font-size: 10px !important;
   }
   .main {
     padding: 16px 14px;
     gap: 14px;
     box-sizing: border-box;
   }
-  .topbar__left {
-    gap: 10px;
+  .modal {
+    width: 92vw !important;
+    max-height: 90vh !important;
+    padding: 16px 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
   }
-  .pageTitle__title {
-    font-size: 15px;
+  .modalForm {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+    min-height: 0 !important;
   }
-  .pageTitle__kicker {
-    font-size: 11px;
+  #profileFieldsContainer,
+  .modalForm__body,
+  .modal__body {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding: 4px 2px !important;
+    min-height: 0 !important;
+  }
+  .modal__footer {
+    margin-top: 12px !important;
+    padding-top: 10px !important;
+    position: sticky !important;
+    bottom: 0 !important;
+    background: rgba(11, 15, 27, 0.95) !important;
+    backdrop-filter: blur(8px) !important;
+    z-index: 10 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
 }
 

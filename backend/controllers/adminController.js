@@ -1,6 +1,8 @@
 const User = require("../models/user");
 const Company = require("../models/company");
 const Note = require("../models/notes");
+const Collection = require("../models/collection");
+const Notification = require("../models/notification");
 const PlacementDrive = require("../models/placementDrive");
 const mongoose = require("mongoose");
 
@@ -205,5 +207,37 @@ exports.sendStudentNotification = async (req, res) => {
     res.status(201).json({ success: true, message: "Notification sent successfully", data: notification });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to send notification" });
+  }
+};
+
+// Delete user and cascade delete all their data
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (user.role === "admin") {
+      return res.status(403).json({ success: false, message: "Cannot delete an admin" });
+    }
+
+    // Cascade delete associated data
+    await Company.deleteMany({ user: id });
+    await Note.deleteMany({ user: id });
+    await Collection.deleteMany({ user: id });
+    await Notification.deleteMany({ user: id });
+
+    // Delete the user
+    await User.findByIdAndDelete(id);
+
+    res.status(200).json({ 
+      success: true, 
+      message: "User and all associated data deleted successfully" 
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to delete user" });
   }
 };

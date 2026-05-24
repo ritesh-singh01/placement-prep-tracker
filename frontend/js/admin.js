@@ -216,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             ${student.isBlocked ? 'Unblock' : 'Block'}
                         </button>
                         <button class="btn btn--ghost btn--sm view-student" data-id="${student._id}">View</button>
+                        <button class="btn btn--ghost btn--sm delete-student btn--danger" data-id="${student._id}" style="color: var(--bad); border-color: rgba(255, 90, 122, 0.2);">Delete</button>
                     </div>
                 </td>
             </tr>
@@ -245,6 +246,18 @@ document.addEventListener("DOMContentLoaded", () => {
         qsa(".view-student").forEach(btn => {
             btn.addEventListener("click", () => {
                 openStudentDetailModal(btn.dataset.id);
+            });
+        });
+
+        // Delete student listener
+        qsa(".delete-student").forEach(btn => {
+            btn.addEventListener("click", () => {
+                deletingStudentId = btn.dataset.id;
+                const delModal = qs("#deleteConfirmModal");
+                if (delModal) {
+                    delModal.style.display = "flex";
+                    if (window.lucide) window.lucide.createIcons({ root: delModal });
+                }
             });
         });
     };
@@ -417,6 +430,18 @@ document.addEventListener("DOMContentLoaded", () => {
             };
         }
 
+        const deleteBtn = qs("#sdDeleteBtn");
+        if (deleteBtn) {
+            deleteBtn.onclick = () => {
+                deletingStudentId = studentId;
+                const delModal = qs("#deleteConfirmModal");
+                if (delModal) {
+                    delModal.style.display = "flex";
+                    if (window.lucide) window.lucide.createIcons({ root: delModal });
+                }
+            };
+        }
+
         // Rebind Send Notification action
         const sendNotifBtn = qs("#sdSendNotifBtn");
         if (sendNotifBtn) {
@@ -477,6 +502,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // --- STATE ---
+    let deletingStudentId = null;
     let allApps = [];
     let appFilters = {
         search: '',
@@ -1115,6 +1141,54 @@ document.addEventListener("DOMContentLoaded", () => {
                     editingDriveId = null;
                     if (driveForm) driveForm.reset();
                 }
+            });
+        }
+
+        // --- DELETE CONFIRM MODAL WIRING ---
+        const deleteModal = qs("#deleteConfirmModal");
+        const cancelDeleteBtn = qs("#cancelDeleteBtn");
+        const confirmDeleteBtn = qs("#confirmDeleteBtn");
+
+        if (cancelDeleteBtn && deleteModal) {
+            cancelDeleteBtn.addEventListener("click", () => {
+                deleteModal.style.display = "none";
+                deletingStudentId = null;
+            });
+        }
+
+        if (deleteModal) {
+            deleteModal.addEventListener("click", (e) => {
+                if (e.target === deleteModal) {
+                    deleteModal.style.display = "none";
+                    deletingStudentId = null;
+                }
+            });
+        }
+
+        if (confirmDeleteBtn && deleteModal) {
+            confirmDeleteBtn.addEventListener("click", async () => {
+                if (!deletingStudentId) return;
+                
+                const span = confirmDeleteBtn.querySelector("span");
+                const originalText = span ? span.textContent : "Delete Account";
+                if (span) span.textContent = "Deleting...";
+                confirmDeleteBtn.classList.add("is-busy");
+                
+                const res = await adminApi.delete(`/users/${deletingStudentId}`);
+                
+                if (span) span.textContent = originalText;
+                confirmDeleteBtn.classList.remove("is-busy");
+                
+                if (res) {
+                    if (window.Toast) window.Toast.success("Deleted", "Student and all associated data deleted successfully");
+                    deleteModal.style.display = "none";
+                    closeStudentDetailModal();
+                    renderStudents();
+                } else {
+                    if (window.Toast) window.Toast.error("Error", "Failed to delete student");
+                }
+                
+                deletingStudentId = null;
             });
         }
 

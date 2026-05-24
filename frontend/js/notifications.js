@@ -138,7 +138,10 @@ class NotificationManager {
                 ${badgeHTML}
             </div>
             <div class="nc-item__desc">${n.message}</div>
-            <div class="nc-item__time">${this.formatTime(n.createdAt)}</div>
+            <div class="nc-item__footer">
+              <span class="nc-item__time">${this.formatTime(n.createdAt)}</span>
+              ${n.company ? `<button class="nc-item__open-btn js-open-notif" data-id="${n._id}">Open <i data-lucide="arrow-right"></i></button>` : ''}
+            </div>
           </div>
         </div>
         `;
@@ -147,7 +150,23 @@ class NotificationManager {
       // Add click listeners to items
       this.list.querySelectorAll(".nc-item").forEach(item => {
         const notif = this.notifications.find(n => n._id === item.dataset.id);
-        item.addEventListener("click", () => this.handleNotificationClick(notif));
+        
+        // Card click: only mark as read, do NOT redirect
+        item.addEventListener("click", (e) => {
+          if (e.target.closest(".js-open-notif")) return;
+          if (notif && !notif.read) {
+            this.markAsRead(notif._id);
+          }
+        });
+
+        // Open button click: mark as read AND redirect
+        const openBtn = item.querySelector(".js-open-notif");
+        if (openBtn) {
+          openBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.handleNotificationClick(notif);
+          });
+        }
       });
     }
     
@@ -173,7 +192,7 @@ class NotificationManager {
   async handleNotificationClick(notif) {
     if (!notif) return;
 
-    // Mark as read
+    // Mark as read if not already read
     if (!notif.read) {
       await this.markAsRead(notif._id);
     }
@@ -199,6 +218,17 @@ class NotificationManager {
 
   async markAsRead(id) {
     try {
+      const itemEl = this.list.querySelector(`.nc-item[data-id="${id}"]`);
+      if (itemEl && itemEl.classList.contains('is-unread')) {
+        itemEl.classList.add('fade-read');
+        const dot = itemEl.querySelector('.nc-item__dot');
+        if (dot) {
+          dot.style.transition = 'all 0.4s ease';
+          dot.style.opacity = '0';
+          dot.style.transform = 'scale(0)';
+        }
+      }
+
       const notif = this.notifications.find(n => n._id === id);
       if (notif && notif.isAnnouncement) {
         const readAnnIds = JSON.parse(localStorage.getItem("readAnnouncements") || "[]");
@@ -212,8 +242,12 @@ class NotificationManager {
       this.notifications = this.notifications.map(n => 
         n._id === id ? { ...n, read: true } : n
       );
-      this.renderNotifications();
-      this.updateBadges();
+      
+      // Delay re-render so transition finishes
+      setTimeout(() => {
+        this.renderNotifications();
+        this.updateBadges();
+      }, 400);
     } catch (err) {
       console.error("Failed to mark notification as read:", err);
     }
