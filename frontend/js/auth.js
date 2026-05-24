@@ -19,36 +19,123 @@ function toast(message, type = "info") {
   }
 }
 
+/**
+ * Validates email format according to strict production requirements
+ */
+function isValidEmail(email) {
+  if (!email || typeof email !== 'string') return false;
+  
+  // Trim before validation
+  const trimmed = email.trim();
+  
+  // No spaces anywhere
+  if (/\s/.test(trimmed)) return false;
+  
+  // Exactly one @ symbol
+  const parts = trimmed.split('@');
+  if (parts.length !== 2) return false;
+  
+  const [local, domain] = parts;
+  
+  // Valid local part before @
+  if (!local) return false;
+  
+  // Valid domain after @ (must contain at least one dot)
+  if (!domain || !domain.includes('.')) return false;
+  
+  const domainParts = domain.split('.');
+  
+  // Domain extension must be at least 2 characters
+  const tld = domainParts[domainParts.length - 1];
+  if (tld.length < 2) return false;
+  
+  // No empty parts in domain (e.g. you@.edu or you@college.)
+  if (domainParts.some(p => p === "")) return false;
+
+  return true;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   let currentMode = "login";
+  let selectedRole = null;
+
+  const roleSelection = qs("#roleSelection");
+  const authContent = qs("#authContent");
+  const roleCards = qsa(".role-card");
+  const backBtn = qs("#backToRole");
+
   const authForm = qs("#authForm");
   const nameField = qs("#nameField");
   const loginExtras = qs("#loginExtras");
-  const demoExtras = qs("#demoExtras");
+  const adminNote = qs("#adminNote");
   const submitBtnText = qs("#submitBtnText");
-  const demo = qs("#demoLogin");
   
+  const panelTitle = qs("#panelTitle");
+  const panelSubtitle = qs("#panelSubtitle");
+  const authTabs = qs("#authTabs");
+
+  // Role Selection Logic
+  roleCards.forEach(card => {
+    card.addEventListener("click", () => {
+      selectedRole = card.dataset.role;
+      showAuthForm();
+    });
+  });
+
+  backBtn.addEventListener("click", () => {
+    roleSelection.style.display = "block";
+    authContent.style.display = "none";
+    selectedRole = null;
+  });
+
+  function showAuthForm() {
+    roleSelection.style.display = "none";
+    authContent.style.display = "block";
+    
+    if (selectedRole === "admin") {
+      panelTitle.textContent = "Admin Portal";
+      panelSubtitle.textContent = "Sign in to manage the placement tracker.";
+      authTabs.style.display = "none";
+      adminNote.style.display = "block";
+      currentMode = "login";
+      if (nameField) nameField.style.display = "none";
+      if (loginExtras) loginExtras.style.display = "flex";
+      if (submitBtnText) submitBtnText.textContent = "Admin Sign in";
+    } else {
+      panelTitle.textContent = "Welcome";
+      panelSubtitle.textContent = "Sign in or create an account to track your progress.";
+      authTabs.style.display = "flex";
+      adminNote.style.display = "none";
+      switchToTab("login");
+    }
+  }
+
+  function switchToTab(target) {
+    const tabs = qsa(".auth__tab");
+    tabs.forEach(t => {
+      if (t.dataset.target === target) t.classList.add("is-active");
+      else t.classList.remove("is-active");
+    });
+    currentMode = target;
+    
+    if (currentMode === "signup") {
+      if (nameField) nameField.style.display = "grid";
+      if (loginExtras) loginExtras.style.display = "none";
+      if (submitBtnText) submitBtnText.textContent = "Create Account";
+      if (authForm && authForm.name) authForm.name.required = true;
+    } else {
+      if (nameField) nameField.style.display = "none";
+      if (loginExtras) loginExtras.style.display = "flex";
+      if (submitBtnText) submitBtnText.textContent = "Sign in";
+      if (authForm && authForm.name) authForm.name.required = false;
+    }
+  }
+
   // Tabs logic
   const tabs = qsa(".auth__tab");
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("is-active"));
-      tab.classList.add("is-active");
-      currentMode = tab.dataset.target;
-      
-      if (currentMode === "signup") {
-        if (nameField) nameField.style.display = "grid";
-        if (loginExtras) loginExtras.style.display = "none";
-        if (demoExtras) demoExtras.style.display = "none";
-        if (submitBtnText) submitBtnText.textContent = "Create Account";
-        if (authForm && authForm.name) authForm.name.required = true;
-      } else {
-        if (nameField) nameField.style.display = "none";
-        if (loginExtras) loginExtras.style.display = "flex";
-        if (demoExtras) demoExtras.style.display = "block";
-        if (submitBtnText) submitBtnText.textContent = "Sign in";
-        if (authForm && authForm.name) authForm.name.required = false;
-      }
+      switchToTab(tab.dataset.target);
     });
   });
 
@@ -62,12 +149,16 @@ document.addEventListener("DOMContentLoaded", () => {
       input.type = next;
       const icon = toggle.querySelector("[data-lucide]");
       if (icon) icon.setAttribute("data-lucide", next === "password" ? "eye" : "eye-off");
-      if (window.lucide?.createIcons) window.lucide.createIcons();
+      if (window.lucide?.createIcons) window.lucide.createIcons({ root: toggle });
     });
   });
 
-  const goDashboard = () => {
-    window.location.href = "dashboard.html";
+  const redirectUser = (role) => {
+    if (role === "admin") {
+      window.location.href = "admin.html";
+    } else {
+      window.location.href = "dashboard.html";
+    }
   };
 
   const forgotBtn = qs("#forgotPassword");
@@ -77,9 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (demo) demo.addEventListener("click", () => {
-    toast("Demo mode is disabled. Please create an account.", "error");
-  });
+
 
   const API_BASE = `${window.APP_API_BASE}/auth`;
 
@@ -93,10 +182,23 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       if (!data.success) throw new Error(data.message || "Authentication failed");
       
-      localStorage.setItem("token", data.data.token);
-      localStorage.setItem("user", JSON.stringify(data.data));
-      goDashboard();
+      const user = data.data;
+      
+      // Role enforcement on frontend
+      if (selectedRole === "admin" && user.role !== "admin") {
+        throw new Error("This is a student account. Please use Student Login.");
+      }
+      if (selectedRole === "student" && user.role !== "student") {
+        throw new Error("This is an admin account. Please use Admin Login.");
+      }
+
+      localStorage.setItem("token", user.token);
+      localStorage.setItem("user", JSON.stringify(user));
+      
+      redirectUser(user.role);
     } catch (err) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       toast(err.message, "error");
     }
   };
@@ -104,14 +206,23 @@ document.addEventListener("DOMContentLoaded", () => {
   if (authForm) {
     authForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const email = authForm.email.value;
+      
+      let email = authForm.email.value.trim();
       const password = authForm.password.value;
+      
+      // Email validation
+      if (!isValidEmail(email)) {
+        return toast("Please enter a valid email address without spaces.", "error");
+      }
+
+      // Normalize email to lowercase
+      email = email.toLowerCase();
       
       if (currentMode === "login") {
         if (!email || !password) return toast("Fill all fields", "error");
-        handleAuth(`${API_BASE}/login`, { email, password });
+        handleAuth(`${API_BASE}/login`, { email, password, expectedRole: selectedRole });
       } else {
-        const name = authForm.name.value;
+        const name = authForm.name.value.trim();
         if (!name || !email || !password) return toast("Fill all fields", "error");
         handleAuth(`${API_BASE}/signup`, { name, email, password });
       }

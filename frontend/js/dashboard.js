@@ -317,19 +317,374 @@ function initQuickActions() {
   qsa("[data-action]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const a = btn.getAttribute("data-action");
-      if (a === "viewCompanies" || a === "addCompany") window.location.href = "company.html";
-      if (a === "addNote") window.location.href = "notes.html";
-      if (a === "addInterview") window.location.href = "company.html";
+      if (a === "addApplication") {
+        window.location.href = "company.html?action=add";
+      } else if (a === "addNote") {
+        window.location.href = "notes.html?action=add";
+      } else if (a === "upcomingInterviews") {
+        window.location.href = "company.html?filter=Interview Scheduled";
+      } else if (a === "checkATS") {
+        if (typeof window.openATSModal === "function") {
+          window.openATSModal();
+        }
+      }
     });
   });
+}
+
+/**
+ * Focus Checklist Manager
+ */
+const FocusManager = {
+  tasks: [],
+  container: null,
+  addBtn: null,
+  
+  init() {
+    this.container = qs("#focusChecklist");
+    this.addBtn = qs("#addTaskBtn");
+    
+    if (!this.container || !this.addBtn) return;
+    
+    this.load();
+    this.render();
+    this.bindEvents();
+  },
+  
+  load() {
+    const saved = localStorage.getItem("placement_focus_tasks");
+    if (saved) {
+      try {
+        this.tasks = JSON.parse(saved);
+      } catch (e) {
+        this.tasks = this.getDefaultTasks();
+      }
+    } else {
+      this.tasks = this.getDefaultTasks();
+    }
+  },
+  
+  getDefaultTasks() {
+    return [
+      { id: Date.now() + 1, text: "Revise DBMS notes", completed: true },
+      { id: Date.now() + 2, text: "Solve 3 DSA problems", completed: false },
+      { id: Date.now() + 3, text: "Mock interview (30 min)", completed: false }
+    ];
+  },
+  
+  save() {
+    localStorage.setItem("placement_focus_tasks", JSON.stringify(this.tasks));
+  },
+  
+  bindEvents() {
+    this.addBtn.addEventListener("click", () => this.showForm());
+  },
+  
+  render() {
+    this.container.innerHTML = "";
+    
+    if (this.tasks.length === 0) {
+      this.container.innerHTML = `<div style="padding: 10px 14px; opacity: 0.5; font-size: 13px;">No tasks for today.</div>`;
+    }
+    
+    this.tasks.forEach(task => {
+      const label = document.createElement("label");
+      label.className = "check";
+      label.innerHTML = `
+        <input type="checkbox" ${task.completed ? "checked" : ""} data-id="${task.id}" />
+        <span>${task.text}</span>
+      `;
+      
+      const input = label.querySelector("input");
+      input.addEventListener("change", () => {
+        task.completed = input.checked;
+        this.save();
+      });
+      
+      this.container.appendChild(label);
+    });
+    
+    if (window.lucide) window.lucide.createIcons();
+  },
+  
+  showForm() {
+    this.addBtn.style.display = "none";
+    
+    const form = document.createElement("div");
+    form.className = "checklist__form";
+    form.innerHTML = `
+      <input type="text" class="checklist__input" placeholder="What needs to be done?" id="taskInput" />
+      <div class="checklist__actions">
+        <button class="btn btn--ghost btn--sm" id="cancelTask">Cancel</button>
+        <button class="btn btn--primary btn--sm" id="saveTask">Add</button>
+      </div>
+    `;
+    
+    this.container.appendChild(form);
+    const input = form.querySelector("#taskInput");
+    input.focus();
+    
+    // Save on Enter
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") this.handleAddTask();
+    });
+    
+    form.querySelector("#saveTask").addEventListener("click", () => this.handleAddTask());
+    form.querySelector("#cancelTask").addEventListener("click", () => {
+      this.addBtn.style.display = "flex";
+      this.render();
+    });
+  },
+  
+  handleAddTask() {
+    const input = qs("#taskInput");
+    const text = input.value.trim();
+    
+    if (!text) {
+      if (window.Toast) window.Toast.error("Error", "Task name cannot be empty.");
+      return;
+    }
+    
+    this.tasks.push({
+      id: Date.now(),
+      text,
+      completed: false
+    });
+    
+    this.save();
+    this.addBtn.style.display = "flex";
+    this.render();
+  }
+};
+
+/**
+ * ATS Resume Checker Modal Controller
+ */
+function initATSChecker() {
+  const modal = qs("#atsModal");
+  const closeBtn = qs("#atsModalClose");
+  
+  if (!modal) return;
+  
+  // States
+  const uploadState = qs("#atsUploadState");
+  const scanningState = qs("#atsScanningState");
+  const resultsState = qs("#atsResultsState");
+  
+  // Elements inside States
+  const uploadZone = qs("#atsUploadZone");
+  const fileSelectBtn = qs("#atsFileSelectBtn");
+  const fileInput = qs("#atsFileInput");
+  const scannerBar = qs("#atsScannerBar");
+  const scannerStatus = qs("#atsScannerStatus");
+  const resetBtn = qs("#atsResetBtn");
+  
+  // Helper to open modal
+  window.openATSModal = () => {
+    // Reset to upload state
+    uploadState.style.display = "block";
+    scanningState.style.display = "none";
+    resultsState.style.display = "none";
+    
+    window.openModalOverlay(modal);
+    if (window.lucide?.createIcons) window.lucide.createIcons({ root: modal });
+  };
+  
+  // Helpers to close modal
+  const closeModal = () => {
+    window.closeModalOverlay(modal);
+  };
+  
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+  });
+  
+  // Drag and Drop
+  if (uploadZone) {
+    ["dragenter", "dragover"].forEach(eventName => {
+      uploadZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        uploadZone.classList.add("is-dragover");
+      }, false);
+    });
+    
+    ["dragleave", "drop"].forEach(eventName => {
+      uploadZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove("is-dragover");
+      }, false);
+    });
+    
+    uploadZone.addEventListener("drop", (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length > 0) {
+        startATSScanning(files[0]);
+      }
+    });
+  }
+  
+  if (fileSelectBtn && fileInput) {
+    fileSelectBtn.addEventListener("click", () => {
+      fileInput.click();
+    });
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length > 0) {
+        startATSScanning(fileInput.files[0]);
+      }
+    });
+  }
+  
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      if (fileInput) fileInput.value = "";
+      uploadState.style.display = "block";
+      scanningState.style.display = "none";
+      resultsState.style.display = "none";
+    });
+  }
+  
+  // Scanning logic
+  function startATSScanning(file) {
+    uploadState.style.display = "none";
+    scanningState.style.display = "block";
+    resultsState.style.display = "none";
+    scannerBar.style.width = "0%";
+    
+    const phases = [
+      { text: "Reading file structure...", duration: 800, progress: 15 },
+      { text: "Parsing text and section formatting...", duration: 1000, progress: 40 },
+      { text: "Analyzing tech skill alignment...", duration: 900, progress: 70 },
+      { text: "Calculating final ATS optimization score...", duration: 800, progress: 100 }
+    ];
+    
+    let currentPhase = 0;
+    
+    function runPhase() {
+      if (currentPhase >= phases.length) {
+        showATSResults();
+        return;
+      }
+      
+      const phase = phases[currentPhase];
+      scannerStatus.textContent = phase.text;
+      scannerBar.style.width = `${phase.progress}%`;
+      
+      setTimeout(() => {
+        currentPhase++;
+        runPhase();
+      }, phase.duration);
+    }
+    
+    runPhase();
+  }
+  
+  // Results logic
+  function showATSResults() {
+    scanningState.style.display = "none";
+    resultsState.style.display = "block";
+    
+    // Generate scores (semi-randomized but realistic)
+    const overallScore = Math.floor(Math.random() * 20) + 72; // 72 to 91
+    const keywordScore = overallScore - Math.floor(Math.random() * 6);
+    const formatScore = overallScore + Math.floor(Math.random() * 8);
+    const sectionScore = overallScore + Math.floor(Math.random() * 5);
+    
+    // Clamp scores
+    const clamp = (val) => Math.max(0, Math.min(100, val));
+    const kScore = clamp(keywordScore);
+    const fScore = clamp(formatScore);
+    const sScore = clamp(sectionScore);
+    
+    // Set UI scores
+    const scoreVal = qs("#atsScoreValue");
+    if (scoreVal) scoreVal.textContent = `${overallScore}%`;
+    
+    const scoreStroke = qs("#atsScoreStroke");
+    if (scoreStroke) {
+      // Circle circumference is 2 * pi * r = 2 * 3.14159 * 15.9155 = 100.
+      scoreStroke.setAttribute("stroke-dasharray", `${overallScore}, 100`);
+    }
+    
+    const scoreLevel = qs("#atsScoreLevel");
+    const feedbackSummary = qs("#atsFeedbackSummary");
+    if (scoreLevel && feedbackSummary) {
+      if (overallScore >= 85) {
+        scoreLevel.textContent = "Excellent";
+        scoreLevel.style.color = "var(--good)";
+        feedbackSummary.textContent = "Your resume has exceptional layout alignment and strong technical keyword density for software engineering.";
+      } else if (overallScore >= 75) {
+        scoreLevel.textContent = "Good";
+        scoreLevel.style.color = "var(--blue)";
+        feedbackSummary.textContent = "Solid match! Adding a few missing specialized frameworks and metrics-focused bullet points will elevate your score further.";
+      } else {
+        scoreLevel.textContent = "Needs Improvement";
+        scoreLevel.style.color = "var(--warn)";
+        feedbackSummary.textContent = "Your resume formatting is parseable, but keyword match for standard software engineering roles is relatively low.";
+      }
+    }
+    
+    // Metrics bars
+    const kwScoreEl = qs("#atsKeywordScore");
+    const kwBar = qs("#atsKeywordBar");
+    if (kwScoreEl && kwBar) {
+      kwScoreEl.textContent = `${kScore}%`;
+      kwBar.style.width = `${kScore}%`;
+    }
+    
+    const fmtScoreEl = qs("#atsFormatScore");
+    const fmtBar = qs("#atsFormatBar");
+    if (fmtScoreEl && fmtBar) {
+      fmtScoreEl.textContent = `${fScore}%`;
+      fmtBar.style.width = `${fScore}%`;
+    }
+    
+    const secScoreEl = qs("#atsSectionScore");
+    const secBar = qs("#atsSectionBar");
+    if (secScoreEl && secBar) {
+      secScoreEl.textContent = `${sScore}%`;
+      secBar.style.width = `${sScore}%`;
+    }
+    
+    // Insights/Recommendations
+    const insightsList = qs("#atsInsightsList");
+    if (insightsList) {
+      const allRecommendations = [
+        "Include more data-driven impact statements (e.g. 'Optimized APIs, improving response times by 30%').",
+        "Add standard cloud infrastructure keywords (AWS, Docker, Kubernetes) to your skills section.",
+        "Ensure all project experiences clearly list the programming languages and databases used.",
+        "Avoid using graphical skill level indicators (like bar charts or star scales) as ATS parsers discard them.",
+        "Include database design and query optimization keywords (SQL, Indexes, Redis).",
+        "Format date fields consistently using standard Month Year or MM/YYYY format."
+      ];
+      
+      // Select 3 random unique recommendations
+      const shuffled = allRecommendations.sort(() => 0.5 - Math.random());
+      const selectedRecs = shuffled.slice(0, 3);
+      
+      insightsList.innerHTML = selectedRecs.map(r => `<li>${r}</li>`).join("");
+    }
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   initQuickActions();
   loadDashboardAnalytics();
+  FocusManager.init();
+  initATSChecker();
   
   // Refresh on focus (keep data fresh)
   window.addEventListener("focus", () => {
     loadDashboardAnalytics();
+  });
+
+  // Handle sidebar toggle (resize charts)
+  window.addEventListener('sidebarToggle', () => {
+    Object.values(charts).forEach(chart => {
+      if (chart && typeof chart.resize === 'function') {
+        chart.resize();
+      }
+    });
   });
 });

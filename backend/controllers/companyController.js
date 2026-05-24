@@ -366,3 +366,115 @@ exports.getAnalytics = async (req, res) => {
     });
   }
 };
+
+exports.seedDemoData = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Check if demo data already exists to prevent duplicates
+    const existingDemo = await Company.findOne({ user: userId, isDemo: true });
+    if (existingDemo) {
+      return res.status(400).json({
+        success: false,
+        message: "Demo data already exists for this user.",
+      });
+    }
+
+    const companies = [
+      "TCS", "Infosys", "Wipro", "Cognizant", "Accenture", 
+      "Capgemini", "HCL", "Tech Mahindra", "IBM", "Deloitte", 
+      "Zoho", "Persistent Systems", "LTIMindtree", "Hexaware", "Mindtree"
+    ];
+
+    const roles = ["SDE", "Full Stack Developer", "Backend Engineer", "Frontend Developer", "Data Analyst", "DevOps Intern"];
+    const statuses = ["Applied", "Interview Scheduled", "Selected", "Rejected", "Pending"];
+    const priorities = ["High", "Medium", "Low"];
+
+    const demoRecords = [];
+    const now = new Date();
+
+    const distribution = [
+      { monthsAgo: 7, count: 2 },
+      { monthsAgo: 6, count: 2 },
+      { monthsAgo: 5, count: 3 },
+      { monthsAgo: 4, count: 2 },
+      { monthsAgo: 3, count: 3 },
+      { monthsAgo: 2, count: 2 },
+      { monthsAgo: 1, count: 2 },
+      { monthsAgo: 0, count: 2 }
+    ];
+
+    let companyIdx = 0;
+
+    for (const item of distribution) {
+      for (let i = 0; i < item.count; i++) {
+        const appliedDate = new Date(now);
+        appliedDate.setMonth(now.getMonth() - item.monthsAgo);
+        appliedDate.setDate(Math.floor(Math.random() * 25) + 1);
+
+        let status = "Applied";
+        if (item.monthsAgo > 3) {
+          status = Math.random() > 0.4 ? "Rejected" : "Selected";
+        } else if (item.monthsAgo > 1) {
+          status = Math.random() > 0.5 ? "Interview Scheduled" : "Applied";
+        } else {
+          status = statuses[Math.floor(Math.random() * statuses.length)];
+        }
+
+        let interviewDate = null;
+        if (status === "Interview Scheduled") {
+          interviewDate = new Date(appliedDate);
+          interviewDate.setDate(appliedDate.getDate() + 14);
+        }
+
+        demoRecords.push({
+          companyName: companies[companyIdx % companies.length],
+          role: roles[Math.floor(Math.random() * roles.length)],
+          package: `${Math.floor(Math.random() * 10) + 8}-${Math.floor(Math.random() * 15) + 15} LPA`,
+          status: status,
+          priority: priorities[Math.floor(Math.random() * priorities.length)],
+          notes: `Demo data for ${companies[companyIdx % companies.length]}. This is a sample application record.`,
+          appliedDate: appliedDate,
+          interviewDate: interviewDate,
+          user: userId,
+          isDemo: true
+        });
+
+        companyIdx++;
+      }
+    }
+
+    await Company.insertMany(demoRecords);
+
+    return res.status(201).json({
+      success: true,
+      message: `Successfully seeded ${demoRecords.length} demo records.`,
+      data: { count: demoRecords.length }
+    });
+  } catch (err) {
+    console.error("seedDemoData:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to seed demo data.",
+    });
+  }
+};
+
+exports.clearDemoData = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const result = await Company.deleteMany({ user: userId, isDemo: true });
+
+    return res.status(200).json({
+      success: true,
+      message: `Successfully removed ${result.deletedCount} demo records.`,
+      data: { count: result.deletedCount }
+    });
+  } catch (err) {
+    console.error("clearDemoData:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to clear demo data.",
+    });
+  }
+};

@@ -5,13 +5,19 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "seed:admin": "node seed/createAdmin.js",
+    "seed:clean": "node seed/cleanDb.js",
+    "clean:demo": "node scripts/cleanDemoData.js",
+    "reset:student": "node scripts/resetStudentPassword.js",
+    "seed:demo-student": "node scripts/seedDemoStudent.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "axios": "^1.16.1",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -19,5 +25,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.3.2",
     "nodemon": "^3.1.0"
+  },
+  "devDependencies": {
+    "puppeteer": "^25.0.4"
   }
 }

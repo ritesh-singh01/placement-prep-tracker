@@ -20,6 +20,10 @@ const collectionSchema = new mongoose.Schema(
       required: true,
       ref: "User",
     },
+    isDefault: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

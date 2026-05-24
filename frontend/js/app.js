@@ -58,6 +58,8 @@ function initSidebarToggle() {
 
   btn.addEventListener("click", () => {
     document.body.classList.toggle("is-sidebar-collapsed");
+    // Dispatch event for other components (like charts) to resize
+    window.dispatchEvent(new Event('sidebarToggle'));
   });
 }
 
@@ -86,34 +88,28 @@ function initMobileNav() {
 }
 
 function initCommandPalette() {
-  const openBtn = qs("#openCommand");
   const overlay = qs("#cmdkOverlay");
   const closeBtn = qs("#cmdkClose");
   const input = qs("#cmdkInput");
 
   if (!overlay) return;
 
-  /* FORCE HIDE ON LOAD */
-  overlay.hidden = true;
-  overlay.style.display = "none";
-
   const openPalette = () => {
-    overlay.hidden = false;
-    overlay.style.display = "flex";
-
+    overlay.classList.add("is-open");
     requestAnimationFrame(() => {
-      if (input) input.focus();
+      if (input) {
+        input.value = "";
+        input.focus();
+      }
+      qsa(".cmdk__item", overlay).forEach(item => item.style.display = "flex");
     });
+    document.documentElement.style.overflow = "hidden";
   };
 
   const closePalette = () => {
-    overlay.hidden = true;
-    overlay.style.display = "none";
+    overlay.classList.remove("is-open");
+    document.documentElement.style.overflow = "";
   };
-
-  if (openBtn) {
-    openBtn.addEventListener("click", openPalette);
-  }
 
   if (closeBtn) {
     closeBtn.addEventListener("click", closePalette);
@@ -126,23 +122,19 @@ function initCommandPalette() {
   });
 
   document.addEventListener("keydown", (e) => {
-    const isCmdK =
-      (e.ctrlKey || e.metaKey) &&
-      e.key.toLowerCase() === "k";
+    const isCmdK = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k";
 
     if (isCmdK) {
       e.preventDefault();
-
-      if (overlay.hidden) {
-        openPalette();
-      } else {
+      if (overlay.classList.contains("is-open")) {
         closePalette();
+      } else {
+        openPalette();
       }
-
       return;
     }
 
-    if (e.key === "Escape") {
+    if (e.key === "Escape" && overlay.classList.contains("is-open")) {
       closePalette();
     }
   });
@@ -160,52 +152,558 @@ function initCommandPalette() {
   qsa("[data-go]", overlay).forEach((btn) => {
     btn.addEventListener("click", () => {
       const dest = btn.getAttribute("data-go");
-
       if (!dest) return;
-
-      window.location.href = dest;
+      closePalette();
+      
+      // If it's a logout command, handle it
+      if (btn.textContent.toLowerCase().includes("logout")) {
+          logout();
+      } else {
+          window.location.href = dest;
+      }
     });
   });
 }
 
-function checkAuth() {
-  const page = document.body?.dataset?.page;
-  if (page && page !== "login") {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "index.html";
-      return;
-    }
-  }
-
-  // Auto-redirect from login if already logged in
-  if (page === "login") {
-    const token = localStorage.getItem("token");
-    if (token) {
-      window.location.href = "dashboard.html";
-      return;
-    }
-  }
-
-  const profiles = qsa(".miniProfile");
-  profiles.forEach((p) => {
-    p.style.cursor = "pointer";
-    p.addEventListener("click", () => {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      if (window.Toast) {
-        window.Toast.info("Profile Info", `Logged in as ${user.name || 'User'}`);
+window.clearAuthStorage = function() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("role");
+  try {
+    const keys = Object.keys(localStorage);
+    keys.forEach(k => {
+      if (k.toLowerCase().includes("auth") || k.toLowerCase().includes("user")) {
+        localStorage.removeItem(k);
       }
     });
+  } catch (e) {
+    console.error("Error clearing localStorage:", e);
+  }
+  
+  try {
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("role");
+    const keys = Object.keys(sessionStorage);
+    keys.forEach(k => {
+      if (k.toLowerCase().includes("auth") || k.toLowerCase().includes("user")) {
+        sessionStorage.removeItem(k);
+      }
+    });
+  } catch (e) {
+    console.error("Error clearing sessionStorage:", e);
+  }
+};
+
+function checkAuth() {
+  const page = document.body?.dataset?.page;
+  const token = localStorage.getItem("token");
+  const userJson = localStorage.getItem("user");
+  let user = null;
+
+  try {
+    if (userJson) user = JSON.parse(userJson);
+  } catch (e) {
+    console.error("Invalid user data in storage");
+    window.clearAuthStorage();
+  }
+
+  const isValidAdmin = token && user && user.role === "admin";
+  const isValidStudent = token && user && (user.role === "student" || user.role === "user");
+
+  // Protection for internal pages (Dashboard, Company, Notes, Admin)
+  if (page && page !== "login") {
+    if (page === "admin" && !isValidAdmin) {
+      window.location.href = isValidStudent ? "dashboard.html" : "index.html";
+      return;
+    }
+
+    const studentPages = ["dashboard", "company", "notes"];
+    if (studentPages.includes(page) && !isValidStudent) {
+      window.location.href = isValidAdmin ? "admin.html" : "index.html";
+      return;
+    }
+  }
+
+  // On login page, clear any old auth token/user data so it always starts clean
+  if (page === "login") {
+    window.clearAuthStorage();
+  }
+}
+
+window.logout = function() {
+  window.clearAuthStorage();
+  window.location.replace("index.html");
+};
+
+async function profileRequest(endpoint, options = {}) {
+  const token = localStorage.getItem("token");
+  const url = `${window.APP_API_BASE || "http://localhost:5000/api"}${endpoint}`;
+  
+  const headers = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {})
+  };
+
+  const response = await fetch(url, {
+    headers,
+    ...options
   });
 
-  const logoutBtns = qsa("#logoutBtn, [data-logout]");
-  logoutBtns.forEach((btn) => {
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      window.clearAuthStorage();
+      window.location.replace("index.html");
+    }
+    throw new Error(data.message || "Request failed");
+  }
+
+  return data;
+}
+
+function renderProfileFields(role, data = {}) {
+  const container = document.getElementById("profileFieldsContainer");
+  if (!container) return;
+
+  const getVal = (field) => data[field] || "";
+
+  let html = `
+    <label class="modalField">
+      <span class="modalField__label">Full Name <span class="req">*</span></span>
+      <input class="modalField__input" type="text" name="name" value="${getVal('name')}" required placeholder="Your Name" />
+      <span class="modalField__error" id="errProfileName" style="color: #ff5a7a; font-size: 11px; margin-top: 4px; display: block;"></span>
+    </label>
+    <label class="modalField">
+      <span class="modalField__label">Email (Readonly)</span>
+      <input class="modalField__input" type="email" name="email" value="${getVal('email')}" readonly />
+    </label>
+    <label class="modalField">
+      <span class="modalField__label">Phone Number</span>
+      <input class="modalField__input" type="text" name="phoneNumber" value="${getVal('phoneNumber')}" placeholder="e.g. +1234567890" />
+    </label>
+  `;
+
+  if (role === "student") {
+    html += `
+      <label class="modalField">
+        <span class="modalField__label">College Name</span>
+        <input class="modalField__input" type="text" name="collegeName" value="${getVal('collegeName')}" placeholder="e.g. Stanford University" />
+      </label>
+      <label class="modalField">
+        <span class="modalField__label">Course / Degree</span>
+        <input class="modalField__input" type="text" name="course" value="${getVal('course')}" placeholder="e.g. B.Tech Computer Science" />
+      </label>
+      <label class="modalField">
+        <span class="modalField__label">Branch / Department</span>
+        <input class="modalField__input" type="text" name="branch" value="${getVal('branch')}" placeholder="e.g. IT" />
+      </label>
+      <label class="modalField">
+        <span class="modalField__label">Graduation Year</span>
+        <input class="modalField__input" type="text" name="graduationYear" value="${getVal('graduationYear')}" placeholder="e.g. 2026" />
+      </label>
+      <label class="modalField">
+        <span class="modalField__label">Skills</span>
+        <input class="modalField__input" type="text" name="skills" value="${getVal('skills')}" placeholder="e.g. Javascript, Node.js, React" />
+      </label>
+      <label class="modalField">
+        <span class="modalField__label">LinkedIn URL</span>
+        <input class="modalField__input" type="url" name="linkedinUrl" value="${getVal('linkedinUrl')}" placeholder="https://linkedin.com/in/username" />
+      </label>
+      <label class="modalField">
+        <span class="modalField__label">GitHub URL</span>
+        <input class="modalField__input" type="url" name="githubUrl" value="${getVal('githubUrl')}" placeholder="https://github.com/username" />
+      </label>
+      <label class="modalField">
+        <span class="modalField__label">Resume URL</span>
+        <input class="modalField__input" type="url" name="resumeUrl" value="${getVal('resumeUrl')}" placeholder="https://drive.google.com/..." />
+      </label>
+    `;
+  } else if (role === "admin") {
+    html += `
+      <label class="modalField">
+        <span class="modalField__label">Department</span>
+        <input class="modalField__input" type="text" name="department" value="${getVal('department')}" placeholder="e.g. Placement Cell" />
+      </label>
+      <label class="modalField">
+        <span class="modalField__label">Designation</span>
+        <input class="modalField__input" type="text" name="designation" value="${getVal('designation')}" placeholder="e.g. Director" />
+      </label>
+      <label class="modalField">
+        <span class="modalField__label">Office Location</span>
+        <input class="modalField__input" type="text" name="officeLocation" value="${getVal('officeLocation')}" placeholder="e.g. Block A, Room 101" />
+      </label>
+    `;
+  }
+
+  html += `
+    <label class="modalField modalField--full">
+      <span class="modalField__label">Short Bio</span>
+      <textarea class="modalField__input" name="bio" rows="3" placeholder="Tell us about yourself...">${getVal('bio')}</textarea>
+    </label>
+  `;
+
+  container.innerHTML = html;
+}
+
+function initPasswordToggles(container) {
+  const wrappers = container.querySelectorAll(".password-input-wrapper");
+  wrappers.forEach(wrapper => {
+    const input = wrapper.querySelector("input");
+    const btn = wrapper.querySelector(".password-toggle-btn");
+    if (!input || !btn) return;
+    
+    // Prevent duplicate event listeners
+    if (btn.dataset.toggleInitialized) return;
+    btn.dataset.toggleInitialized = "true";
+    
     btn.addEventListener("click", (e) => {
       e.preventDefault();
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.replace("index.html");
+      e.stopPropagation();
+      const type = input.type === "password" ? "text" : "password";
+      input.type = type;
+      
+      // Cleanly replace button content and let Lucide re-create the icon to prevent duplicates/bugs
+      btn.innerHTML = `<i data-lucide="${type === 'password' ? 'eye' : 'eye-off'}"></i>`;
+      if (window.lucide) window.lucide.createIcons({ root: btn });
     });
+  });
+}
+
+function initUserMenu() {
+  const userChip = document.querySelector(".topbar .pill, .topbar .miniProfile");
+  if (!userChip) return;
+
+  const userRole = localStorage.getItem("role") || (localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "student");
+
+  // 1. Inject Dropdown HTML
+  if (!document.getElementById("userDropdown")) {
+    const dropdown = document.createElement("div");
+    dropdown.className = "user-dropdown";
+    dropdown.id = "userDropdown";
+    dropdown.innerHTML = `
+      <button class="user-dropdown__item" id="dropdownProfileBtn">
+        <i data-lucide="user"></i>
+        <span>Profile</span>
+      </button>
+      <button class="user-dropdown__item" id="dropdownPasswordBtn">
+        <i data-lucide="key-round"></i>
+        <span>Change Password</span>
+      </button>
+      <div class="user-dropdown__divider"></div>
+      <button class="user-dropdown__item user-dropdown__item--danger" id="dropdownLogoutBtn">
+        <i data-lucide="log-out"></i>
+        <span>Logout</span>
+      </button>
+    `;
+    userChip.appendChild(dropdown);
+  }
+
+  // 2. Inject Profile Modal HTML
+  if (!document.getElementById("profileModalOverlay")) {
+    const pModal = document.createElement("div");
+    pModal.className = "modalOverlay";
+    pModal.id = "profileModalOverlay";
+    pModal.hidden = true;
+    pModal.innerHTML = `
+      <div class="modal glass" style="width: min(680px, 100%); max-height: min(92vh, 850px);">
+        <div class="modal__glow" aria-hidden="true"></div>
+        <header class="modal__header">
+          <div>
+            <h2 class="modal__title">Edit Profile</h2>
+            <p class="modal__subtitle">Manage your personal and professional details.</p>
+          </div>
+          <button class="iconBtn" type="button" id="closeProfileModal" aria-label="Close">
+            <i data-lucide="x"></i>
+          </button>
+        </header>
+        <form class="modalForm" id="profileForm" novalidate>
+          <div class="modalForm__grid" id="profileFieldsContainer">
+            <!-- Rendered dynamically -->
+          </div>
+          <footer class="modal__footer" style="margin-top: 20px;">
+            <button class="btn btn--ghost" type="button" id="cancelProfileModal">Cancel</button>
+            <button class="btn btn--primary glowBtn" type="submit">
+              <i data-lucide="check"></i>
+              <span>Save Changes</span>
+            </button>
+          </footer>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(pModal);
+  }
+
+  // 3. Inject Change Password Modal HTML
+  if (!document.getElementById("passwordModalOverlay")) {
+    const passModal = document.createElement("div");
+    passModal.className = "modalOverlay";
+    passModal.id = "passwordModalOverlay";
+    passModal.hidden = true;
+    passModal.innerHTML = `
+      <div class="modal modal--sm glass">
+        <div class="modal__glow" aria-hidden="true"></div>
+        <header class="modal__header">
+          <div>
+            <h2 class="modal__title">Change Password</h2>
+            <p class="modal__subtitle">Update your account password.</p>
+          </div>
+          <button class="iconBtn" type="button" id="closePasswordModal" aria-label="Close">
+            <i data-lucide="x"></i>
+          </button>
+        </header>
+        <form class="modalForm" id="passwordForm" novalidate>
+          <div style="display: grid; gap: 14px;">
+            <label class="modalField">
+              <span class="modalField__label">Current Password <span class="req">*</span></span>
+              <div class="password-input-wrapper">
+                <input class="modalField__input" type="password" name="currentPassword" id="currentPassword" autocomplete="current-password" required placeholder="••••••••" />
+                <button class="password-toggle-btn" type="button" tabindex="-1">
+                  <i data-lucide="eye"></i>
+                </button>
+              </div>
+              <span class="modalField__error" id="errCurrentPassword" style="color: #ff5a7a; font-size: 11px; margin-top: 4px; display: block;"></span>
+            </label>
+            <label class="modalField">
+              <span class="modalField__label">New Password <span class="req">*</span></span>
+              <div class="password-input-wrapper">
+                <input class="modalField__input" type="password" name="newPassword" id="newPassword" autocomplete="new-password" required placeholder="••••••••" />
+                <button class="password-toggle-btn" type="button" tabindex="-1">
+                  <i data-lucide="eye"></i>
+                </button>
+              </div>
+              <span class="modalField__error" id="errNewPassword" style="color: #ff5a7a; font-size: 11px; margin-top: 4px; display: block;"></span>
+            </label>
+            <label class="modalField">
+              <span class="modalField__label">Confirm New Password <span class="req">*</span></span>
+              <div class="password-input-wrapper">
+                <input class="modalField__input" type="password" name="confirmPassword" id="confirmPassword" autocomplete="new-password" required placeholder="••••••••" />
+                <button class="password-toggle-btn" type="button" tabindex="-1">
+                  <i data-lucide="eye"></i>
+                </button>
+              </div>
+              <span class="modalField__error" id="errConfirmPassword" style="color: #ff5a7a; font-size: 11px; margin-top: 4px; display: block;"></span>
+            </label>
+          </div>
+          <footer class="modal__footer" style="margin-top: 20px;">
+            <button class="btn btn--ghost" type="button" id="cancelPasswordModal">Cancel</button>
+            <button class="btn btn--primary glowBtn" type="submit">
+              <i data-lucide="check"></i>
+              <span>Change Password</span>
+            </button>
+          </footer>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(passModal);
+  }
+
+  if (window.lucide) window.lucide.createIcons();
+
+  const dropdown = document.getElementById("userDropdown");
+  const profileModalOverlay = document.getElementById("profileModalOverlay");
+  const passwordModalOverlay = document.getElementById("passwordModalOverlay");
+
+  // Dropdown toggle logic
+  userChip.addEventListener("click", (e) => {
+    if (e.target.closest("#userDropdown")) return;
+    e.stopPropagation();
+    dropdown.classList.toggle("is-open");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!userChip.contains(e.target)) {
+      dropdown.classList.remove("is-open");
+    }
+  });
+
+  // Dropdown buttons events
+  document.getElementById("dropdownLogoutBtn").addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.logout();
+  });
+
+  document.getElementById("dropdownProfileBtn").addEventListener("click", async (e) => {
+    e.stopPropagation();
+    dropdown.classList.remove("is-open");
+    
+    // Fetch profile details
+    try {
+      const res = await profileRequest("/auth/profile");
+      if (res.success) {
+        renderProfileFields(userRole, res.data);
+        if (window.lucide) window.lucide.createIcons({ root: profileModalOverlay });
+        window.openModalOverlay(profileModalOverlay);
+      } else {
+        window.Toast.error("Error", res.message || "Failed to load profile");
+      }
+    } catch (err) {
+      window.Toast.error("Error", err.message || "Failed to load profile");
+    }
+  });
+
+  document.getElementById("dropdownPasswordBtn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdown.classList.remove("is-open");
+    
+    // Reset inputs & errors
+    document.getElementById("passwordForm").reset();
+    document.getElementById("errCurrentPassword").textContent = "";
+    document.getElementById("errNewPassword").textContent = "";
+    document.getElementById("errConfirmPassword").textContent = "";
+    
+    // Make sure types are reset to password
+    passwordModalOverlay.querySelectorAll("input").forEach(inp => inp.type = "password");
+    passwordModalOverlay.querySelectorAll(".password-toggle-btn").forEach(btn => {
+      btn.innerHTML = '<i data-lucide="eye"></i>';
+    });
+    if (window.lucide) window.lucide.createIcons({ root: passwordModalOverlay });
+
+    window.openModalOverlay(passwordModalOverlay);
+  });
+
+  // Modal Closes
+  document.getElementById("closeProfileModal").addEventListener("click", () => window.closeModalOverlay(profileModalOverlay));
+  document.getElementById("cancelProfileModal").addEventListener("click", () => window.closeModalOverlay(profileModalOverlay));
+  document.getElementById("closePasswordModal").addEventListener("click", () => window.closeModalOverlay(passwordModalOverlay));
+  document.getElementById("cancelPasswordModal").addEventListener("click", () => window.closeModalOverlay(passwordModalOverlay));
+
+  // Password hide/show toggle listeners
+  initPasswordToggles(passwordModalOverlay);
+
+  // Profile Form Submit
+  const profileForm = document.getElementById("profileForm");
+  profileForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nameInput = profileForm.querySelector("input[name='name']");
+    const errName = document.getElementById("errProfileName");
+    if (errName) errName.textContent = "";
+
+    if (!nameInput.value.trim()) {
+      if (errName) errName.textContent = "Name is required";
+      return;
+    }
+
+    const body = {};
+    const inputs = profileForm.querySelectorAll("input, textarea");
+    inputs.forEach(input => {
+      if (input.name) {
+        body[input.name] = input.value;
+      }
+    });
+
+    try {
+      const res = await profileRequest("/auth/profile", {
+        method: "PUT",
+        body: JSON.stringify(body)
+      });
+
+      if (res.success) {
+        window.Toast.success("Success", "Profile updated successfully");
+        
+        // Update caches
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          const u = JSON.parse(userStr);
+          u.name = res.data.name;
+          localStorage.setItem("user", JSON.stringify(u));
+        }
+
+        // Update displays
+        const nameDisplays = document.querySelectorAll("#userNameDisplay, .miniProfile__name");
+        nameDisplays.forEach(el => el.textContent = res.data.name);
+
+        window.closeModalOverlay(profileModalOverlay);
+      } else {
+        window.Toast.error("Error", res.message || "Failed to save profile");
+      }
+    } catch (err) {
+      window.Toast.error("Error", err.message || "Failed to save profile");
+    }
+  });
+
+  // Password Form Submit
+  const passwordForm = document.getElementById("passwordForm");
+  passwordForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const currentPass = document.getElementById("currentPassword").value;
+    const newPass = document.getElementById("newPassword").value;
+    const confirmPass = document.getElementById("confirmPassword").value;
+
+    const errCurrent = document.getElementById("errCurrentPassword");
+    const errNew = document.getElementById("errNewPassword");
+    const errConfirm = document.getElementById("errConfirmPassword");
+
+    errCurrent.textContent = "";
+    errNew.textContent = "";
+    errConfirm.textContent = "";
+
+    let hasErrors = false;
+
+    if (!currentPass) {
+      errCurrent.textContent = "Current password is required";
+      hasErrors = true;
+    }
+
+    if (!newPass) {
+      errNew.textContent = "New password is required";
+      hasErrors = true;
+    } else {
+      if (newPass.length < 8) {
+        errNew.textContent = "New password must be at least 8 characters";
+        hasErrors = true;
+      } else {
+        const hasUppercase = /[A-Z]/.test(newPass);
+        const hasLowercase = /[a-z]/.test(newPass);
+        const hasNumber = /[0-9]/.test(newPass);
+        if (!hasUppercase || !hasLowercase || !hasNumber) {
+          errNew.textContent = "Must contain uppercase, lowercase, and a number";
+          hasErrors = true;
+        }
+      }
+    }
+
+    if (!confirmPass) {
+      errConfirm.textContent = "Confirm password is required";
+      hasErrors = true;
+    } else if (newPass !== confirmPass) {
+      errConfirm.textContent = "Passwords do not match";
+      hasErrors = true;
+    }
+
+    if (newPass && currentPass && newPass === currentPass) {
+      errNew.textContent = "New password cannot be same as current password";
+      hasErrors = true;
+    }
+
+    if (hasErrors) return;
+
+    try {
+      const res = await profileRequest("/auth/change-password", {
+        method: "PUT",
+        body: JSON.stringify({
+          currentPassword: currentPass,
+          newPassword: newPass,
+          confirmPassword: confirmPass
+        })
+      });
+
+      if (res.success) {
+        window.Toast.success("Success", "Password changed successfully! Logging out...");
+        window.closeModalOverlay(passwordModalOverlay);
+        setTimeout(() => {
+          window.logout();
+        }, 1500);
+      } else {
+        window.Toast.error("Error", res.message || "Failed to change password");
+      }
+    } catch (err) {
+      errCurrent.textContent = err.message || "Failed to change password";
+      window.Toast.error("Error", err.message || "Failed to change password");
+    }
   });
 }
 
@@ -216,6 +714,16 @@ document.addEventListener("DOMContentLoaded", () => {
   initSidebarToggle();
   initMobileNav();
   initCommandPalette();
+  initUserMenu();
+
+  // Fix Student Logout
+  document.addEventListener("click", (e) => {
+      const logoutTarget = e.target.closest("[data-logout]");
+      if (logoutTarget) {
+          e.preventDefault();
+          window.logout();
+      }
+  });
 });
 
 // Handle browser back button / bfcache

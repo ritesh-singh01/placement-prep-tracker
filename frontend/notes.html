@@ -15,6 +15,7 @@
 
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/notes.css" />
+    <link rel="stylesheet" href="css/notifications.css" />
   </head>
   <body class="theme-dark" data-page="notes">
     <div class="appShell">
@@ -27,10 +28,6 @@
               <span class="logo__subtitle">Interview & Prep</span>
             </span>
           </a>
-
-          <button class="sidebar__collapse iconBtn" type="button" id="sidebarToggle" aria-label="Toggle sidebar">
-            <i data-lucide="panel-left"></i>
-          </button>
         </div>
 
         <nav class="nav">
@@ -46,28 +43,7 @@
             <i data-lucide="notebook-tabs"></i>
             <span>Notes</span>
           </a>
-
-          <div class="nav__divider"></div>
-
-          <a class="nav__item" href="index.html" data-logout>
-            <i data-lucide="log-out"></i>
-            <span>Logout</span>
-          </a>
         </nav>
-
-        <div class="sidebar__bottom glass">
-          <div class="miniProfile">
-            <div class="avatar" aria-hidden="true">AS</div>
-            <div class="miniProfile__meta">
-              <div class="miniProfile__name">Aspirant</div>
-              <div class="miniProfile__hint">Demo workspace</div>
-            </div>
-          </div>
-          <button class="btn btn--ghost btn--sm" type="button" id="openCommand">
-            <i data-lucide="command"></i>
-            <span>Quick commands</span>
-          </button>
-        </div>
       </aside>
 
       <div class="content">
@@ -91,6 +67,32 @@
               <i data-lucide="plus"></i>
               <span>New note</span>
             </button>
+            
+            <div style="position: relative;">
+              <button class="iconBtn" type="button" id="ncToggle" aria-label="Notifications">
+                <i data-lucide="bell"></i>
+                <span class="badge-count" id="notifBadge" hidden>0</span>
+              </button>
+
+              <!-- Notification Center Panel -->
+              <div class="nc-panel" id="ncPanel">
+                <div class="nc-header">
+                  <div class="nc-header__title">Notifications</div>
+                  <button class="btn btn--ghost btn--sm" id="markAllRead">Mark all read</button>
+                </div>
+                <div class="nc-list" id="ncList">
+                  <div class="empty-state">
+                    <i data-lucide="bell-off"></i>
+                    <div class="empty-state__title">All caught up!</div>
+                    <div class="empty-state__text">No new notifications at the moment.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="pill" aria-label="Profile">
+              <span class="online-dot"></span>
+              <span class="pill__text" id="userNameDisplay">User</span>
+            </div>
           </div>
         </header>
 
@@ -118,12 +120,7 @@
               <div class="card__header">
                 <div>
                   <div class="card__title">Recent Notes</div>
-                  <div class="card__subtitle">Clean editor-style layout (UI only)</div>
                 </div>
-                <button class="btn btn--ghost btn--sm" type="button" id="pinNote">
-                  <i data-lucide="pin"></i>
-                  <span>Pin</span>
-                </button>
               </div>
 
               <div class="noteGrid" id="notesContainer">
@@ -273,8 +270,11 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="js/config.js" defer></script>
     <script src="js/companyApi.js" defer></script>
+    <script src="js/notificationApi.js" defer></script>
     <script src="js/notesApi.js" defer></script>
+    <script src="js/toast.js" defer></script>
     <script src="js/app.js" defer></script>
+    <script src="js/notifications.js" defer></script>
     <script src="js/notes.js" defer></script>
   </body>
 </html>

@@ -30,8 +30,12 @@ async function request(url, options = {}) {
 
     if (!response.ok) {
       if (response.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        if (typeof window.clearAuthStorage === "function") {
+          window.clearAuthStorage();
+        } else {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+        }
         window.location.href = "index.html";
       }
       throw new ApiError(
@@ -81,6 +85,14 @@ const CompanyApi = {
 
   async getAnalytics() {
     return request(`${API_BASE}/analytics`);
+  },
+
+  async demoSeed() {
+    return request(`${API_BASE}/demo-seed`, { method: "POST" });
+  },
+
+  async demoClear() {
+    return request(`${API_BASE}/demo-clear`, { method: "DELETE" });
   },
 
   request,

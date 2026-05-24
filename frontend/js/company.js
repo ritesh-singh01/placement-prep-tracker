@@ -1016,6 +1016,27 @@
     wireMiniMenuDismiss();
     await loadCompanies();
     handlePendingCompany();
+
+    // Check URL parameters
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = urlParams.get("action");
+    var filter = urlParams.get("filter");
+    
+    if (action === "add" || filter) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    if (action === "add") {
+      openCompanyModal("add", null);
+    }
+    
+    if (filter) {
+      var filterStatus = qs("#filterStatus");
+      if (filterStatus) {
+        filterStatus.value = filter;
+        renderTable();
+      }
+    }
   }
 
   window.handlePendingCompany = handlePendingCompany;

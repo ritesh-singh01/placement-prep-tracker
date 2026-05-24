@@ -69,6 +69,10 @@ const companySchema = new mongoose.Schema(
       required: true,
       ref: "User",
     },
+    isDemo: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

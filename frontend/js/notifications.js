@@ -40,22 +40,71 @@ class NotificationManager {
   }
 
   async loadNotifications() {
-    if (!window.NotificationApi) return;
     try {
-      const res = await window.NotificationApi.list();
-      if (res.success) {
-        // Only re-render if data actually changed to prevent flickering
-        const newNotifs = JSON.stringify(res.data);
-        if (newNotifs !== JSON.stringify(this.notifications)) {
-          this.notifications = res.data;
-          this.renderNotifications();
-          this.updateBadges();
+      const token = localStorage.getItem("token");
+      const headers = { "Authorization": `Bearer ${token}` };
+
+      // Fetch normal notifications
+      let notifs = [];
+      if (window.NotificationApi) {
+        const res = await window.NotificationApi.list();
+        if (res.success) notifs = res.data;
+      }
+
+      // Fetch platform announcements
+      let announcements = [];
+      try {
+        const resAnn = await fetch(`${window.APP_API_BASE}/announcements`, { headers });
+        const dataAnn = await resAnn.json();
+        if (dataAnn.success) {
+          const readAnnIds = JSON.parse(localStorage.getItem("readAnnouncements") || "[]");
+          announcements = dataAnn.data.map(ann => ({
+            ...ann,
+            isAnnouncement: true,
+            type: ann.type || 'info',
+            read: readAnnIds.includes(ann._id)
+          }));
         }
+      } catch (e) {
+        console.warn("Failed to fetch announcements:", e);
+      }
+
+      // Merge and sort: Unread first, then HIGH > MEDIUM > LOW, then newest first
+      const combined = [...announcements, ...notifs].sort((a, b) => {
+        if (a.read !== b.read) {
+          return a.read ? 1 : -1;
+        }
+        
+        const priorityOrder = { high: 3, medium: 2, low: 1 };
+        const getPriorityValue = (item) => {
+          if (item.isAnnouncement) {
+            if (item.type === 'urgent') return 3;
+            if (item.type === 'warning') return 2;
+            return 1; // info, success
+          }
+          return priorityOrder[item.priority || 'low'] || 1;
+        };
+
+        const pA = getPriorityValue(a);
+        const pB = getPriorityValue(b);
+        if (pA !== pB) {
+          return pB - pA;
+        }
+
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+
+      const newContent = JSON.stringify(combined);
+      if (newContent !== JSON.stringify(this.notifications)) {
+        this.notifications = combined;
+        this.renderNotifications();
+        this.updateBadges();
       }
     } catch (err) {
-      console.error("Failed to load notifications:", err);
+      console.error("Failed to load combined notifications:", err);
     }
   }
+
 
   renderNotifications() {
     if (!this.list) return;
@@ -63,25 +112,37 @@ class NotificationManager {
     if (this.notifications.length === 0) {
       this.list.innerHTML = `
         <div class="empty-state">
-          <i data-lucide="bell-off"></i>
+          <i data-lucide="bell"></i>
           <div class="empty-state__title">All caught up!</div>
           <div class="empty-state__text">No new notifications at the moment.</div>
         </div>
       `;
     } else {
-      this.list.innerHTML = this.notifications.map(n => `
-        <div class="nc-item ${n.read ? '' : 'is-unread'}" data-id="${n._id}">
+      this.list.innerHTML = this.notifications.map(n => {
+        const priority = n.isAnnouncement 
+          ? (n.type === 'urgent' ? 'high' : (n.type === 'warning' ? 'medium' : 'low'))
+          : (n.priority || 'low');
+        const badgeHTML = n.isAnnouncement 
+          ? `<span class="badge badge--${n.type}">${n.type}</span>`
+          : `<span class="badge badge--priority-${priority}">${priority.toUpperCase()}</span>`;
+          
+        return `
+        <div class="nc-item ${n.read ? '' : 'is-unread'} ${n.isAnnouncement ? 'is-announcement' : ''} priority-${priority}" data-id="${n._id}">
           ${n.read ? '' : '<div class="nc-item__dot"></div>'}
-          <div class="nc-item__icon">
-            ${this.getIcon(n.type)}
+          <div class="nc-item__icon ${n.isAnnouncement ? 'icon--' + n.type : 'icon--priority-' + priority}">
+            ${this.getIcon(n)}
           </div>
           <div class="nc-item__content">
-            <div class="nc-item__title">${n.title}</div>
+            <div class="nc-item__header">
+                <div class="nc-item__title">${n.title}</div>
+                ${badgeHTML}
+            </div>
             <div class="nc-item__desc">${n.message}</div>
             <div class="nc-item__time">${this.formatTime(n.createdAt)}</div>
           </div>
         </div>
-      `).join("");
+        `;
+      }).join("");
 
       // Add click listeners to items
       this.list.querySelectorAll(".nc-item").forEach(item => {
@@ -100,8 +161,11 @@ class NotificationManager {
       if (unreadCount > 0) {
         this.badge.textContent = unreadCount > 9 ? "9+" : unreadCount;
         this.badge.hidden = false;
+        this.badge.style.display = "grid";
       } else {
+        this.badge.textContent = "0";
         this.badge.hidden = true;
+        this.badge.style.display = "none";
       }
     }
   }
@@ -135,7 +199,16 @@ class NotificationManager {
 
   async markAsRead(id) {
     try {
-      await window.NotificationApi.markAsRead(id);
+      const notif = this.notifications.find(n => n._id === id);
+      if (notif && notif.isAnnouncement) {
+        const readAnnIds = JSON.parse(localStorage.getItem("readAnnouncements") || "[]");
+        if (!readAnnIds.includes(id)) {
+          readAnnIds.push(id);
+          localStorage.setItem("readAnnouncements", JSON.stringify(readAnnIds));
+        }
+      } else {
+        await window.NotificationApi.markAsRead(id);
+      }
       this.notifications = this.notifications.map(n => 
         n._id === id ? { ...n, read: true } : n
       );
@@ -149,6 +222,13 @@ class NotificationManager {
   async markAllAsRead() {
     try {
       await window.NotificationApi.markAllAsRead();
+      
+      // Save all announcement IDs as read in localStorage
+      const annIds = this.notifications.filter(n => n.isAnnouncement).map(n => n._id);
+      const readAnnIds = JSON.parse(localStorage.getItem("readAnnouncements") || "[]");
+      const updatedReadAnnIds = Array.from(new Set([...readAnnIds, ...annIds]));
+      localStorage.setItem("readAnnouncements", JSON.stringify(updatedReadAnnIds));
+
       this.notifications = this.notifications.map(n => ({ ...n, read: true }));
       this.renderNotifications();
       this.updateBadges();
@@ -158,12 +238,31 @@ class NotificationManager {
     }
   }
 
-  getIcon(type) {
-    switch (type) {
-      case "interview": return '<i data-lucide="calendar" style="color: var(--indigo)"></i>';
-      case "deadline": return '<i data-lucide="clock" style="color: var(--warn)"></i>';
-      case "status_change": return '<i data-lucide="refresh-cw" style="color: var(--blue)"></i>';
-      default: return '<i data-lucide="bell" style="color: var(--subtle)"></i>';
+  getIcon(n) {
+    if (n.isAnnouncement) {
+      const icons = {
+        info: 'info',
+        success: 'check-circle',
+        warning: 'alert-triangle',
+        urgent: 'zap'
+      };
+      const iconName = icons[n.type] || 'megaphone';
+      return `<i data-lucide="${iconName}"></i>`;
+    }
+
+    if (n.priority === 'high') {
+      return `<i data-lucide="alert-triangle" style="color: var(--bad)"></i>`;
+    }
+
+    switch (n.type) {
+      case "interview": 
+        return '<i data-lucide="calendar" style="color: var(--indigo)"></i>';
+      case "deadline": 
+        return '<i data-lucide="clock" style="color: var(--warn)"></i>';
+      case "status_change": 
+        return '<i data-lucide="refresh-cw" style="color: var(--blue)"></i>';
+      default: 
+        return '<i data-lucide="bell" style="color: var(--subtle)"></i>';
     }
   }
 

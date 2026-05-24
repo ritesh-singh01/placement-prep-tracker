@@ -20,6 +20,10 @@ const noteSchema = new mongoose.Schema(
       required: true,
       ref: "User",
     },
+    pinned: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

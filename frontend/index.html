@@ -55,14 +55,43 @@
 
       <section class="auth__panel">
         <div class="panel glass">
-          <header class="panel__header">
-            <h1 class="panel__title">Welcome</h1>
-            <p class="panel__subtitle">Sign in or create an account to track your progress.</p>
-            <div class="auth__tabs">
-              <button type="button" class="auth__tab is-active" data-target="login">Sign In</button>
-              <button type="button" class="auth__tab" data-target="signup">Sign Up</button>
+          <div id="roleSelection" class="role-selection">
+            <h1 class="panel__title">Choose your access type</h1>
+            <p class="panel__subtitle">Select how you want to access the platform.</p>
+            
+            <div class="role-cards">
+              <button type="button" class="role-card glass" data-role="student">
+                <div class="role-card__icon"><i data-lucide="user"></i></div>
+                <div class="role-card__meta">
+                  <div class="role-card__title">Student</div>
+                  <div class="role-card__text">Track applications, notes, and progress</div>
+                </div>
+              </button>
+              
+              <button type="button" class="role-card glass" data-role="admin">
+                <div class="role-card__icon"><i data-lucide="shield-check"></i></div>
+                <div class="role-card__meta">
+                  <div class="role-card__title">Admin</div>
+                  <div class="role-card__text">Manage students, drives, and reports</div>
+                </div>
+              </button>
             </div>
-          </header>
+          </div>
+
+          <div id="authContent" style="display: none;">
+            <button type="button" class="back-btn" id="backToRole">
+              <i data-lucide="arrow-left"></i>
+              <span>Back to Selection</span>
+            </button>
+
+            <header class="panel__header">
+              <h1 class="panel__title" id="panelTitle">Welcome</h1>
+              <p class="panel__subtitle" id="panelSubtitle">Sign in or create an account to track your progress.</p>
+              <div class="auth__tabs" id="authTabs">
+                <button type="button" class="auth__tab is-active" data-target="login">Sign In</button>
+                <button type="button" class="auth__tab" data-target="signup">Sign Up</button>
+              </div>
+            </header>
 
           <form class="form" id="authForm" novalidate>
             <label class="field" id="nameField" style="display: none;">
@@ -83,6 +112,8 @@
                   name="email"
                   placeholder="you@college.edu"
                   autocomplete="email"
+                  inputmode="email"
+                  spellcheck="false"
                   required
                 />
               </span>
@@ -106,6 +137,11 @@
               </span>
             </label>
 
+            <div id="adminNote" style="display: none; margin: 12px 0; font-size: 13px; color: var(--muted); text-align: center;">
+              <i data-lucide="info" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i>
+              Admin accounts are managed by the system.
+            </div>
+
             <div class="form__row" id="loginExtras">
               <label class="checkbox">
                 <input type="checkbox" name="remember" />
@@ -119,20 +155,13 @@
               <i data-lucide="arrow-right"></i>
             </button>
 
-            <div id="demoExtras">
-              <div class="divider">
-                <span>or</span>
-              </div>
-              <button class="btn btn--secondary btn--lg" type="button" id="demoLogin">
-                <i data-lucide="zap"></i>
-                <span>Continue with Demo</span>
-              </button>
-            </div>
+
 
             <p class="fineprint">
               By continuing, you agree to the Terms and Privacy Policy.
             </p>
           </form>
+          </div>
           
           <div id="toastStack" class="toastStack" aria-live="polite"></div>
         </div>

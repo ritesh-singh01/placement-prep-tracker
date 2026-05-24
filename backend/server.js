@@ -9,7 +9,8 @@ const authRoutes = require("./routes/authRoutes");
 const notesRoutes = require("./routes/notesRoutes");
 const collectionRoutes = require("./routes/collectionRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
-const { seedCompaniesIfEmpty } = require("./seed/companySeed");
+const adminRoutes = require("./routes/adminRoutes");
+const announcementRoutes = require("./routes/announcementRoutes");
 
 dotenv.config();
 
@@ -32,6 +33,8 @@ app.use("/api/companies", companyRoutes);
 app.use("/api/notes", notesRoutes);
 app.use("/api/collections", collectionRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/announcements", announcementRoutes);
 
 app.use(express.static(path.join(__dirname, "..", "frontend")));
 
@@ -51,7 +54,6 @@ const PORT = process.env.PORT || 5000;
 async function start() {
   try {
     await connectDB();
-    await seedCompaniesIfEmpty();
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`Frontend: http://localhost:${PORT}/company.html`);

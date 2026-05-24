@@ -21,6 +21,70 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
       select: false,
     },
+    role: {
+      type: String,
+      enum: ["student", "admin"],
+      default: "student",
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+    // Shared profile fields
+    phoneNumber: {
+      type: String,
+      default: "",
+    },
+    bio: {
+      type: String,
+      default: "",
+    },
+    // Student specific profile fields
+    collegeName: {
+      type: String,
+      default: "",
+    },
+    course: {
+      type: String,
+      default: "",
+    },
+    branch: {
+      type: String,
+      default: "",
+    },
+    graduationYear: {
+      type: String,
+      default: "",
+    },
+    skills: {
+      type: String,
+      default: "",
+    },
+    linkedinUrl: {
+      type: String,
+      default: "",
+    },
+    githubUrl: {
+      type: String,
+      default: "",
+    },
+    resumeUrl: {
+      type: String,
+      default: "",
+    },
+    // Admin specific profile fields
+    department: {
+      type: String,
+      default: "",
+    },
+    designation: {
+      type: String,
+      default: "",
+    },
+    officeLocation: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

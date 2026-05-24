@@ -20,8 +20,12 @@ const NotesApi = {
 
       if (!response.ok) {
         if (response.status === 401) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
+          if (typeof window.clearAuthStorage === "function") {
+            window.clearAuthStorage();
+          } else {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+          }
           window.location.href = "index.html";
         }
         throw new window.CompanyApi.ApiError(

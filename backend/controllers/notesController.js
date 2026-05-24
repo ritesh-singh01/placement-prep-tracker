@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Note = require("../models/notes");
 const Collection = require("../models/collection");
 
@@ -18,7 +19,7 @@ exports.getNotes = async (req, res) => {
 
 exports.createNote = async (req, res) => {
   try {
-    let { title, content, collectionId } = req.body;
+    let { title, content, collectionId, pinned } = req.body;
 
     if (!title || !content) {
       return res.status(400).json({
@@ -27,10 +28,13 @@ exports.createNote = async (req, res) => {
       });
     }
 
-    if (!collectionId) {
-      const generalCol = await Collection.findOne({ name: "General", user: req.user._id });
+    const isValidCol = mongoose.Types.ObjectId.isValid(collectionId);
+    if (!collectionId || !isValidCol) {
+      const generalCol = await Collection.findOne({ isDefault: true, user: req.user._id }) || await Collection.findOne({ name: "General", user: req.user._id });
       if (generalCol) {
         collectionId = generalCol._id;
+      } else {
+        collectionId = undefined;
       }
     }
 
@@ -38,6 +42,7 @@ exports.createNote = async (req, res) => {
       title,
       content,
       collectionId,
+      pinned: !!pinned,
       user: req.user._id,
     });
 
@@ -57,18 +62,28 @@ exports.createNote = async (req, res) => {
 exports.updateNote = async (req, res) => {
   try {
     const { id } = req.params;
-    let { title, content, collectionId } = req.body;
+    let { title, content, collectionId, pinned } = req.body;
 
-    if (!collectionId) {
-      const generalCol = await Collection.findOne({ name: "General", user: req.user._id });
-      if (generalCol) {
-        collectionId = generalCol._id;
+    const updateFields = {};
+    if (title !== undefined) updateFields.title = title;
+    if (content !== undefined) updateFields.content = content;
+    if (pinned !== undefined) updateFields.pinned = !!pinned;
+
+    if (req.body.hasOwnProperty("collectionId")) {
+      const isValidCol = mongoose.Types.ObjectId.isValid(collectionId);
+      if (!collectionId || !isValidCol) {
+        const generalCol = await Collection.findOne({ isDefault: true, user: req.user._id }) || await Collection.findOne({ name: "General", user: req.user._id });
+        if (generalCol) {
+          updateFields.collectionId = generalCol._id;
+        }
+      } else {
+        updateFields.collectionId = collectionId;
       }
     }
 
     const doc = await Note.findOneAndUpdate(
       { _id: id, user: req.user._id },
-      { title, content, collectionId },
+      updateFields,
       { new: true, runValidators: true }
     ).populate("collectionId").lean().exec();
 
