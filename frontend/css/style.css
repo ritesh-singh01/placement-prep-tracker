@@ -799,9 +799,13 @@ body.is-mobile-nav-open .sidebarOverlay {
   }
   .pageTitle__title {
     font-size: 14px !important;
+    width: 100% !important;
+    text-align: center !important;
   }
   .pageTitle__kicker {
     font-size: 10px !important;
+    width: 100% !important;
+    text-align: center !important;
   }
   .pill__text {
     display: none !important;
@@ -821,7 +825,7 @@ body.is-mobile-nav-open .sidebarOverlay {
   .modal {
     width: 92vw !important;
     max-height: 90vh !important;
-    padding: 24px 20px !important;
+    padding: 24px 0 0 0 !important; /* Zero horizontal/bottom padding on mobile modal */
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden !important;
@@ -835,15 +839,21 @@ body.is-mobile-nav-open .sidebarOverlay {
     min-height: 0 !important;
   }
   .modalForm__grid {
+    display: grid !important;
     grid-template-columns: 1fr !important;
-    gap: 20px !important;
+    gap: 16px !important;
   }
+  .modal__header {
+    padding: 0 20px 14px 20px !important; /* Padded header */
+  }
+  .modalForm > div:not(.modal__footer),
+  .modalForm__grid,
   #profileFieldsContainer,
   .modalForm__body,
   .modal__body {
     flex: 1 !important;
     overflow-y: auto !important;
-    padding: 4px 2px !important;
+    padding: 4px 20px 20px 20px !important; /* Added horizontal padding to align fields */
     min-height: 0 !important;
     scroll-behavior: smooth !important;
   }
@@ -902,23 +912,67 @@ body.is-mobile-nav-open .sidebarOverlay {
     height: 16px !important;
   }
   .modal__footer {
-    margin-top: 16px !important;
-    padding-top: 16px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    gap: 12px !important;
+    margin-top: auto !important;
+    padding: 16px 20px !important;
     position: sticky !important;
     bottom: 0 !important;
-    background: rgba(10, 15, 30, 0.98) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    background: rgba(10, 15, 30, 0.75) !important; /* Premium glassmorphism */
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
     z-index: 10 !important;
     border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-    display: flex !important;
-    gap: 12px !important;
-    justify-content: flex-end !important;
+    box-sizing: border-box !important;
   }
   .modal__footer .btn {
-    height: 42px !important;
-    padding: 0 16px !important;
-    font-size: 14px !important;
+    flex: 1 !important;
+    height: 44px !important;
+    padding: 0 12px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    white-space: nowrap !important;
+    transition: transform 150ms ease, background 150ms ease !important;
+  }
+  .modal__footer .btn:active {
+    transform: scale(0.97) !important; /* Ergonomic scale active state */
+  }
+  .modal__footer .btn--ghost,
+  .modal__footer button[id*="cancel"],
+  .modal__footer button[id*="Close"] {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: var(--text) !important;
+  }
+  .modal__footer .btn--ghost:hover,
+  .modal__footer button[id*="cancel"]:hover,
+  .modal__footer button[id*="Close"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+  @media (max-width: 360px) {
+    .modal__footer {
+      gap: 8px !important;
+      padding: 12px 14px !important;
+    }
+    .modal__footer .btn {
+      font-size: 12px !important;
+      padding: 0 8px !important;
+      gap: 4px !important;
+    }
+    .modal__footer .btn svg,
+    .modal__footer .btn i {
+      display: none !important; /* Hide icons to prevent text clipping on ultra-small screens */
+    }
   }
 }
 
@@ -1378,5 +1432,49 @@ input::-webkit-credentials-auto-fill-button {
     overflow-x: hidden !important;
     width: 100% !important;
     max-width: 100% !important;
+  }
+}
+
+/* Integrate Notes Page New Note button into the mobile topbar/header */
+@media (max-width: 768px) {
+  body[data-page="notes"] .topbar {
+    grid-template-columns: auto 1fr auto auto !important;
+  }
+  body[data-page="notes"] #newNoteBtn {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: var(--text) !important;
+    box-shadow: none !important;
+    position: static !important; /* Reset any fixed position from notes.css */
+    margin: 0 !important;
+    z-index: 2 !important;
+  }
+  body[data-page="notes"] #newNoteBtn:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+  body[data-page="notes"] #newNoteBtn span {
+    display: none !important;
+  }
+  body[data-page="notes"] #newNoteBtn svg {
+    margin: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    color: #fff !important;
+  }
+  body[data-page="notes"] .topbar__actions {
+    grid-column: 4 !important;
+    grid-row: 1 !important;
+  }
+  body[data-page="notes"] .search {
+    grid-column: 1 / 5 !important;
   }
 }

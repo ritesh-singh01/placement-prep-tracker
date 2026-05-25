@@ -511,6 +511,11 @@
   padding: 24px;
 }
 
+.admin-modal-overlay .modal {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 .admin-modal-card {
   width: min(560px, 100%);
   max-height: 90vh;
@@ -1093,6 +1098,77 @@
     #studentDetailModal .sd-modal-actions #sdCloseBtn {
         width: 100% !important;
         min-height: 38px !important;
+    }
+
+    /* General Admin Modals Mobile Polish */
+    .admin-modal-overlay {
+        padding: 16px 12px !important;
+    }
+    .admin-modal-card {
+        width: 92vw !important;
+        padding: 20px 16px !important;
+        border-radius: 20px !important;
+        max-height: 90vh !important;
+    }
+    .admin-modal-actions {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 10px !important;
+        margin-top: 20px !important;
+    }
+    .admin-modal-actions button,
+    .admin-modal-actions .btn-secondary,
+    .admin-modal-actions .btn-primary {
+        flex: 1 !important;
+        min-height: 44px !important;
+        height: 44px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 10px !important;
+        font-size: 13.5px !important;
+        font-weight: 700 !important;
+        border-radius: 12px !important;
+        white-space: nowrap !important;
+        transition: transform 150ms ease !important;
+    }
+    .admin-modal-actions button:active,
+    .admin-modal-actions .btn-secondary:active,
+    .admin-modal-actions .btn-primary:active {
+        transform: scale(0.97) !important;
+    }
+    @media (max-width: 360px) {
+        .admin-modal-actions {
+            gap: 8px !important;
+        }
+        .admin-modal-actions button,
+        .admin-modal-actions .btn-secondary,
+        .admin-modal-actions .btn-primary {
+            font-size: 12px !important;
+            padding: 0 8px !important;
+        }
+        #publishAnnouncementBtn {
+            font-size: 0 !important;
+        }
+        #publishAnnouncementBtn::after {
+            content: "Publish" !important;
+            font-size: 12px !important;
+        }
+        #cancelAnnouncementBtn {
+            font-size: 0 !important;
+        }
+        #cancelAnnouncementBtn::after {
+            content: "Cancel" !important;
+            font-size: 12px !important;
+        }
+        #confirmDeleteBtn span {
+            font-size: 0 !important;
+        }
+        #confirmDeleteBtn span::after {
+            content: "Delete" !important;
+            font-size: 12px !important;
+        }
     }
 }
 

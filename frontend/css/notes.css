@@ -236,32 +236,10 @@
   letter-spacing: 0.01em;
 }
 
+/* Mobile adjustments - button is integrated into topbar */
 @media (max-width: 640px) {
   .noteGrid {
-    padding-bottom: 96px !important;
-  }
-  #newNoteBtn {
-    position: fixed !important;
-    bottom: 24px !important;
-    right: 24px !important;
-    z-index: 100 !important;
-    width: 56px !important;
-    height: 56px !important;
-    border-radius: 50% !important;
-    padding: 0 !important;
-    display: grid !important;
-    place-items: center !important;
-    box-shadow: 0 8px 24px rgba(124, 107, 255, 0.45) !important;
-    background: linear-gradient(135deg, var(--indigo), var(--blue)) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  }
-  #newNoteBtn span {
-    display: none !important;
-  }
-  #newNoteBtn svg {
-    margin: 0 !important;
-    width: 24px !important;
-    height: 24px !important;
+    padding-bottom: 24px !important; /* normal padding since button is in topbar */
   }
 }
 
