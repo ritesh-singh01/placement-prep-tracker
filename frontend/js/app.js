@@ -505,6 +505,17 @@ function initUserMenu() {
   const profileModalOverlay = document.getElementById("profileModalOverlay");
   const passwordModalOverlay = document.getElementById("passwordModalOverlay");
 
+  // Sidebar settings button delegation
+  const navSettings = document.getElementById("navSettings");
+  if (navSettings) {
+    navSettings.addEventListener("click", (e) => {
+      e.preventDefault();
+      document.body.classList.remove("is-mobile-nav-open");
+      const profileBtn = document.getElementById("dropdownProfileBtn");
+      if (profileBtn) profileBtn.click();
+    });
+  }
+
   // Dropdown toggle logic
   userChip.addEventListener("click", (e) => {
     if (e.target.closest("#userDropdown")) return;

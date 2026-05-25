@@ -194,7 +194,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const tbody = qs("#studentsTableBody");
         if (!tbody) return;
 
-        tbody.innerHTML = students.map(student => `
+        const query = qs("#studentSearch") ? qs("#studentSearch").value.trim().toLowerCase() : "";
+        const filteredStudents = students.filter(student => 
+            (student.name || "").toLowerCase().includes(query) || 
+            (student.email || "").toLowerCase().includes(query)
+        );
+
+        tbody.innerHTML = filteredStudents.map(student => `
             <tr>
                 <td>
                     <div class="user-cell">
@@ -1106,6 +1112,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (target === "announcements") renderAnnouncements();
             });
         });
+
+        const studentSearch = qs("#studentSearch");
+        if (studentSearch) {
+            studentSearch.addEventListener("input", () => {
+                renderStudents();
+            });
+        }
     };
 
     // --- MODALS ---
@@ -1357,6 +1370,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+    const initClickableCards = () => {
+        qsa(".clickable-card").forEach(card => {
+            card.addEventListener("click", () => {
+                const target = card.dataset.targetSection;
+                if (!target) return;
+                const navItem = qs(`.nav__item[data-section="${target}"]`);
+                if (navItem) navItem.click();
+            });
+        });
+    };
+
     // --- INIT ---
     initNavigation();
     initModals();
@@ -1364,6 +1388,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initAppFilters();
     initAnnouncementFlow(); // NEW
     initStudentDetailFlow(); // NEW
+    initClickableCards(); // NEW
     renderStats(); // Load default view
     if (window.lucide) window.lucide.createIcons();
 });

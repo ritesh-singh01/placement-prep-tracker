@@ -733,35 +733,6 @@ body.is-mobile-nav-open .sidebarOverlay {
 
 @media (max-width: 768px) {
   .topbar {
-    padding: 14px 16px;
-    gap: 14px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  .topbar__right {
-    gap: 12px;
-  }
-  .search {
-    width: min(240px, 35vw);
-  }
-  .pill__text {
-    display: none;
-  }
-  .pill {
-    padding: 10px;
-    border-radius: 12px;
-  }
-  .main {
-    width: 100%;
-    max-width: 100%;
-    padding: 16px;
-    box-sizing: border-box;
-  }
-}
-
-@media (max-width: 640px) {
-  .topbar {
     display: grid !important;
     grid-template-columns: auto 1fr auto !important;
     grid-template-rows: auto auto !important;
@@ -825,18 +796,29 @@ body.is-mobile-nav-open .sidebarOverlay {
   .pageTitle__kicker {
     font-size: 10px !important;
   }
+  .pill__text {
+    display: none !important;
+  }
+  .pill {
+    padding: 10px !important;
+    border-radius: 12px !important;
+  }
   .main {
     padding: 16px 14px;
     gap: 14px;
     box-sizing: border-box;
   }
+  .modalOverlay {
+    padding: 24px 16px !important;
+  }
   .modal {
     width: 92vw !important;
     max-height: 90vh !important;
-    padding: 16px 14px !important;
+    padding: 24px 20px !important;
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden !important;
+    border-radius: 20px !important;
   }
   .modalForm {
     display: flex !important;
@@ -847,7 +829,7 @@ body.is-mobile-nav-open .sidebarOverlay {
   }
   .modalForm__grid {
     grid-template-columns: 1fr !important;
-    gap: 12px !important;
+    gap: 20px !important;
   }
   #profileFieldsContainer,
   .modalForm__body,
@@ -856,16 +838,75 @@ body.is-mobile-nav-open .sidebarOverlay {
     overflow-y: auto !important;
     padding: 4px 2px !important;
     min-height: 0 !important;
+    scroll-behavior: smooth !important;
+  }
+  .modalField {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-bottom: 0 !important;
+  }
+  .modalField__label {
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    color: rgba(255, 255, 255, 0.88) !important;
+    line-height: 1.3 !important;
+  }
+  .modalField__input {
+    font-size: 14px !important;
+    padding: 12px 14px !important;
+    height: 44px !important;
+    width: 100% !important;
+    border-radius: 12px !important;
+  }
+  input.modalField__input,
+  select.modalField__input {
+    height: 44px !important;
+  }
+  .modalField__input::placeholder {
+    font-size: 13px !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+  }
+  .modalField__error {
+    font-size: 11px !important;
+    margin-top: 4px !important;
+  }
+  .modal__header .iconBtn,
+  .admin-modal-header .modal-close-btn {
+    width: 32px !important;
+    height: 32px !important;
+    flex-shrink: 0 !important;
+    border-radius: 10px !important;
+    font-size: 20px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+  }
+  .modal__header .iconBtn svg,
+  .modal__header .iconBtn i {
+    width: 16px !important;
+    height: 16px !important;
   }
   .modal__footer {
-    margin-top: 12px !important;
-    padding-top: 10px !important;
+    margin-top: 16px !important;
+    padding-top: 16px !important;
     position: sticky !important;
     bottom: 0 !important;
-    background: rgba(11, 15, 27, 0.95) !important;
-    backdrop-filter: blur(8px) !important;
+    background: rgba(10, 15, 30, 0.98) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
     z-index: 10 !important;
     border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    display: flex !important;
+    gap: 12px !important;
+    justify-content: flex-end !important;
+  }
+  .modal__footer .btn {
+    height: 42px !important;
+    padding: 0 16px !important;
+    font-size: 14px !important;
   }
 }
 

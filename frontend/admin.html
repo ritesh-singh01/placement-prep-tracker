@@ -52,6 +52,18 @@
                     <i data-lucide="megaphone"></i>
                     <span>Announcements</span>
                 </button>
+                <button class="nav__item" data-section="students" id="navUserManagement">
+                    <i data-lucide="user-cog"></i>
+                    <span>User Management</span>
+                </button>
+                <button class="nav__item" id="navSettings">
+                    <i data-lucide="settings"></i>
+                    <span>Settings/Profile</span>
+                </button>
+                <button class="nav__item" data-logout style="color: var(--bad);">
+                    <i data-lucide="log-out"></i>
+                    <span>Logout</span>
+                </button>
             </nav>
         </aside>
 
@@ -89,56 +101,56 @@
                 <section id="admin-overview" class="admin-section active">
                     <h2 class="section-title">Platform Statistics</h2>
                     <div class="stats-grid">
-                        <div class="stat-card glass">
+                        <div class="stat-card glass clickable-card" data-target-section="students">
                             <div class="stat-card__icon blue"><i data-lucide="users"></i></div>
                             <div class="stat-card__meta">
                                 <div class="stat-card__label">Total Students</div>
                                 <div class="stat-card__value" id="statStudents">2</div>
                             </div>
                         </div>
-                        <div class="stat-card glass">
+                        <div class="stat-card glass clickable-card" data-target-section="applications">
                             <div class="stat-card__icon purple"><i data-lucide="file-text"></i></div>
                             <div class="stat-card__meta">
                                 <div class="stat-card__label">Applications</div>
                                 <div class="stat-card__value" id="statApps">38</div>
                             </div>
                         </div>
-                        <div class="stat-card glass">
+                        <div class="stat-card glass clickable-card" data-target-section="applications">
                             <div class="stat-card__icon green"><i data-lucide="check-circle"></i></div>
                             <div class="stat-card__meta">
                                 <div class="stat-card__label">Selected</div>
                                 <div class="stat-card__value" id="statSelected">6</div>
                             </div>
                         </div>
-                        <div class="stat-card glass">
+                        <div class="stat-card glass clickable-card" data-target-section="applications">
                             <div class="stat-card__icon red"><i data-lucide="x-circle"></i></div>
                             <div class="stat-card__meta">
                                 <div class="stat-card__label">Rejected</div>
                                 <div class="stat-card__value" id="statRejected">9</div>
                             </div>
                         </div>
-                        <div class="stat-card glass">
+                        <div class="stat-card glass clickable-card" data-target-section="applications">
                             <div class="stat-card__icon amber"><i data-lucide="calendar"></i></div>
                             <div class="stat-card__meta">
                                 <div class="stat-card__label">Interviews</div>
                                 <div class="stat-card__value" id="statInterviews">12</div>
                             </div>
                         </div>
-                        <div class="stat-card glass">
+                        <div class="stat-card glass clickable-card" data-target-section="applications">
                             <div class="stat-card__icon cyan"><i data-lucide="zap"></i></div>
                             <div class="stat-card__meta">
                                 <div class="stat-card__label">Active</div>
                                 <div class="stat-card__value" id="statActive">23</div>
                             </div>
                         </div>
-                        <div class="stat-card glass">
+                        <div class="stat-card glass clickable-card" data-target-section="students">
                             <div class="stat-card__icon indigo"><i data-lucide="notebook"></i></div>
                             <div class="stat-card__meta">
                                 <div class="stat-card__label">Total Notes</div>
                                 <div class="stat-card__value" id="statNotes">3</div>
                             </div>
                         </div>
-                        <div class="stat-card glass">
+                        <div class="stat-card glass clickable-card" data-target-section="drives">
                             <div class="stat-card__icon pink"><i data-lucide="map"></i></div>
                             <div class="stat-card__meta">
                                 <div class="stat-card__label">Drives</div>
@@ -152,6 +164,10 @@
                 <section id="admin-students" class="admin-section">
                     <div class="section-header">
                         <h2 class="section-title">Student Management</h2>
+                        <div class="admin-search-box student-search-wrapper" style="max-width: 320px; width: 100%; height: 42px; padding: 0 12px; margin: 0; background: rgba(255,255,255,0.04); border: 1px solid var(--stroke); border-radius: 12px; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="search" style="width: 16px; height: 16px; color: var(--subtle);"></i>
+                            <input type="text" id="studentSearch" placeholder="Search students by name or email..." class="admin-control" style="font-size: 13px; border: none; background: transparent; color: #fff; outline: none; width: 100%;">
+                        </div>
                     </div>
                     <div class="table-container glass">
                         <table class="admin-table">
@@ -538,7 +554,7 @@
                 <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; display: grid; gap: 16px;">
                     <div>
                         <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #fff;">Send Notification to Student</h4>
-                        <div style="display: flex; gap: 12px; align-items: flex-start;">
+                        <div class="sd-notif-row" style="display: flex; gap: 12px; align-items: flex-start;">
                             <div style="flex: 1; display: grid; gap: 8px;">
                                 <input type="text" id="sdNotifTitle" placeholder="Notification Title (e.g. Schedule Interview)" style="height: 38px; padding: 8px 12px; border-radius: 10px; font-size: 12px; border: 1px solid rgba(255,255,255,0.12); background: rgba(15, 23, 42, 0.9); color:#fff; outline:none;" />
                                 <textarea id="sdNotifMessage" rows="2" placeholder="Notification Message..." style="padding: 8px 12px; border-radius: 10px; font-size: 12px; min-height: 50px; border: 1px solid rgba(255,255,255,0.12); background: rgba(15, 23, 42, 0.9); color:#fff; outline:none; resize:vertical;"></textarea>
@@ -554,7 +570,7 @@
                         </div>
                     </div>
 
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; gap: 10px;">
+                    <div class="sd-modal-actions" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; gap: 10px;">
                         <div style="display: flex; gap: 8px;">
                             <button type="button" id="sdBlockBtn" class="btn btn--secondary btn--sm" style="border-color: rgba(255,90,122,0.3); color: #ff5a7a; border-radius: 10px;">Block Student</button>
                             <button type="button" id="sdDeleteBtn" class="btn btn--secondary btn--sm btn--danger" style="border-color: rgba(255,90,122,0.3); color: var(--bad); border-radius: 10px;">Delete Student</button>
