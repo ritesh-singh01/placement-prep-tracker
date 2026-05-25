@@ -1203,6 +1203,17 @@
     #appsTableBody td:nth-child(5)::before { content: "Priority" !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 11px !important; color: var(--subtle) !important; letter-spacing: 0.05em !important; }
     #appsTableBody td:nth-child(6)::before { content: "Applied On" !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 11px !important; color: var(--subtle) !important; letter-spacing: 0.05em !important; }
 
+    /* CSS injected column labels for Student Details Applications Table */
+    #sdAppsTableBody td:nth-child(2)::before { content: "Role" !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 11px !important; color: var(--subtle) !important; letter-spacing: 0.05em !important; }
+    #sdAppsTableBody td:nth-child(3)::before { content: "Status" !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 11px !important; color: var(--subtle) !important; letter-spacing: 0.05em !important; }
+    #sdAppsTableBody td:nth-child(4)::before { content: "Priority" !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 11px !important; color: var(--subtle) !important; letter-spacing: 0.05em !important; }
+    #sdAppsTableBody td:nth-child(5)::before { content: "Applied Date" !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 11px !important; color: var(--subtle) !important; letter-spacing: 0.05em !important; }
+    #sdAppsTableBody td:nth-child(6)::before { content: "Interview Date" !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 11px !important; color: var(--subtle) !important; letter-spacing: 0.05em !important; }
+
+    /* CSS injected column labels for Student Details Notes Table */
+    #sdNotesTableBody td:nth-child(2)::before { content: "Category" !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 11px !important; color: var(--subtle) !important; letter-spacing: 0.05em !important; }
+    #sdNotesTableBody td:nth-child(3)::before { content: "Last Updated" !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 11px !important; color: var(--subtle) !important; letter-spacing: 0.05em !important; }
+
     /* Student table touch-friendly action button grid */
     #studentsTableBody td:last-child {
         display: block !important;
@@ -1491,6 +1502,111 @@
         color: #fff !important;
     }
 }
+
+/* Unified Light Mode Compatibility Overrides */
+body.theme-light {
+  --ring: 0 0 0 3px rgba(124, 107, 255, 0.25);
+}
+
+body.theme-light .sidebar {
+  background: rgba(255, 255, 255, 0.4) !important;
+  border-right: 1px solid var(--stroke) !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.03) !important;
+}
+
+body.theme-light .sidebarOverlay {
+  background: rgba(241, 245, 249, 0.4) !important;
+}
+
+body.theme-light .section-title,
+body.theme-light .admin-section-title {
+  color: var(--text) !important;
+}
+
+body.theme-light .admin-modal-overlay {
+  background: rgba(241, 245, 249, 0.8) !important;
+}
+
+body.theme-light .admin-modal-card {
+  background: var(--surface2) !important;
+  border: 1px solid var(--stroke) !important;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.08) !important;
+  color: var(--text) !important;
+}
+
+body.theme-light .admin-modal-header p,
+body.theme-light .admin-form-group label,
+body.theme-light .sd-notif-title-label {
+  color: var(--muted) !important;
+}
+
+body.theme-light .admin-form-group input,
+body.theme-light .admin-form-group textarea,
+body.theme-light .admin-form-group select,
+body.theme-light .sd-notif-inputs input,
+body.theme-light .sd-notif-inputs textarea,
+body.theme-light .sd-notif-controls select {
+  background: var(--bg0) !important;
+  border: 1px solid var(--stroke) !important;
+  color: var(--text) !important;
+}
+
+body.theme-light .admin-form-group input:focus,
+body.theme-light .admin-form-group textarea:focus,
+body.theme-light .admin-form-group select:focus,
+body.theme-light .sd-notif-inputs input:focus,
+body.theme-light .sd-notif-inputs textarea:focus,
+body.theme-light .sd-notif-controls select:focus {
+  border-color: var(--indigo) !important;
+  box-shadow: var(--ring) !important;
+}
+
+body.theme-light .admin-control {
+  color: var(--text) !important;
+}
+
+body.theme-light .admin-select {
+  color: var(--text) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(15,23,42,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+}
+
+body.theme-light .admin-reset-btn {
+  background: var(--bg2) !important;
+  border-color: var(--stroke) !important;
+  color: var(--text) !important;
+}
+
+body.theme-light .admin-reset-btn:hover {
+  background: rgba(15, 23, 42, 0.08) !important;
+}
+
+body.theme-light .mobile-close-sidebar {
+  color: var(--muted) !important;
+}
+body.theme-light .mobile-close-sidebar:hover {
+  color: var(--text) !important;
+}
+
+body.theme-light .user-dropdown {
+  background: var(--surface2) !important;
+  border: 1px solid var(--stroke) !important;
+  box-shadow: var(--shadow-md) !important;
+  color: var(--text) !important;
+}
+
+body.theme-light .topbar .miniProfile:hover {
+  border-color: var(--stroke) !important;
+  background-color: rgba(15, 23, 42, 0.04) !important;
+}
+
+@media (max-width: 768px) {
+  body.theme-light .admin-table tr {
+    background: var(--surface) !important;
+    border-color: var(--stroke) !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04) !important;
+  }
+}
+
 
 
 

@@ -114,41 +114,98 @@
             </div>
             <div class="mock-window-body">
               <div class="mock-sidebar" aria-hidden="true">
-                <div class="mock-nav-item is-active"></div>
-                <div class="mock-nav-item"></div>
-                <div class="mock-nav-item"></div>
-                <div class="mock-nav-item" style="margin-top: auto; height: 24px;"></div>
+                <div class="mock-nav-item is-active" style="width: 80%; background: linear-gradient(90deg, rgba(124, 107, 255, 0.2), transparent);"></div>
+                <div class="mock-nav-item" style="width: 65%;"></div>
+                <div class="mock-nav-item" style="width: 70%;"></div>
+                <div class="mock-nav-item" style="width: 55%;"></div>
+                <div class="mock-nav-item" style="margin-top: auto; width: 45%;"></div>
               </div>
               <div class="mock-content">
+                <!-- Abstract Top Header Bar -->
+                <div class="abstract-header-bar" aria-hidden="true" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--stroke); padding-bottom: 12px; margin-bottom: 4px;">
+                  <div class="abstract-search-placeholder" style="width: 140px; height: 10px; background: rgba(255,255,255,0.06); border-radius: 4px;"></div>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <div style="width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,0.08);"></div>
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, rgba(124, 107, 255, 0.4), rgba(79, 227, 255, 0.4));"></div>
+                  </div>
+                </div>
+
                 <div class="mock-grid-stats">
-                  <div class="mock-card">
-                    <div class="mock-card__header"></div>
-                    <div class="mock-card__val"></div>
+                  <!-- Abstract Radial Progress Widget -->
+                  <div class="mock-card abstract-widget-radial">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                      <div class="abstract-text-line" style="width: 40%; height: 8px; background: rgba(255,255,255,0.12); border-radius: 3px;"></div>
+                      <div class="abstract-badge-placeholder" style="width: 24px; height: 10px; background: rgba(61, 220, 151, 0.15); border-radius: 100px;"></div>
+                    </div>
+                    <div class="abstract-circle-wrap" style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
+                      <div class="abstract-radial-progress" style="width: 32px; height: 32px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.04); border-top-color: var(--indigo); transform: rotate(45deg);"></div>
+                      <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                        <div class="abstract-text-line" style="width: 80%; height: 10px; background: rgba(255,255,255,0.25); border-radius: 3px;"></div>
+                        <div class="abstract-text-line" style="width: 50%; height: 6px; background: rgba(255,255,255,0.12); border-radius: 3px;"></div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="mock-card" style="border-color: rgba(61,220,151,0.25);">
-                    <div class="mock-card__header" style="background: rgba(61,220,151,0.15);"></div>
-                    <div class="mock-card__val" style="background: rgba(61,220,151,0.25);"></div>
+                  <!-- Abstract Chart Widget -->
+                  <div class="mock-card abstract-widget-chart" style="border-color: rgba(79, 227, 255, 0.15); background: linear-gradient(180deg, rgba(79, 227, 255, 0.04), transparent);">
+                    <div class="abstract-text-line" style="width: 50%; height: 8px; background: rgba(255,255,255,0.12); border-radius: 3px; margin-bottom: 12px;"></div>
+                    <div class="abstract-sparkline" style="position: relative; height: 32px; width: 100%; overflow: hidden;">
+                      <svg viewBox="0 0 100 30" class="abstract-sparkline-svg" style="width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 4px rgba(79, 227, 255, 0.4));">
+                        <path d="M0,20 Q15,5 30,18 T60,8 T90,2 M90,2 L100,20 L100,30 L0,30 Z" fill="rgba(79, 227, 255, 0.06)" stroke="var(--cyan)" stroke-width="1.5" stroke-linecap="round"></path>
+                        <circle cx="90" cy="2" r="2.5" fill="var(--cyan)"></circle>
+                      </svg>
+                    </div>
                   </div>
-                  <div class="mock-card">
-                    <div class="mock-card__header"></div>
-                    <div class="mock-card__val"></div>
+                  <!-- Abstract Grid Activity Widget -->
+                  <div class="mock-card abstract-widget-activity">
+                    <div class="abstract-text-line" style="width: 60%; height: 8px; background: rgba(255,255,255,0.12); border-radius: 3px; margin-bottom: 8px;"></div>
+                    <div class="abstract-grid-matrix" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 10px;">
+                      <div class="matrix-cell active-low" style="aspect-ratio: 1; border-radius: 2px; background: rgba(255,255,255,0.06);"></div>
+                      <div class="matrix-cell active-high" style="aspect-ratio: 1; border-radius: 2px; background: var(--indigo); opacity: 0.85;"></div>
+                      <div class="matrix-cell active-low" style="aspect-ratio: 1; border-radius: 2px; background: rgba(255,255,255,0.06);"></div>
+                      <div class="matrix-cell active-med" style="aspect-ratio: 1; border-radius: 2px; background: var(--blue); opacity: 0.5;"></div>
+                      <div class="matrix-cell active-low" style="aspect-ratio: 1; border-radius: 2px; background: rgba(255,255,255,0.06);"></div>
+                      <div class="matrix-cell active-high" style="aspect-ratio: 1; border-radius: 2px; background: var(--indigo); opacity: 0.9;"></div>
+                      <div class="matrix-cell active-low" style="aspect-ratio: 1; border-radius: 2px; background: rgba(255,255,255,0.06);"></div>
+                      <div class="matrix-cell active-med" style="aspect-ratio: 1; border-radius: 2px; background: var(--indigo); opacity: 0.4;"></div>
+                      <div class="matrix-cell active-low" style="aspect-ratio: 1; border-radius: 2px; background: rgba(255,255,255,0.06);"></div>
+                      <div class="matrix-cell active-high" style="aspect-ratio: 1; border-radius: 2px; background: var(--cyan); opacity: 0.85;"></div>
+                      <div class="matrix-cell active-low" style="aspect-ratio: 1; border-radius: 2px; background: rgba(255,255,255,0.06);"></div>
+                      <div class="matrix-cell active-low" style="aspect-ratio: 1; border-radius: 2px; background: rgba(255,255,255,0.06);"></div>
+                      <div class="matrix-cell active-med" style="aspect-ratio: 1; border-radius: 2px; background: var(--blue); opacity: 0.6;"></div>
+                      <div class="matrix-cell active-low" style="aspect-ratio: 1; border-radius: 2px; background: rgba(255,255,255,0.06);"></div>
+                    </div>
                   </div>
                 </div>
                 <div class="mock-main-section">
-                  <div class="mock-inner-card">
-                    <div class="mock-card__header" style="width: 40%; margin-bottom: 16px;"></div>
+                  <div class="mock-inner-card abstract-widget-pipeline" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div class="abstract-text-line" style="width: 40%; height: 10px; background: rgba(255,255,255,0.18); border-radius: 3px; margin-bottom: 12px;"></div>
                     <div style="display: flex; flex-direction: column; gap: 8px;">
-                      <div style="height: 36px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--stroke);"></div>
-                      <div style="height: 36px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--stroke);"></div>
-                      <div style="height: 36px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--stroke);"></div>
+                      <div style="display: flex; align-items: center; justify-content: space-between; height: 28px; background: rgba(255,255,255,0.01); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.06); padding: 0 10px;">
+                        <div style="width: 30%; height: 6px; background: rgba(255,255,255,0.15); border-radius: 2px;"></div>
+                        <div style="width: 15%; height: 8px; background: rgba(124, 107, 255, 0.2); border: 1px solid rgba(124, 107, 255, 0.35); border-radius: 100px;"></div>
+                      </div>
+                      <div style="display: flex; align-items: center; justify-content: space-between; height: 28px; background: rgba(255,255,255,0.01); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.06); padding: 0 10px;">
+                        <div style="width: 45%; height: 6px; background: rgba(255,255,255,0.15); border-radius: 2px;"></div>
+                        <div style="width: 15%; height: 8px; background: rgba(79, 227, 255, 0.2); border: 1px solid rgba(79, 227, 255, 0.35); border-radius: 100px;"></div>
+                      </div>
+                      <div style="display: flex; align-items: center; justify-content: space-between; height: 28px; background: rgba(255,255,255,0.01); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.06); padding: 0 10px;">
+                        <div style="width: 35%; height: 6px; background: rgba(255,255,255,0.15); border-radius: 2px;"></div>
+                        <div style="width: 15%; height: 8px; background: rgba(61, 220, 151, 0.2); border: 1px solid rgba(61, 220, 151, 0.35); border-radius: 100px;"></div>
+                      </div>
                     </div>
                   </div>
                   <div class="mock-main-right">
-                    <div class="mock-inner-card" style="height: 100%;">
-                      <div class="mock-card__header" style="width: 60%; margin-bottom: 12px;"></div>
-                      <div style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 6px;"></div>
-                      <div style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 6px;"></div>
-                      <div style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 4px;"></div>
+                    <div class="mock-inner-card abstract-widget-focus" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(135deg, rgba(124, 107, 255, 0.03), transparent);">
+                      <div>
+                        <div class="abstract-text-line" style="width: 60%; height: 10px; background: rgba(255,255,255,0.18); border-radius: 3px; margin-bottom: 12px;"></div>
+                        <div style="height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; margin-bottom: 6px; width: 90%;"></div>
+                        <div style="height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; margin-bottom: 6px; width: 85%;"></div>
+                        <div style="height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; width: 50%;"></div>
+                      </div>
+                      <div style="display: flex; gap: 6px; align-items: center; margin-top: 12px; justify-content: flex-end;">
+                        <div style="width: 14px; height: 14px; border-radius: 4px; background: rgba(255,255,255,0.12);"></div>
+                        <div style="width: 50px; height: 8px; background: rgba(255,255,255,0.15); border-radius: 3px;"></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -430,24 +487,26 @@
         </button>
 
         <div id="roleSelection" class="role-selection">
-          <h1 class="panel__title">Choose your access type</h1>
-          <p class="panel__subtitle">Select how you want to access the platform.</p>
+          <h1 class="panel__title" style="margin-bottom: 8px;">Choose your access type</h1>
+          <p class="panel__subtitle" style="margin-bottom: 24px;">Select how you want to access the platform.</p>
           
-          <div class="role-cards">
-            <button type="button" class="role-card glass" data-role="student">
-              <div class="role-card__icon"><i data-lucide="user"></i></div>
-              <div class="role-card__meta">
-                <div class="role-card__title">Student</div>
-                <div class="role-card__text">Track applications, notes, and progress</div>
-              </div>
-            </button>
-            
-            <button type="button" class="role-card glass" data-role="admin">
+          <div class="role-cards" style="display: grid; gap: 14px; position: relative;">
+            <button type="button" class="role-card role-card--admin glass" data-role="admin">
               <div class="role-card__icon"><i data-lucide="shield-check"></i></div>
               <div class="role-card__meta">
-                <div class="role-card__title">Admin</div>
-                <div class="role-card__text">Manage students, drives, and reports</div>
+                <div class="role-card__title">Admin Portal</div>
+                <div class="role-card__text">Manage students, placement drives, reports, announcements, and platform operations.</div>
               </div>
+              <div class="role-card__glow"></div>
+            </button>
+            
+            <button type="button" class="role-card role-card--student glass" data-role="student">
+              <div class="role-card__icon"><i data-lucide="user"></i></div>
+              <div class="role-card__meta">
+                <div class="role-card__title">Student Workspace</div>
+                <div class="role-card__text">Track applications, manage interview prep, notes, resumes, and placement progress.</div>
+              </div>
+              <div class="role-card__glow"></div>
             </button>
           </div>
         </div>

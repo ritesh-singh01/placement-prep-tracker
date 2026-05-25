@@ -760,58 +760,195 @@
   text-decoration: underline;
 }
 
-/* 9. Auth Modal Overlay */
+/* 9. Auth Modal Overlay & Premium Role Cards */
 .auth-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(7, 10, 18, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(3, 7, 18, 0.4);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
   z-index: 100000;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  padding: 16px;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 24px 16px;
 }
 
 .auth-modal-overlay.is-open {
   opacity: 1;
   pointer-events: auto;
+  background: rgba(3, 7, 18, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .auth-modal-overlay .panel {
-  transform: translateY(15px);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(0.94) translateY(20px);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  overflow: hidden;
 }
 
 .auth-modal-overlay.is-open .panel {
-  transform: translateY(0);
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Inner purple spotlight glow */
+.auth-modal-overlay .panel::before {
+  content: "";
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(124, 107, 255, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.theme-light .auth-modal-overlay .panel::before {
+  background: radial-gradient(circle, rgba(124, 107, 255, 0.08) 0%, transparent 70%);
 }
 
 .auth-modal-close-btn {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 32px;
-  height: 32px;
+  top: 24px;
+  right: 24px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   border: 1px solid var(--stroke);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
   display: grid;
   place-items: center;
   cursor: pointer;
   color: var(--muted);
-  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 20;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .auth-modal-close-btn:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: var(--stroke2);
+  border-color: rgba(255, 255, 255, 0.25);
   color: #fff;
+  transform: rotate(90deg) scale(1.05);
+}
+
+.theme-light .auth-modal-close-btn {
+  background: rgba(15, 23, 42, 0.04);
+  color: var(--muted);
+}
+.theme-light .auth-modal-close-btn:hover {
+  background: rgba(15, 23, 42, 0.08);
+  border-color: rgba(15, 23, 42, 0.2);
+  color: var(--text);
+}
+
+/* Premium Role Selection Cards styling */
+.role-card {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.role-card--admin:hover {
+  border-color: rgba(124, 107, 255, 0.35) !important;
+  background: rgba(124, 107, 255, 0.03) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 30px rgba(124, 107, 255, 0.12) !important;
+}
+
+.role-card--student:hover {
+  border-color: rgba(79, 227, 255, 0.35) !important;
+  background: rgba(79, 227, 255, 0.03) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 30px rgba(79, 227, 255, 0.12) !important;
+}
+
+.role-card__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  transition: all 0.3s ease;
+}
+
+.role-card--admin .role-card__icon {
+  background: rgba(124, 107, 255, 0.12);
+  color: var(--indigo);
+  border: 1px solid rgba(124, 107, 255, 0.2);
+}
+
+.role-card--admin:hover .role-card__icon {
+  background: var(--indigo);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(124, 107, 255, 0.4);
+}
+
+.role-card--student .role-card__icon {
+  background: rgba(79, 227, 255, 0.12);
+  color: var(--cyan);
+  border: 1px solid rgba(79, 227, 255, 0.2);
+}
+
+.role-card--student:hover .role-card__icon {
+  background: var(--cyan);
+  color: #070a12;
+  box-shadow: 0 0 16px rgba(79, 227, 255, 0.4);
+}
+
+.role-card__glow {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.role-card--admin .role-card__glow {
+  background: radial-gradient(circle, rgba(124, 107, 255, 0.08) 0%, transparent 70%);
+  right: -50px;
+  bottom: -50px;
+}
+
+.role-card--student .role-card__glow {
+  background: radial-gradient(circle, rgba(79, 227, 255, 0.08) 0%, transparent 70%);
+  right: -50px;
+  bottom: -50px;
+}
+
+.role-card:hover .role-card__glow {
+  opacity: 1;
+}
+
+/* Light mode overrides for role selection cards */
+.theme-light .role-card {
+  background: rgba(15, 23, 42, 0.02) !important;
+  border-color: rgba(15, 23, 42, 0.06) !important;
+}
+
+.theme-light .role-card--admin:hover {
+  background: rgba(124, 107, 255, 0.04) !important;
+  box-shadow: 0 10px 30px rgba(124, 107, 255, 0.06) !important;
+}
+
+.theme-light .role-card--student:hover {
+  background: rgba(79, 227, 255, 0.04) !important;
+  box-shadow: 0 10px 30px rgba(79, 227, 255, 0.06) !important;
 }
 
 /* 10. Mobile Slide Drawer Menu */
@@ -883,3 +1020,61 @@
 .mobile-drawer__ctas .btn {
   width: 100%;
 }
+
+/* Cinematic Abstract SaaS Preview Mockup Widgets */
+.abstract-widget-radial {
+  position: relative;
+  overflow: hidden;
+}
+.abstract-radial-progress {
+  transform-origin: center;
+  animation: spin-radial 3s linear infinite;
+}
+@keyframes spin-radial {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.abstract-widget-chart {
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+.abstract-widget-chart:hover {
+  border-color: rgba(79, 227, 255, 0.4) !important;
+  background: linear-gradient(180deg, rgba(79, 227, 255, 0.08), transparent) !important;
+}
+.abstract-sparkline-svg path {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: draw-sparkline 4s cubic-bezier(0.16, 1, 0.3, 1) forwards infinite;
+}
+@keyframes draw-sparkline {
+  0% { stroke-dashoffset: 200; }
+  50% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.abstract-grid-matrix .matrix-cell {
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+}
+.abstract-grid-matrix .matrix-cell:hover {
+  transform: scale(1.15);
+  filter: brightness(1.25);
+}
+
+.abstract-widget-pipeline div {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.abstract-widget-pipeline div:hover {
+  border-color: rgba(124, 107, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  transform: scale(1.02);
+}
+
+.abstract-widget-focus {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+.abstract-widget-focus:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(124, 107, 255, 0.05);
+}
+

@@ -1493,46 +1493,40 @@ input::-webkit-credentials-auto-fill-button {
   }
 }
 
-/* Integrate Notes Page New Note button into the mobile topbar/header */
+/* Style Notes Page New Note button as a bottom-right FAB on mobile viewports (<768px) */
 @media (max-width: 768px) {
-  body[data-page="notes"] .topbar {
-    grid-template-columns: auto 1fr auto auto !important;
-  }
   body[data-page="notes"] #newNoteBtn {
-    grid-column: 3 !important;
-    grid-row: 1 !important;
-    width: 40px !important;
-    height: 40px !important;
-    padding: 0 !important;
-    border-radius: 12px !important;
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50% !important;
     display: inline-grid !important;
     place-items: center !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: var(--text) !important;
-    box-shadow: none !important;
-    position: static !important; /* Reset any fixed position from notes.css */
+    background: linear-gradient(135deg, var(--indigo) 0%, rgba(124, 107, 255, 0.8) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
+    box-shadow: 0 8px 30px rgba(124, 107, 255, 0.4) !important;
+    z-index: 99999 !important;
+    padding: 0 !important;
     margin: 0 !important;
-    z-index: 2 !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
   }
   body[data-page="notes"] #newNoteBtn:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-2px) scale(1.05) !important;
+    box-shadow: 0 12px 35px rgba(124, 107, 255, 0.5) !important;
   }
   body[data-page="notes"] #newNoteBtn span {
     display: none !important;
   }
   body[data-page="notes"] #newNoteBtn svg {
     margin: 0 !important;
-    width: 20px !important;
-    height: 20px !important;
+    width: 24px !important;
+    height: 24px !important;
     color: #fff !important;
   }
-  body[data-page="notes"] .topbar__actions {
-    grid-column: 4 !important;
-    grid-row: 1 !important;
-  }
-  body[data-page="notes"] .search {
-    grid-column: 1 / 5 !important;
+  body[data-page="notes"] .noteGrid {
+    padding-bottom: 96px !important;
   }
 }
