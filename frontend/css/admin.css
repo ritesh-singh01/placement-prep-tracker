@@ -1156,5 +1156,24 @@
     }
 }
 
+/* Close button inside sidebar on mobile */
+@media (max-width: 980px) {
+    .mobile-close-sidebar {
+        display: inline-grid !important;
+        border: none !important;
+        background: transparent !important;
+        color: var(--muted) !important;
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+        cursor: pointer !important;
+        place-items: center !important;
+        transition: color 0.2s ease !important;
+    }
+    .mobile-close-sidebar:hover {
+        color: #fff !important;
+    }
+}
+
 
 

@@ -80,6 +80,13 @@ function initMobileNav() {
     document.body.classList.remove("is-mobile-nav-open");
   });
 
+  const closeBtn = qs("#closeSidebar");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      document.body.classList.remove("is-mobile-nav-open");
+    });
+  }
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       document.body.classList.remove("is-mobile-nav-open");
