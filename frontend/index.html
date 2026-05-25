@@ -3,95 +3,469 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Placement Tracker — Login</title>
-    <meta name="description" content="Placement Preparation & Interview Tracker — Login" />
+    <title>Placement Prep Tracker — Supercharge Your Career Journey</title>
+    <meta name="description" content="A professional unified platform to manage placement preparation, track company applications, customize prep notes, and analyze success rates." />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
+    <script src="js/theme.js"></script>
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/auth.css" />
     <link rel="stylesheet" href="css/notifications.css" />
+    <link rel="stylesheet" href="css/landing.css" />
   </head>
-  <body class="theme-dark" data-page="login">
-    <main class="auth">
-      <section class="auth__brand">
-        <div class="brandmark">
-          <div class="brandmark__icon" aria-hidden="true">
-            <i data-lucide="sparkles"></i>
-          </div>
-          <div>
-            <div class="brandmark__title">Placement Tracker</div>
-            <div class="brandmark__subtitle">Preparation & Interview Dashboard</div>
-          </div>
+  <body class="theme-dark" data-page="landing">
+    
+    <!-- Header/Navbar -->
+    <header class="landing-nav">
+      <div class="landing-nav__container">
+        <div class="landing-nav__left">
+          <a class="brandmark" href="#home" style="gap: 10px;">
+            <div class="brandmark__icon" aria-hidden="true" style="width: 36px; height: 36px; border-radius: 10px; box-shadow: none;">
+              <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i>
+            </div>
+            <span class="brandmark__title" style="font-size: 16.5px;">Placement Tracker</span>
+          </a>
+          <nav class="landing-nav__links">
+            <a class="landing-nav__link" href="#showcase">Showcase</a>
+            <a class="landing-nav__link" href="#features">Features</a>
+            <a class="landing-nav__link" href="#values">Why Tracker</a>
+          </nav>
         </div>
 
-        <div class="auth__hero">
-          <div class="auth__heroTitle">Track applications. Prepare smarter. Get selected.</div>
-          <p class="auth__heroText">
-            A premium dashboard to manage your placement journey—applications, interview notes, and
-            progress analytics.
-          </p>
-          <div class="auth__bullets">
-            <div class="bullet">
-              <i data-lucide="shield-check"></i>
-              <span>Clean, focused workflow</span>
-            </div>
-            <div class="bullet">
-              <i data-lucide="bar-chart-3"></i>
-              <span>Progress analytics</span>
-            </div>
-            <div class="bullet">
-              <i data-lucide="notebook-tabs"></i>
-              <span>Interview notes & prep</span>
-            </div>
-          </div>
+        <div class="landing-nav__right">
+          <button class="iconBtn" type="button" id="landingThemeToggle" aria-label="Toggle theme" style="margin-right: 4px;">
+            <i data-lucide="sun"></i>
+          </button>
+          <button class="btn btn--ghost btn--sm landing-nav__link" id="navSignIn" data-action="open-auth">Sign In</button>
+          <button class="btn btn--primary btn--sm btn--glow" id="navGetStarted" data-action="open-auth">Get Started</button>
+          <button class="iconBtn landing-nav__hamburger" type="button" id="hamburgerBtn" aria-label="Open menu">
+            <i data-lucide="menu"></i>
+          </button>
         </div>
-      </section>
+      </div>
+    </header>
 
-      <section class="auth__panel">
-        <div class="panel glass">
-          <div id="roleSelection" class="role-selection">
-            <h1 class="panel__title">Choose your access type</h1>
-            <p class="panel__subtitle">Select how you want to access the platform.</p>
-            
-            <div class="role-cards">
-              <button type="button" class="role-card glass" data-role="student">
-                <div class="role-card__icon"><i data-lucide="user"></i></div>
-                <div class="role-card__meta">
-                  <div class="role-card__title">Student</div>
-                  <div class="role-card__text">Track applications, notes, and progress</div>
-                </div>
-              </button>
-              
-              <button type="button" class="role-card glass" data-role="admin">
-                <div class="role-card__icon"><i data-lucide="shield-check"></i></div>
-                <div class="role-card__meta">
-                  <div class="role-card__title">Admin</div>
-                  <div class="role-card__text">Manage students, drives, and reports</div>
-                </div>
-              </button>
-            </div>
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+    <div class="mobile-drawer" id="mobileDrawer">
+      <div class="mobile-drawer__header">
+        <a class="brandmark" href="#home" style="gap: 8px;">
+          <div class="brandmark__icon" aria-hidden="true" style="width: 32px; height: 32px; border-radius: 8px;">
+            <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
           </div>
+          <span class="brandmark__title" style="font-size: 15px;">Placement Tracker</span>
+        </a>
+        <button class="iconBtn" type="button" id="drawerClose" aria-label="Close menu">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="mobile-drawer__links">
+        <a class="mobile-drawer__link" href="#showcase">Showcase</a>
+        <a class="mobile-drawer__link" href="#features">Features</a>
+        <a class="mobile-drawer__link" href="#values">Why Tracker</a>
+      </div>
+      <div class="mobile-drawer__ctas">
+        <button class="btn btn--ghost" id="drawerSignIn" data-action="open-auth">Sign In</button>
+        <button class="btn btn--primary" id="drawerGetStarted" data-action="open-auth">Get Started</button>
+      </div>
+    </div>
 
-          <div id="authContent" style="display: none;">
-            <button type="button" class="back-btn" id="backToRole">
-              <i data-lucide="arrow-left"></i>
-              <span>Back to Selection</span>
-            </button>
+    <!-- Hero Section -->
+    <section class="landing-hero" id="home">
+      <div class="hero-glow-layer" aria-hidden="true"></div>
+      
+      <div class="landing-hero__kicker">
+        <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
+        <span>Unified Placement prep workspace</span>
+      </div>
+      
+      <h1 class="landing-hero__title">
+        Track applications. Prepare smarter. Get selected.
+      </h1>
+      
+      <p class="landing-hero__subtitle">
+        A premium, professional dashboard ecosystem designed for college students and placement coordinators. Manage interview pipelines, coordinate mock drives, and secure your dream offer in one unified space.
+      </p>
+      
+      <div class="landing-hero__ctas">
+        <button class="btn btn--primary btn--lg btn--glow" id="heroGetStarted" data-action="open-auth">Get Started</button>
+        <a class="btn btn--secondary btn--lg" href="#showcase">Explore Platform</a>
+      </div>
 
-            <header class="panel__header">
-              <h1 class="panel__title" id="panelTitle">Welcome</h1>
-              <p class="panel__subtitle" id="panelSubtitle">Sign in or create an account to track your progress.</p>
-              <div class="auth__tabs" id="authTabs">
-                <button type="button" class="auth__tab is-active" data-target="login">Sign In</button>
-                <button type="button" class="auth__tab" data-target="signup">Sign Up</button>
+      <!-- Hero Visual Preview -->
+      <div class="landing-hero__preview">
+        <div class="preview-wrapper">
+          <div class="preview-mock-screen">
+            <div class="mock-window-header" aria-hidden="true">
+              <div style="display: flex; gap: 6px;">
+                <div class="mock-dot"></div>
+                <div class="mock-dot"></div>
+                <div class="mock-dot"></div>
               </div>
-            </header>
+              <div style="margin-left: 20px; font-size: 11px; color: var(--subtle); background: rgba(0,0,0,0.3); padding: 2px 16px; border-radius: 6px;">
+                placementtracker.com/dashboard
+              </div>
+            </div>
+            <div class="mock-window-body">
+              <div class="mock-sidebar" aria-hidden="true">
+                <div class="mock-nav-item is-active"></div>
+                <div class="mock-nav-item"></div>
+                <div class="mock-nav-item"></div>
+                <div class="mock-nav-item" style="margin-top: auto; height: 24px;"></div>
+              </div>
+              <div class="mock-content">
+                <div class="mock-grid-stats">
+                  <div class="mock-card">
+                    <div class="mock-card__header"></div>
+                    <div class="mock-card__val"></div>
+                  </div>
+                  <div class="mock-card" style="border-color: rgba(61,220,151,0.25);">
+                    <div class="mock-card__header" style="background: rgba(61,220,151,0.15);"></div>
+                    <div class="mock-card__val" style="background: rgba(61,220,151,0.25);"></div>
+                  </div>
+                  <div class="mock-card">
+                    <div class="mock-card__header"></div>
+                    <div class="mock-card__val"></div>
+                  </div>
+                </div>
+                <div class="mock-main-section">
+                  <div class="mock-inner-card">
+                    <div class="mock-card__header" style="width: 40%; margin-bottom: 16px;"></div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                      <div style="height: 36px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--stroke);"></div>
+                      <div style="height: 36px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--stroke);"></div>
+                      <div style="height: 36px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--stroke);"></div>
+                    </div>
+                  </div>
+                  <div class="mock-main-right">
+                    <div class="mock-inner-card" style="height: 100%;">
+                      <div class="mock-card__header" style="width: 60%; margin-bottom: 12px;"></div>
+                      <div style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 6px;"></div>
+                      <div style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 6px;"></div>
+                      <div style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 4px;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Showcase Section -->
+    <section class="landing-section" id="showcase">
+      <div class="landing-section__header">
+        <h2 class="landing-section__title">Explore the Product Workspace</h2>
+        <p class="landing-section__subtitle">Toggle between student and admin portals to see how they coordinate details seamlessly.</p>
+      </div>
+
+      <div class="preview-tabs-container">
+        <div class="preview-tabs">
+          <button class="preview-tab-btn is-active" id="tabStudentBtn">Student Workspace</button>
+          <button class="preview-tab-btn" id="tabAdminBtn">Admin Console</button>
+        </div>
+      </div>
+
+      <div class="showcase-display">
+        <!-- Student Dashboard Showcase -->
+        <div class="showcase-tab-content is-active" id="showcaseStudentContent">
+          <div class="mock-dashboard-layout">
+            <div class="mock-metrics-row">
+              <div class="mock-metric-card">
+                <span class="mock-metric-card__val">18</span>
+                <span class="mock-metric-card__label">Applied</span>
+              </div>
+              <div class="mock-metric-card" style="border-color: rgba(79, 227, 255, 0.25);">
+                <span class="mock-metric-card__val" style="color: var(--cyan);">4</span>
+                <span class="mock-metric-card__label">Interviews</span>
+              </div>
+              <div class="mock-metric-card" style="border-color: rgba(61, 220, 151, 0.25);">
+                <span class="mock-metric-card__val" style="color: var(--good);">2</span>
+                <span class="mock-metric-card__label">Offers Received</span>
+              </div>
+              <div class="mock-metric-card">
+                <span class="mock-metric-card__val">83%</span>
+                <span class="mock-metric-card__label">Prep Score</span>
+              </div>
+            </div>
+
+            <div class="mock-split-row">
+              <div class="mock-inner-card">
+                <h3 class="mock-inner-card__title">
+                  <i data-lucide="building-2" style="width: 16px; height: 16px; color: var(--indigo);"></i>
+                  Active Application Pipeline
+                </h3>
+                <div class="mock-pipeline">
+                  <div class="mock-pipeline-item">
+                    <div>
+                      <div class="mock-pipeline-company">Google</div>
+                      <div class="mock-pipeline-role">Software Engineer Intern</div>
+                    </div>
+                    <span class="mock-badge mock-badge--interview">Technical Interview</span>
+                  </div>
+                  <div class="mock-pipeline-item">
+                    <div>
+                      <div class="mock-pipeline-company">Stripe</div>
+                      <div class="mock-pipeline-role">Frontend Engineer</div>
+                    </div>
+                    <span class="mock-badge mock-badge--offer">Offer Confirmed</span>
+                  </div>
+                  <div class="mock-pipeline-item">
+                    <div>
+                      <div class="mock-pipeline-company">Microsoft</div>
+                      <div class="mock-pipeline-role">Product Manager</div>
+                    </div>
+                    <span class="mock-badge mock-badge--applied">Applied</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mock-inner-card">
+                <h3 class="mock-inner-card__title">
+                  <i data-lucide="notebook-tabs" style="width: 16px; height: 16px; color: var(--indigo);"></i>
+                  Recent Prep Notes
+                </h3>
+                <div class="mock-notes-list">
+                  <div class="mock-note-item">
+                    <i data-lucide="pin" style="width: 14px; height: 14px;"></i>
+                    <div>
+                      <div class="mock-note-title">Dynamic Programming Patterns</div>
+                      <div class="mock-note-desc">Key notes on knapsack & subsegment problems.</div>
+                    </div>
+                  </div>
+                  <div class="mock-note-item">
+                    <i data-lucide="pin" style="width: 14px; height: 14px;"></i>
+                    <div>
+                      <div class="mock-note-title">System Design Core Principles</div>
+                      <div class="mock-note-desc">Sharding, horizontal scaling and load balancers.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Console Showcase -->
+        <div class="showcase-tab-content" id="showcaseAdminContent">
+          <div class="mock-dashboard-layout">
+            <div class="mock-metrics-row">
+              <div class="mock-metric-card">
+                <span class="mock-metric-card__val">342</span>
+                <span class="mock-metric-card__label">Total Students</span>
+              </div>
+              <div class="mock-metric-card" style="border-color: rgba(124, 107, 255, 0.25);">
+                <span class="mock-metric-card__val" style="color: var(--indigo);">12</span>
+                <span class="mock-metric-card__label">Active Drives</span>
+              </div>
+              <div class="mock-metric-card" style="border-color: rgba(61, 220, 151, 0.25);">
+                <span class="mock-metric-card__val" style="color: var(--good);">76.5%</span>
+                <span class="mock-metric-card__label">Placed Rate</span>
+              </div>
+              <div class="mock-metric-card">
+                <span class="mock-metric-card__val">8</span>
+                <span class="mock-metric-card__label">New Broadcasts</span>
+              </div>
+            </div>
+
+            <div class="mock-split-row">
+              <div class="mock-inner-card">
+                <h3 class="mock-inner-card__title">
+                  <i data-lucide="users" style="width: 16px; height: 16px; color: var(--indigo);"></i>
+                  Active Student List
+                </h3>
+                <div class="table-container" style="background: transparent; border: none; padding: 0;">
+                  <table class="admin-table" style="min-width: 100%;">
+                    <thead>
+                      <tr style="border-bottom: 1px solid var(--stroke); padding-bottom: 8px;">
+                        <th style="text-align: left; font-size: 11px; color: var(--subtle); text-transform: uppercase;">Name</th>
+                        <th style="text-align: left; font-size: 11px; color: var(--subtle); text-transform: uppercase;">Course</th>
+                        <th style="text-align: right; font-size: 11px; color: var(--subtle); text-transform: uppercase;">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style="border-bottom: 1px solid rgba(255,255,255,0.02); height: 42px;">
+                        <td style="font-size: 13.5px; font-weight: 600;">Jane Cooper</td>
+                        <td style="font-size: 12.5px; color: var(--muted);">B.Tech CSE</td>
+                        <td style="text-align: right;"><span class="mock-badge mock-badge--offer">Placed</span></td>
+                      </tr>
+                      <tr style="border-bottom: 1px solid rgba(255,255,255,0.02); height: 42px;">
+                        <td style="font-size: 13.5px; font-weight: 600;">Alex Rivera</td>
+                        <td style="font-size: 12.5px; color: var(--muted);">B.Tech IT</td>
+                        <td style="text-align: right;"><span class="mock-badge mock-badge--interview">Interviewing</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="mock-inner-card">
+                <h3 class="mock-inner-card__title">
+                  <i data-lucide="megaphone" style="width: 16px; height: 16px; color: var(--indigo);"></i>
+                  Active Placement Drives
+                </h3>
+                <div class="mock-pipeline">
+                  <div class="mock-pipeline-item" style="padding: 10px;">
+                    <div>
+                      <div class="mock-pipeline-company" style="font-size: 13px;">Amazon Web Services</div>
+                      <div style="font-size: 11px; color: var(--good); margin-top: 2px;">Deadline: May 28, 2026</div>
+                    </div>
+                  </div>
+                  <div class="mock-pipeline-item" style="padding: 10px;">
+                    <div>
+                      <div class="mock-pipeline-company" style="font-size: 13px;">Salesforce</div>
+                      <div style="font-size: 11px; color: var(--subtle); margin-top: 2px;">Status: Processing Applications</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Platform Features Grid Section -->
+    <section class="landing-section" id="features">
+      <div class="landing-section__header">
+        <h2 class="landing-section__title">High-Performance Placement Tools</h2>
+        <p class="landing-section__subtitle">A modern, fully integrated dashboard containing everything standard students and admins need.</p>
+      </div>
+
+      <div class="landing-features-grid">
+        <!-- Card 1 -->
+        <div class="feature-card glass">
+          <div class="feature-card__icon"><i data-lucide="building-2"></i></div>
+          <h3 class="feature-card__title">Application Pipeline</h3>
+          <p class="feature-card__text">Track application states with ease. Move companies through applied, interviewing, and offer columns, keeping your pipeline organized.</p>
+        </div>
+        <!-- Card 2 -->
+        <div class="feature-card glass">
+          <div class="feature-card__icon"><i data-lucide="notebook-tabs"></i></div>
+          <h3 class="feature-card__title">Interview prep workspace</h3>
+          <p class="feature-card__text">Save dynamic preparation notes. Pin critical topics like dynamic programming or system design and attach priority tags for rapid review.</p>
+        </div>
+        <!-- Card 3 -->
+        <div class="feature-card glass">
+          <div class="feature-card__icon"><i data-lucide="shield-alert"></i></div>
+          <h3 class="feature-card__title">Administrative Control</h3>
+          <p class="feature-card__text">Admins can coordinate corporate drives, publish priority announcements, review candidate profiles, and export aggregate statistics.</p>
+        </div>
+        <!-- Card 4 -->
+        <div class="feature-card glass">
+          <div class="feature-card__icon"><i data-lucide="scan"></i></div>
+          <h3 class="feature-card__title">ATS Resume Scanner</h3>
+          <p class="feature-card__text">Upload and scan candidate resumes against standard job keywords, calculating match index scores and suggestions before submitting.</p>
+        </div>
+        <!-- Card 5 -->
+        <div class="feature-card glass">
+          <div class="feature-card__icon"><i data-lucide="bell"></i></div>
+          <h3 class="feature-card__title">Real-Time Alerts</h3>
+          <p class="feature-card__text">Never miss deadlines. Receive real-time push alerts regarding newly opened placement drives, announcements, and direct requests.</p>
+        </div>
+        <!-- Card 6 -->
+        <div class="feature-card glass">
+          <div class="feature-card__icon"><i data-lucide="bar-chart-3"></i></div>
+          <h3 class="feature-card__title">Aggregate Analytics</h3>
+          <p class="feature-card__text">Keep track of success rates. Get visually pleasing progress indicators showing total placement rates, filters, and success distributions.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features and Value Section -->
+    <section class="landing-section" id="values" style="border-top: 1px solid var(--stroke); padding-top: 100px;">
+      <div class="landing-section__header">
+        <h2 class="landing-section__title">Engineered for University Success</h2>
+        <p class="landing-section__subtitle">Why coordinators and candidates trust our preparation tracker workspace.</p>
+      </div>
+
+      <div class="values-grid">
+        <div class="value-item">
+          <div class="value-item__icon"><i data-lucide="check-circle-2"></i></div>
+          <div>
+            <h3 class="value-item__title">Structured Coordination</h3>
+            <p class="value-item__text">Align students and admin coordinators under one platform to coordinate interviews and drive statuses in real time.</p>
+          </div>
+        </div>
+        <div class="value-item">
+          <div class="value-item__icon"><i data-lucide="check-circle-2"></i></div>
+          <div>
+            <h3 class="value-item__title">Modern User Experience</h3>
+            <p class="value-item__text">Designed following production aesthetic standards—glassmorphic styling, dark modes, responsive structures, and quick workflows.</p>
+          </div>
+        </div>
+        <div class="value-item">
+          <div class="value-item__icon"><i data-lucide="check-circle-2"></i></div>
+          <div>
+            <h3 class="value-item__title">Performance Optimized</h3>
+            <p class="value-item__text">Fast static script loading, standard CSS variables, and clean vanilla Javascript transitions make mobile experiences fluid.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+      <div class="landing-footer__container">
+        <span class="landing-footer__text">© 2026 Placement Prep Tracker. All rights reserved.</span>
+        <div class="landing-footer__links">
+          <a class="landing-footer__link" href="#showcase">Privacy Policy</a>
+          <a class="landing-footer__link" href="#features">Terms of Service</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Centered Auth Modal Overlay -->
+    <div class="auth-modal-overlay" id="authModal" hidden>
+      <div class="panel glass">
+        <button class="auth-modal-close-btn" id="modalClose" aria-label="Close modal">
+          <i data-lucide="x"></i>
+        </button>
+
+        <div id="roleSelection" class="role-selection">
+          <h1 class="panel__title">Choose your access type</h1>
+          <p class="panel__subtitle">Select how you want to access the platform.</p>
+          
+          <div class="role-cards">
+            <button type="button" class="role-card glass" data-role="student">
+              <div class="role-card__icon"><i data-lucide="user"></i></div>
+              <div class="role-card__meta">
+                <div class="role-card__title">Student</div>
+                <div class="role-card__text">Track applications, notes, and progress</div>
+              </div>
+            </button>
+            
+            <button type="button" class="role-card glass" data-role="admin">
+              <div class="role-card__icon"><i data-lucide="shield-check"></i></div>
+              <div class="role-card__meta">
+                <div class="role-card__title">Admin</div>
+                <div class="role-card__text">Manage students, drives, and reports</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div id="authContent" style="display: none;">
+          <button type="button" class="back-btn" id="backToRole">
+            <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+            <span>Back to Selection</span>
+          </button>
+
+          <header class="panel__header">
+            <h1 class="panel__title" id="panelTitle">Welcome</h1>
+            <p class="panel__subtitle" id="panelSubtitle">Sign in or create an account to track your progress.</p>
+            <div class="auth__tabs" id="authTabs">
+              <button type="button" class="auth__tab is-active" data-target="login">Sign In</button>
+              <button type="button" class="auth__tab" data-target="signup">Sign Up</button>
+            </div>
+          </header>
 
           <form class="form" id="authForm" novalidate>
             <label class="field" id="nameField" style="display: none;">
@@ -155,23 +529,21 @@
               <i data-lucide="arrow-right"></i>
             </button>
 
-
-
             <p class="fineprint">
               By continuing, you agree to the Terms and Privacy Policy.
             </p>
           </form>
-          </div>
-          
-          <div id="toastStack" class="toastStack" aria-live="polite"></div>
         </div>
-      </section>
-    </main>
+        
+        <div id="toastStack" class="toastStack" aria-live="polite"></div>
+      </div>
+    </div>
 
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="js/config.js"></script>
     <script src="js/toast.js"></script>
-    <script src="js/app.js" defer></script>
-    <script src="js/auth.js" defer></script>
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/landing.js"></script>
   </body>
 </html>
