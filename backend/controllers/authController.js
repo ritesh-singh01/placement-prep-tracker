@@ -79,6 +79,8 @@ exports.signup = async (req, res) => {
 
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
+    const verificationOTP = Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationOTPExpires = Date.now() + 24 * 60 * 60 * 1000;
 
     const user = await User.create({
       name,
@@ -89,6 +91,8 @@ exports.signup = async (req, res) => {
       isVerified: false,
       verificationToken,
       verificationTokenExpires,
+      verificationOTP,
+      verificationOTPExpires,
     });
 
     if (!user) {
@@ -110,7 +114,7 @@ exports.signup = async (req, res) => {
     await sendEmail({
       email: user.email,
       subject: "Verify Your Email - Placement Prep Tracker",
-      text: `Hello ${user.name},\n\nPlease verify your email address by clicking the link below:\n\n${verificationLink}\n\nThis link is valid for 24 hours.`,
+      text: `Hello ${user.name},\n\nPlease verify your email address by clicking the link below:\n\n${verificationLink}\n\nAlternatively, you can enter the following 6-digit code on the verification screen:\n\nVerification Code: ${verificationOTP}\n\nThis code and link are valid for 24 hours.`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
           <h2 style="color: #4f46e5; margin-bottom: 16px;">Email Verification</h2>
@@ -119,7 +123,11 @@ exports.signup = async (req, res) => {
           <div style="margin: 24px 0;">
             <a href="${verificationLink}" style="background-color: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Verify Email Address</a>
           </div>
-          <p style="color: #64748b; font-size: 14px;">This link is valid for 24 hours. If the button doesn't work, copy and paste this URL into your browser:</p>
+          <p style="margin: 20px 0;">Alternatively, you can verify your account by entering this 6-digit verification code on the verification screen:</p>
+          <div style="margin: 24px 0; text-align: center;">
+            <span style="font-size: 28px; font-weight: bold; letter-spacing: 4px; padding: 12px 24px; background-color: #f1f5f9; border-radius: 8px; border: 1px solid #cbd5e1; display: inline-block; color: #1e1b4b;">${verificationOTP}</span>
+          </div>
+          <p style="color: #64748b; font-size: 14px;">This link and code are valid for 24 hours. If the button doesn't work, copy and paste this URL into your browser:</p>
           <p style="color: #64748b; font-size: 14px; word-break: break-all;">${verificationLink}</p>
         </div>
       `,
@@ -385,6 +393,8 @@ exports.verifyEmail = async (req, res) => {
     user.isVerified = true;
     user.verificationToken = undefined;
     user.verificationTokenExpires = undefined;
+    user.verificationOTP = undefined;
+    user.verificationOTPExpires = undefined;
     await user.save();
 
     res.redirect("/index.html?verified=true");
@@ -413,8 +423,12 @@ exports.resendVerification = async (req, res) => {
     }
 
     const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationOTP = Math.floor(100000 + Math.random() * 900000).toString();
+
     user.verificationToken = verificationToken;
     user.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
+    user.verificationOTP = verificationOTP;
+    user.verificationOTPExpires = Date.now() + 24 * 60 * 60 * 1000;
     await user.save();
 
     const appUrl = process.env.APP_URL || `http://localhost:${process.env.PORT || 5000}`;
@@ -423,7 +437,7 @@ exports.resendVerification = async (req, res) => {
     await sendEmail({
       email: user.email,
       subject: "Verify Your Email - Placement Prep Tracker",
-      text: `Hello ${user.name},\n\nPlease verify your email address by clicking the link below:\n\n${verificationLink}\n\nThis link is valid for 24 hours.`,
+      text: `Hello ${user.name},\n\nPlease verify your email address by clicking the link below:\n\n${verificationLink}\n\nAlternatively, you can enter the following 6-digit code on the verification screen:\n\nVerification Code: ${verificationOTP}\n\nThis code and link are valid for 24 hours.`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
           <h2 style="color: #4f46e5; margin-bottom: 16px;">Email Verification</h2>
@@ -432,7 +446,11 @@ exports.resendVerification = async (req, res) => {
           <div style="margin: 24px 0;">
             <a href="${verificationLink}" style="background-color: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Verify Email Address</a>
           </div>
-          <p style="color: #64748b; font-size: 14px;">This link is valid for 24 hours. If the button doesn't work, copy and paste this URL into your browser:</p>
+          <p style="margin: 20px 0;">Alternatively, you can verify your account by entering this 6-digit verification code on the verification screen:</p>
+          <div style="margin: 24px 0; text-align: center;">
+            <span style="font-size: 28px; font-weight: bold; letter-spacing: 4px; padding: 12px 24px; background-color: #f1f5f9; border-radius: 8px; border: 1px solid #cbd5e1; display: inline-block; color: #1e1b4b;">${verificationOTP}</span>
+          </div>
+          <p style="color: #64748b; font-size: 14px;">This link and code are valid for 24 hours. If the button doesn't work, copy and paste this URL into your browser:</p>
           <p style="color: #64748b; font-size: 14px; word-break: break-all;">${verificationLink}</p>
         </div>
       `,
@@ -563,5 +581,39 @@ exports.resetPassword = async (req, res) => {
   } catch (err) {
     console.error("[Auth] Reset Password Error:", err.message);
     res.status(500).json({ success: false, message: err.message || "Failed to reset password." });
+  }
+};
+
+exports.verifyEmailOtp = async (req, res) => {
+  try {
+    let { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: "Please provide email and verification code." });
+    }
+
+    email = email.trim().toLowerCase();
+    otp = otp.trim();
+
+    const user = await User.findOne({
+      email,
+      verificationOTP: otp,
+      verificationOTPExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid or expired verification code." });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
+    user.verificationOTP = undefined;
+    user.verificationOTPExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Email verified successfully. You can now login." });
+  } catch (err) {
+    console.error("[Auth] Verify Email OTP Error:", err.message);
+    res.status(500).json({ success: false, message: err.message || "Failed to verify email code." });
   }
 };

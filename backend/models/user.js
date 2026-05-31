@@ -98,6 +98,14 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: undefined,
     },
+    verificationOTP: {
+      type: String,
+      default: undefined,
+    },
+    verificationOTPExpires: {
+      type: Date,
+      default: undefined,
+    },
     resetPasswordOTP: {
       type: String,
       default: undefined,

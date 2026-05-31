@@ -577,6 +577,17 @@
               Admin accounts are managed by the system.
             </div>
 
+            <div id="unverifiedAlert" style="display: none; margin: 16px 0; padding: 14px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.25); background: rgba(245, 158, 11, 0.05); text-align: center;">
+              <p style="font-size: 13px; color: var(--warn); margin-bottom: 12px; line-height: 1.4; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <i data-lucide="alert-triangle" style="width: 16px; height: 16px; flex-shrink: 0;"></i>
+                Your account is not verified yet.
+              </p>
+              <div style="display: flex; gap: 8px; justify-content: center;">
+                <button type="button" class="btn btn--primary btn--sm" id="verifyAccountBtn" style="font-size: 11px; height: 32px; padding: 0 12px; min-width: 90px;">Verify Now</button>
+                <button type="button" class="btn btn--secondary btn--sm" id="resendVerificationBtn" style="font-size: 11px; height: 32px; padding: 0 12px; min-width: 90px;">Resend Email</button>
+              </div>
+            </div>
+
             <div class="form__row" id="loginExtras">
               <label class="checkbox">
                 <input type="checkbox" name="remember" />
@@ -595,15 +606,45 @@
             </p>
           </form>
 
-          <div id="verificationInfoState" style="display: none; text-align: center; padding: 24px 0;">
+          <div id="verificationInfoState" style="display: none; text-align: center; padding: 12px 0;">
             <div class="success-icon-wrap" style="width: 56px; height: 56px; border-radius: 50%; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.25); display: grid; place-items: center; margin: 0 auto 20px; color: var(--indigo); box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);">
               <i data-lucide="mail" style="width: 28px; height: 28px;"></i>
             </div>
             <h2 class="panel__title" style="margin-bottom: 8px;">Verify Your Email</h2>
-            <p class="panel__subtitle" style="margin-bottom: 24px; line-height: 1.5;">We have sent a verification link to <strong id="verificationEmailDisplay" style="color: var(--text);">you@college.edu</strong>.<br>Please verify your email address to activate your account.</p>
-            <button class="btn btn--secondary btn--lg" id="verificationDoneBtn" type="button" style="width: 100%;">
-              <span>Done</span>
-            </button>
+            <p class="panel__subtitle" style="margin-bottom: 20px; line-height: 1.5;">We have sent a verification link and a 6-digit code to <strong id="verificationEmailDisplay" style="color: var(--text);">you@college.edu</strong>.<br>Please verify your email address to activate your account.</p>
+
+            <form class="form" id="emailVerifyOtpForm" style="text-align: left; margin-bottom: 20px;" novalidate>
+              <label class="field">
+                <span class="field__label">6-Digit Activation Code (OTP)</span>
+                <span class="field__control">
+                  <i class="field__icon" data-lucide="key-round"></i>
+                  <input
+                    class="input"
+                    type="text"
+                    name="otp"
+                    id="emailVerifyOtpInput"
+                    placeholder="123456"
+                    pattern="[0-9]{6}"
+                    maxlength="6"
+                    required
+                  />
+                </span>
+              </label>
+              <button class="btn btn--primary btn--lg" type="submit" id="emailVerifyOtpSubmitBtn" style="width: 100%; margin-top: 12px;">
+                <span>Verify Code</span>
+                <i data-lucide="check"></i>
+              </button>
+            </form>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+              <button class="btn btn--secondary btn--lg" id="resendVerificationLinkBtn" type="button" style="width: 100%;">
+                <span>Resend Verification Email</span>
+                <i data-lucide="send"></i>
+              </button>
+              <button class="btn btn--secondary btn--lg" id="verificationBackBtn" type="button" style="width: 100%; background: transparent; border: 1px solid var(--stroke);">
+                <span>Back to Sign In</span>
+              </button>
+            </div>
           </div>
         </div>
         

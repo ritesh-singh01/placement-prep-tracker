@@ -11,6 +11,7 @@ const {
   forgotPassword,
   verifyOtp,
   resetPassword,
+  verifyEmailOtp,
 } = require("../controllers/authController");
 const { protect } = require("../middleware/authMiddleware");
 
@@ -19,6 +20,7 @@ const router = express.Router();
 router.post("/signup", signup);
 router.post("/login", login);
 router.get("/verify-email/:token", verifyEmail);
+router.post("/verify-email-otp", verifyEmailOtp);
 router.post("/resend-verification", resendVerification);
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-otp", verifyOtp);

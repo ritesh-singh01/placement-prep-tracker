@@ -79,6 +79,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const verificationEmailDisplay = qs("#verificationEmailDisplay");
   const verificationDoneBtn = qs("#verificationDoneBtn");
 
+  // Verification & Warning Elements
+  const unverifiedAlert = qs("#unverifiedAlert");
+  const verifyAccountBtn = qs("#verifyAccountBtn");
+  const resendVerificationBtn = qs("#resendVerificationBtn");
+  const emailVerifyOtpForm = qs("#emailVerifyOtpForm");
+  const emailVerifyOtpInput = qs("#emailVerifyOtpInput");
+  const emailVerifyOtpSubmitBtn = qs("#emailVerifyOtpSubmitBtn");
+  const resendVerificationLinkBtn = qs("#resendVerificationLinkBtn");
+  const verificationBackBtn = qs("#verificationBackBtn");
+  
+  let unverifiedEmail = ""; // To store the email for resend/OTP verification
+
   // Forgot Password OTP Elements
   const forgotOtpState = qs("#forgotOtpState");
   const otpResetForm = qs("#otpResetForm");
@@ -121,6 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Reset verification info states if backing out or reloading
     if (verificationInfoState) verificationInfoState.style.display = "none";
     if (authForm) authForm.style.display = "block";
+    if (unverifiedAlert) unverifiedAlert.style.display = "none";
     
     if (selectedRole === "admin") {
       panelTitle.textContent = "Admin Portal";
@@ -147,6 +160,8 @@ document.addEventListener("DOMContentLoaded", () => {
       else t.classList.remove("is-active");
     });
     currentMode = target;
+    
+    if (unverifiedAlert) unverifiedAlert.style.display = "none";
     
     if (currentMode === "signup") {
       if (nameField) nameField.style.display = "grid";
@@ -344,13 +359,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const handleAuth = async (url, body) => {
     try {
+      if (unverifiedAlert) unverifiedAlert.style.display = "none";
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.message || "Authentication failed");
+      if (!data.success) {
+        if (data.isNotVerified) {
+          unverifiedEmail = body.email;
+          if (unverifiedAlert) {
+            unverifiedAlert.style.display = "block";
+            if (window.lucide?.createIcons) window.lucide.createIcons({ root: unverifiedAlert });
+          }
+        }
+        throw new Error(data.message || "Authentication failed");
+      }
       
       const user = data.data;
       
@@ -383,6 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       if (!data.success) throw new Error(data.message || "Registration failed");
 
+      unverifiedEmail = body.email;
       if (verificationEmailDisplay) verificationEmailDisplay.textContent = body.email;
       
       if (authForm) authForm.style.display = "none";
@@ -394,7 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
         verificationInfoState.style.display = "block";
         if (window.lucide?.createIcons) window.lucide.createIcons({ root: verificationInfoState });
       }
-      toast("Verification email sent. Please check your inbox.", "success");
+      toast("Verification email and OTP sent. Please check your inbox.", "success");
     } catch (err) {
       toast(err.message, "error");
     }
@@ -422,6 +448,104 @@ document.addEventListener("DOMContentLoaded", () => {
         const name = authForm.name.value.trim();
         if (!name || !email || !password) return toast("Fill all fields", "error");
         handleSignup(`${API_BASE}/signup`, { name, email, password });
+      }
+    });
+  }
+
+  // Hook up warn/verification action buttons
+  if (verifyAccountBtn) {
+    verifyAccountBtn.addEventListener("click", () => {
+      if (unverifiedAlert) unverifiedAlert.style.display = "none";
+      if (authForm) authForm.style.display = "none";
+      if (authTabs) authTabs.style.display = "none";
+      panelTitle.textContent = "Verify Your Email";
+      panelSubtitle.textContent = "Please verify your account to get started.";
+      if (verificationEmailDisplay) verificationEmailDisplay.textContent = unverifiedEmail;
+      if (verificationInfoState) {
+        verificationInfoState.style.display = "block";
+        if (window.lucide?.createIcons) window.lucide.createIcons({ root: verificationInfoState });
+      }
+    });
+  }
+
+  const triggerResend = async (btn) => {
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span>Sending...</span>`;
+
+    try {
+      const res = await fetch(`${window.APP_API_BASE}/auth/resend-verification`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: unverifiedEmail })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || "Failed to resend email");
+      toast("Verification email and OTP resent successfully!", "success");
+    } catch (err) {
+      toast(err.message, "error");
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  };
+
+  if (resendVerificationBtn) {
+    resendVerificationBtn.addEventListener("click", () => triggerResend(resendVerificationBtn));
+  }
+  if (resendVerificationLinkBtn) {
+    resendVerificationLinkBtn.addEventListener("click", () => triggerResend(resendVerificationLinkBtn));
+  }
+
+  const goBackToSignIn = () => {
+    if (verificationInfoState) verificationInfoState.style.display = "none";
+    if (authForm) {
+      authForm.style.display = "block";
+      authForm.reset();
+    }
+    if (authTabs) authTabs.style.display = "flex";
+    switchToTab("login");
+  };
+
+  if (verificationBackBtn) verificationBackBtn.addEventListener("click", goBackToSignIn);
+  if (verificationDoneBtn) verificationDoneBtn.addEventListener("click", goBackToSignIn);
+
+  if (emailVerifyOtpForm) {
+    emailVerifyOtpForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const otpInput = qs("#emailVerifyOtpInput");
+      const otp = otpInput ? otpInput.value.trim() : "";
+      
+      if (!otp) {
+        return toast("Please enter the 6-digit verification code.", "error");
+      }
+      if (otp.length !== 6 || !/^\d+$/.test(otp)) {
+        return toast("Verification code must be a 6-digit number.", "error");
+      }
+
+      const submitBtn = qs("#emailVerifyOtpSubmitBtn");
+      const originalText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>Verifying...</span>`;
+
+      try {
+        const res = await fetch(`${window.APP_API_BASE}/auth/verify-email-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: unverifiedEmail, otp })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || "Verification failed");
+
+        toast("Email verified successfully! You can now sign in.", "success");
+        if (otpInput) otpInput.value = "";
+        
+        goBackToSignIn();
+      } catch (err) {
+        toast(err.message, "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
       }
     });
   }

@@ -5,7 +5,7 @@
   position: fixed;
   top: 24px;
   right: 24px;
-  z-index: 1000;
+  z-index: 20000000;
   display: grid;
   gap: 12px;
   pointer-events: none;

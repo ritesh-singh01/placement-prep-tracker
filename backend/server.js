@@ -50,6 +50,27 @@ const PORT = process.env.PORT || 5000;
 async function start() {
   try {
     await connectDB();
+    
+    // Auto-verify existing users created prior to the deployment timestamp to prevent lockouts
+    try {
+      const User = require("./models/user");
+      const migrationResult = await User.updateMany(
+        { 
+          $or: [
+            { createdAt: { $lt: new Date("2026-05-31T04:00:00.000Z") } },
+            { createdAt: { $exists: false } }
+          ],
+          isVerified: { $ne: true }
+        },
+        { $set: { isVerified: true } }
+      );
+      if (migrationResult.modifiedCount > 0) {
+        console.log(`[Migration] Auto-verified ${migrationResult.modifiedCount} existing users created prior to May 31, 2026.`);
+      }
+    } catch (migErr) {
+      console.error("[Migration] Existing user verification migration failed:", migErr.message);
+    }
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`Frontend: http://localhost:${PORT}/company.html`);
