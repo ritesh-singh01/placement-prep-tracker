@@ -19,13 +19,24 @@ const sendEmail = async ({ email, subject, text, html }) => {
 
   if (isSmtpConfigured) {
     try {
+      const host = (process.env.SMTP_HOST || '').trim().replace(/^["']|["']$/g, '');
+      const portVal = (process.env.SMTP_PORT || '').toString().trim().replace(/^["']|["']$/g, '');
+      const port = parseInt(portVal, 10) || 587;
+      const secureVal = (process.env.SMTP_SECURE || '').toString().trim().replace(/^["']|["']$/g, '').toLowerCase();
+      const secure = secureVal === 'true' || port === 465;
+      const user = (process.env.SMTP_USER || '').trim().replace(/^["']|["']$/g, '');
+      
+      // Sanitize app password by stripping spaces and quotes
+      let pass = (process.env.SMTP_PASS || '');
+      pass = pass.trim().replace(/^["']|["']$/g, '').replace(/\s+/g, '');
+
       const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT, 10),
-        secure: process.env.SMTP_SECURE === 'true' || parseInt(process.env.SMTP_PORT, 10) === 465,
+        host,
+        port,
+        secure,
         auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
+          user,
+          pass,
         },
       });
 
