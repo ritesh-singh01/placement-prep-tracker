@@ -38,6 +38,7 @@ const sendEmail = async ({ email, subject, text, html }) => {
           user,
           pass,
         },
+        family: 4,
       });
 
       // Verify connection configuration

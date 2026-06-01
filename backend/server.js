@@ -134,6 +134,7 @@ async function start() {
             user,
             pass,
           },
+          family: 4,
         });
 
         await transporter.verify();
