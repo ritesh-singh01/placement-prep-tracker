@@ -134,6 +134,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (verificationInfoState) verificationInfoState.style.display = "none";
     if (authForm) authForm.style.display = "block";
     if (unverifiedAlert) unverifiedAlert.style.display = "none";
+    const resendWarningBox = document.getElementById("resendWarningBox");
+    if (resendWarningBox) resendWarningBox.style.display = "none";
+    const verificationWarningBox = document.getElementById("verificationWarningBox");
+    if (verificationWarningBox) verificationWarningBox.style.display = "none";
     
     if (selectedRole === "admin") {
       panelTitle.textContent = "Admin Portal";
@@ -162,6 +166,11 @@ document.addEventListener("DOMContentLoaded", () => {
     currentMode = target;
     
     if (unverifiedAlert) unverifiedAlert.style.display = "none";
+
+    const resendWarningBox = document.getElementById("resendWarningBox");
+    if (resendWarningBox) resendWarningBox.style.display = "none";
+    const verificationWarningBox = document.getElementById("verificationWarningBox");
+    if (verificationWarningBox) verificationWarningBox.style.display = "none";
     
     if (currentMode === "signup") {
       if (nameField) nameField.style.display = "grid";
@@ -223,6 +232,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (forgotSuccessState) forgotSuccessState.style.display = "none";
       if (forgotForm) forgotForm.reset();
       if (otpResetForm) otpResetForm.reset();
+
+      const forgotWarningBox = document.getElementById("forgotWarningBox");
+      if (forgotWarningBox) forgotWarningBox.style.display = "none";
       
       // Close parent auth modal overlay first
       const authModal = qs("#authModal");
@@ -242,6 +254,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const closeForgotModal = () => {
+    const forgotWarningBox = document.getElementById("forgotWarningBox");
+    if (forgotWarningBox) forgotWarningBox.style.display = "none";
+
     if (forgotModal) {
       forgotModal.classList.remove("is-open");
       setTimeout(() => {
@@ -277,6 +292,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return toast("Please enter a valid email address.", "error");
       }
 
+      const forgotWarningBox = document.getElementById("forgotWarningBox");
+      const forgotWarningText = document.getElementById("forgotWarningText");
+      if (forgotWarningBox) forgotWarningBox.style.display = "none";
+
       try {
         const res = await fetch(`${API_BASE}/forgot-password`, {
           method: "POST",
@@ -284,7 +303,17 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify({ email })
         });
         const data = await res.json();
-        if (!data.success) throw new Error(data.message || "Failed to process request");
+        if (!data.success) {
+          if (res.status === 403 && data.isSandboxError) {
+            if (forgotWarningBox && forgotWarningText) {
+              forgotWarningText.textContent = data.message;
+              forgotWarningBox.style.display = "block";
+              if (window.lucide?.createIcons) window.lucide.createIcons({ root: forgotWarningBox });
+            }
+            throw new Error("Resend Sandbox Restriction: Outbound email failed.");
+          }
+          throw new Error(data.message || "Failed to process request");
+        }
 
         if (otpEmailHidden) otpEmailHidden.value = email;
         if (recoveryEmailDisplay) recoveryEmailDisplay.textContent = email;
@@ -399,6 +428,10 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const handleSignup = async (url, body) => {
+    const resendWarningBox = document.getElementById("resendWarningBox");
+    const resendWarningText = document.getElementById("resendWarningText");
+    if (resendWarningBox) resendWarningBox.style.display = "none";
+
     try {
       const res = await fetch(url, {
         method: "POST",
@@ -406,7 +439,17 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(body)
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.message || "Registration failed");
+      if (!data.success) {
+        if (res.status === 403 && data.isSandboxError) {
+          if (resendWarningBox && resendWarningText) {
+            resendWarningText.textContent = data.message;
+            resendWarningBox.style.display = "block";
+            if (window.lucide?.createIcons) window.lucide.createIcons({ root: resendWarningBox });
+          }
+          throw new Error("Resend Sandbox Restriction: Outbound email failed.");
+        }
+        throw new Error(data.message || "Registration failed");
+      }
 
       unverifiedEmail = body.email;
       if (verificationEmailDisplay) verificationEmailDisplay.textContent = body.email;
@@ -473,6 +516,10 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.disabled = true;
     btn.innerHTML = `<span>Sending...</span>`;
 
+    const verificationWarningBox = document.getElementById("verificationWarningBox");
+    const verificationWarningText = document.getElementById("verificationWarningText");
+    if (verificationWarningBox) verificationWarningBox.style.display = "none";
+
     try {
       const res = await fetch(`${window.APP_API_BASE}/auth/resend-verification`, {
         method: "POST",
@@ -480,7 +527,17 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ email: unverifiedEmail })
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.message || "Failed to resend email");
+      if (!data.success) {
+        if (res.status === 403 && data.isSandboxError) {
+          if (verificationWarningBox && verificationWarningText) {
+            verificationWarningText.textContent = data.message;
+            verificationWarningBox.style.display = "block";
+            if (window.lucide?.createIcons) window.lucide.createIcons({ root: verificationWarningBox });
+          }
+          throw new Error("Resend Sandbox Restriction: Outbound email failed.");
+        }
+        throw new Error(data.message || "Failed to resend email");
+      }
       toast("Verification email and OTP resent successfully!", "success");
     } catch (err) {
       toast(err.message, "error");

@@ -420,20 +420,26 @@ body.theme-light {
 
 /* Form Inputs Light Theme */
 .theme-light input,
-.theme-light textarea,
-.theme-light select {
+.theme-light textarea {
   background: #ffffff !important;
   border: 1px solid var(--stroke2) !important;
   color: var(--text-primary) !important;
 }
 .theme-light select {
+  background-color: #ffffff !important;
+  border: 1px solid var(--stroke2) !important;
+  color: var(--text-primary) !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(15,23,42,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
 }
 .theme-light input:focus,
-.theme-light textarea:focus,
+.theme-light textarea:focus {
+  border-color: var(--accent-primary) !important;
+  background-color: #ffffff !important;
+  box-shadow: var(--ring) !important;
+}
 .theme-light select:focus {
   border-color: var(--accent-primary) !important;
-  background: #ffffff !important;
+  background-color: #ffffff !important;
   box-shadow: var(--ring) !important;
 }
 
@@ -596,11 +602,15 @@ body.theme-light {
 }
 .theme-light .input:focus,
 .theme-light .modalField__input:focus,
-.theme-light .glass-input:focus,
+.theme-light .glass-input:focus {
+  border-color: var(--accent-primary) !important;
+  background-color: #ffffff !important;
+  box-shadow: var(--ring) !important;
+}
 .theme-light .companySelect:focus,
 .theme-light .admin-select:focus {
   border-color: var(--accent-primary) !important;
-  background: #ffffff !important;
+  background-color: #ffffff !important;
   box-shadow: var(--ring) !important;
 }
 .theme-light .modalField__label {
@@ -2243,5 +2253,80 @@ input::-webkit-credentials-auto-fill-button {
   font-size: 14px !important;
   font-family: inherit !important;
   height: 100% !important;
+}
+
+/* --- ENFORCE SELECT DROPDOWN CHEVRON CUSTOM ICON --- */
+select,
+select:focus,
+select:hover,
+.admin-select,
+.admin-select:focus,
+.admin-select:hover,
+.companySelect,
+.companySelect:focus,
+.companySelect:hover,
+.statusSelect,
+.statusSelect:focus,
+.statusSelect:hover,
+.toolbarField--select,
+.toolbarField--select:focus,
+.toolbarField--select:hover,
+.modalField__input--select,
+.modalField__input--select:focus,
+.modalField__input--select:hover {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 14px !important;
+  padding-right: 38px !important;
+}
+
+body.theme-light select,
+body.theme-light select:focus,
+body.theme-light select:hover,
+body.theme-light .admin-select,
+body.theme-light .admin-select:focus,
+body.theme-light .admin-select:hover,
+body.theme-light .companySelect,
+body.theme-light .companySelect:focus,
+body.theme-light .companySelect:hover,
+body.theme-light .statusSelect,
+body.theme-light .statusSelect:focus,
+body.theme-light .statusSelect:hover,
+body.theme-light .toolbarField--select,
+body.theme-light .toolbarField--select:focus,
+body.theme-light .toolbarField--select:hover,
+body.theme-light .modalField__input--select,
+body.theme-light .modalField__input--select:focus,
+body.theme-light .modalField__input--select:hover,
+.theme-light select,
+.theme-light select:focus,
+.theme-light select:hover,
+.theme-light .admin-select,
+.theme-light .admin-select:focus,
+.theme-light .admin-select:hover,
+.theme-light .companySelect,
+.theme-light .companySelect:focus,
+.theme-light .companySelect:hover,
+.theme-light .statusSelect,
+.theme-light .statusSelect:focus,
+.theme-light .statusSelect:hover,
+.theme-light .toolbarField--select,
+.theme-light .toolbarField--select:focus,
+.theme-light .toolbarField--select:hover,
+.theme-light .modalField__input--select,
+.theme-light .modalField__input--select:focus,
+.theme-light .modalField__input--select:hover {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(15,23,42,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 14px !important;
+  padding-right: 38px !important;
 }
 

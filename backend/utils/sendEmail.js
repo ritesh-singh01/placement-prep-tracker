@@ -40,9 +40,22 @@ const sendEmail = async ({ email, subject, text, html }) => {
     } catch (error) {
       console.log("[RESEND EMAIL FAILED]");
       const status = error.response ? error.response.status : 'No Response';
-      const errorData = error.response ? JSON.stringify(error.response.data) : error.message;
-      console.error(`Resend API connection failure (status: ${status}):`, errorData);
-      throw new Error(`Failed to send email to ${email} via Resend. Error: ${errorData}`);
+      const errorData = error.response ? error.response.data : null;
+      const errorString = errorData ? JSON.stringify(errorData) : error.message;
+      console.error(`Resend API connection failure (status: ${status}):`, errorString);
+
+      const isSandboxError = status === 403 || (errorData && (
+        errorData.statusCode === 403 ||
+        errorData.name === 'validation_error' ||
+        (errorData.message && errorData.message.toLowerCase().includes('testing')) ||
+        (errorData.message && errorData.message.toLowerCase().includes('sandbox'))
+      ));
+
+      if (isSandboxError) {
+        throw new Error("Resend Sandbox Restriction: Outbound emails are restricted to the verified testing inbox in sandbox mode. To support real users, configure the email flow outside the sandbox by verifying a domain in Resend and using a domain-based FROM_EMAIL.");
+      }
+
+      throw new Error(`Failed to send email to ${email} via Resend. Error: ${errorString}`);
     }
   } else {
     console.log("Missing RESEND_API_KEY. Falling back to Console logging.");

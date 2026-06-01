@@ -528,6 +528,14 @@
             </div>
           </header>
 
+          <div id="resendWarningBox" style="display: none; padding: 12px 16px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; margin-bottom: 20px; font-size: 13px; line-height: 1.5; color: var(--color-danger, #ef4444); text-align: left; box-sizing: border-box;">
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+              <i data-lucide="alert-triangle" style="width: 16px; height: 16px; flex-shrink: 0; color: var(--color-danger, #ef4444);"></i>
+              <strong style="font-weight: 700;">Resend Sandbox Restriction Alert</strong>
+            </div>
+            <p id="resendWarningText" style="margin: 0; opacity: 0.95;"></p>
+          </div>
+
           <form class="form" id="authForm" novalidate>
             <label class="field" id="nameField" style="display: none;">
               <span class="field__label">Full Name</span>
@@ -612,6 +620,14 @@
             </div>
             <h2 class="panel__title" style="margin-bottom: 8px;">Verify Your Email</h2>
             <p class="panel__subtitle" style="margin-bottom: 20px; line-height: 1.5;">We have sent a verification link and a 6-digit code to <strong id="verificationEmailDisplay" style="color: var(--text);">you@college.edu</strong>.<br>Please verify your email address to activate your account.</p>
+
+            <div id="verificationWarningBox" style="display: none; padding: 12px 16px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; margin-bottom: 20px; font-size: 13px; line-height: 1.5; color: var(--color-danger, #ef4444); text-align: left; box-sizing: border-box;">
+              <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+                <i data-lucide="alert-triangle" style="width: 16px; height: 16px; flex-shrink: 0; color: var(--color-danger, #ef4444);"></i>
+                <strong style="font-weight: 700;">Resend Sandbox Restriction Alert</strong>
+              </div>
+              <p id="verificationWarningText" style="margin: 0; opacity: 0.95;"></p>
+            </div>
 
             <form class="form" id="emailVerifyOtpForm" style="text-align: left; margin-bottom: 20px;" novalidate>
               <label class="field">
@@ -704,6 +720,14 @@
           <h2 class="panel__title" style="margin-bottom: 8px;">Reset Password</h2>
           <p class="panel__subtitle" style="margin-bottom: 24px;">Enter your registered email address and we'll send you a link to reset your password.</p>
           
+          <div id="forgotWarningBox" style="display: none; padding: 12px 16px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; margin-bottom: 20px; font-size: 13px; line-height: 1.5; color: var(--color-danger, #ef4444); text-align: left; box-sizing: border-box;">
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+              <i data-lucide="alert-triangle" style="width: 16px; height: 16px; flex-shrink: 0; color: var(--color-danger, #ef4444);"></i>
+              <strong style="font-weight: 700;">Resend Sandbox Restriction Alert</strong>
+            </div>
+            <p id="forgotWarningText" style="margin: 0; opacity: 0.95;"></p>
+          </div>
+
           <form class="form" id="forgotForm" novalidate>
             <label class="field">
               <span class="field__label">Email Address</span>

@@ -7,9 +7,13 @@
   if (typeof window === "undefined") return;
 
   function resolve() {
+    const protocol = window.location.protocol;
     const hostname = window.location.hostname;
     const isLocal = hostname === "localhost" || hostname === "127.0.0.1" || !hostname;
     
+    if (protocol.startsWith("http")) {
+      return window.location.origin + "/api";
+    }
     if (isLocal) {
       return "http://localhost:5000/api";
     }
