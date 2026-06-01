@@ -53,41 +53,8 @@ app.get("/api/debug/email-test", async (req, res) => {
   }
 
   try {
-    const nodemailer = require("nodemailer");
-    
-    // Normalize and sanitize variables just like sendEmail.js
-    const host = (process.env.SMTP_HOST || '').trim().replace(/^["']|["']$/g, '');
-    const portVal = (process.env.SMTP_PORT || '').toString().trim().replace(/^["']|["']$/g, '');
-    const port = parseInt(portVal, 10) || 587;
-    const secureVal = (process.env.SMTP_SECURE || '').toString().trim().replace(/^["']|["']$/g, '').toLowerCase();
-    const secure = secureVal === 'true' || port === 465;
-    const user = (process.env.SMTP_USER || '').trim().replace(/^["']|["']$/g, '');
-    let pass = (process.env.SMTP_PASS || '');
-    pass = pass.trim().replace(/^["']|["']$/g, '').replace(/\s+/g, '');
-
-    console.log(`[Debug Email Route] Re-creating test transporter for: ${host}:${port}, secure: ${secure}, user: ${user}`);
-    
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure,
-      auth: {
-        user,
-        pass,
-      },
-    });
-
-    console.log("[Debug Email Route] Verifying connection...");
-    await transporter.verify();
-    console.log("[Debug Email Route] SMTP connection success.");
-
-    const fromName = process.env.FROM_NAME || 'Placement Prep Tracker';
-    const fromEmail = process.env.FROM_EMAIL || user;
-
-    console.log("[Debug Email Route] Sending email to riteshthelegend10f@gmail.com...");
-    const info = await transporter.sendMail({
-      from: `"${fromName}" <${fromEmail}>`,
-      to: "riteshthelegend10f@gmail.com",
+    const info = await sendEmail({
+      email: "riteshthelegend10f@gmail.com",
       subject: "Test Email - Placement Prep Tracker",
       text: "This is a debug test email verifying that the SMTP configuration is working properly.",
       html: `
@@ -134,6 +101,48 @@ const PORT = process.env.PORT || 5000;
 async function start() {
   try {
     await connectDB();
+    
+    // SMTP Startup Verification & Logs
+    if (process.env.SMTP_HOST) console.log("SMTP_HOST loaded");
+    if (process.env.SMTP_PORT) console.log("SMTP_PORT loaded");
+    if (process.env.SMTP_USER) console.log("SMTP_USER loaded");
+    if (process.env.SMTP_PASS) console.log("SMTP_PASS loaded");
+
+    const isSmtpConfigured = 
+      process.env.SMTP_HOST && 
+      process.env.SMTP_PORT && 
+      process.env.SMTP_USER && 
+      process.env.SMTP_PASS;
+
+    if (isSmtpConfigured) {
+      try {
+        const nodemailer = require("nodemailer");
+        const host = (process.env.SMTP_HOST || '').trim().replace(/^["']|["']$/g, '');
+        const portVal = (process.env.SMTP_PORT || '').toString().trim().replace(/^["']|["']$/g, '');
+        const port = parseInt(portVal, 10) || 587;
+        const secureVal = (process.env.SMTP_SECURE || '').toString().trim().replace(/^["']|["']$/g, '').toLowerCase();
+        const secure = secureVal === 'true' || port === 465;
+        const user = (process.env.SMTP_USER || '').trim().replace(/^["']|["']$/g, '');
+        let pass = (process.env.SMTP_PASS || '');
+        pass = pass.trim().replace(/^["']|["']$/g, '').replace(/\s+/g, '');
+
+        const transporter = nodemailer.createTransport({
+          host,
+          port,
+          secure,
+          auth: {
+            user,
+            pass,
+          },
+        });
+
+        await transporter.verify();
+        console.log("SMTP CONNECTED SUCCESSFULLY");
+      } catch (err) {
+        console.log("SMTP AUTH FAILED");
+        console.error("[SMTP Startup] Connection verification failed:", err.message);
+      }
+    }
     
     // Auto-verify existing users created prior to the deployment timestamp to prevent lockouts
     try {
