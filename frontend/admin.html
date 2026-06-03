@@ -111,62 +111,185 @@
             <div class="mainContainer" id="adminSections">
                 <!-- Overview Section -->
                 <section id="admin-overview" class="admin-section active">
-                    <h2 class="section-title">Platform Statistics</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card glass clickable-card" data-target-section="students">
-                            <div class="stat-card__icon blue"><i data-lucide="users"></i></div>
-                            <div class="stat-card__meta">
-                                <div class="stat-card__label">Total Students</div>
-                                <div class="stat-card__value" id="statStudents">2</div>
+                    <div class="dashboard-hero glass">
+                        <div class="dashboard-hero__glow" aria-hidden="true"></div>
+                        <div class="dashboard-hero__meta">
+                            <span class="dashboard-hero__kicker">Platform Overview</span>
+                            <h1 class="dashboard-hero__title">Administrative Workspace</h1>
+                            <p class="dashboard-hero__subtitle">Real-time statistics across all candidates, placement campaigns, active interviews, and notes activity.</p>
+                        </div>
+                        <div class="dashboard-hero__stats">
+                            <div class="hero-stat-item clickable-card" data-target-section="students">
+                                <span class="hero-stat-item__val" id="statStudents">0</span>
+                                <span class="hero-stat-item__label">Total Students</span>
+                            </div>
+                            <div class="hero-stat-item__sep" aria-hidden="true"></div>
+                            <div class="hero-stat-item clickable-card" data-target-section="applications">
+                                <span class="hero-stat-item__val" id="statApps">0</span>
+                                <span class="hero-stat-item__label">Applications</span>
+                            </div>
+                            <div class="hero-stat-item__sep" aria-hidden="true"></div>
+                            <div class="hero-stat-item clickable-card" data-target-section="applications">
+                                <span class="hero-stat-item__val" id="statSelected">0</span>
+                                <span class="hero-stat-item__label">Hired Selections</span>
                             </div>
                         </div>
-                        <div class="stat-card glass clickable-card" data-target-section="applications">
-                            <div class="stat-card__icon purple"><i data-lucide="file-text"></i></div>
-                            <div class="stat-card__meta">
-                                <div class="stat-card__label">Applications</div>
-                                <div class="stat-card__value" id="statApps">38</div>
+                    </div>
+
+                    <div class="secondary-metrics-grid">
+                        <div class="sec-stat-card glass clickable-card" data-target-section="applications">
+                            <div class="sec-stat-card__header">
+                                <span class="sec-stat-card__label">Active In-Progress</span>
+                                <div class="sec-stat-card__icon cyan"><i data-lucide="zap"></i></div>
+                            </div>
+                            <div class="sec-stat-card__value" id="statActive">0</div>
+                            <div class="sec-stat-card__footer">Awaiting decision</div>
+                        </div>
+
+                        <div class="sec-stat-card glass clickable-card" data-target-section="applications">
+                            <div class="sec-stat-card__header">
+                                <span class="sec-stat-card__label">Interviews Scheduled</span>
+                                <div class="sec-stat-card__icon amber"><i data-lucide="calendar"></i></div>
+                            </div>
+                            <div class="sec-stat-card__value" id="statInterviews">0</div>
+                            <div class="sec-stat-card__footer">Upcoming schedules</div>
+                        </div>
+
+                        <div class="sec-stat-card glass clickable-card" data-target-section="applications">
+                            <div class="sec-stat-card__header">
+                                <span class="sec-stat-card__label">Rejected Applications</span>
+                                <div class="sec-stat-card__icon red"><i data-lucide="x-circle"></i></div>
+                            </div>
+                            <div class="sec-stat-card__value" id="statRejected">0</div>
+                            <div class="sec-stat-card__footer">Need profile optimization</div>
+                        </div>
+
+                        <div class="sec-stat-card glass clickable-card" data-target-section="drives">
+                            <div class="sec-stat-card__header">
+                                <span class="sec-stat-card__label">Placement Drives</span>
+                                <div class="sec-stat-card__icon pink"><i data-lucide="map"></i></div>
+                            </div>
+                            <div class="sec-stat-card__value" id="statDrives">0</div>
+                            <div class="sec-stat-card__footer">Active campaigns</div>
+                        </div>
+
+                        <div class="sec-stat-card glass clickable-card" data-target-section="students">
+                            <div class="sec-stat-card__header">
+                                <span class="sec-stat-card__label">Total Notes</span>
+                                <div class="sec-stat-card__icon indigo"><i data-lucide="notebook"></i></div>
+                            </div>
+                            <div class="sec-stat-card__value" id="statNotes">0</div>
+                            <div class="sec-stat-card__footer">Student prep documents</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <!-- Left Side: Application Funnel -->
+                        <div class="card glass flex-column" style="gap: 16px;">
+                            <div class="card__header">
+                                <div>
+                                    <div class="card__title">Placement Funnel</div>
+                                    <div class="card__subtitle">Candidate conversion across pipeline stages</div>
+                                </div>
+                            </div>
+                            <div class="funnel-container">
+                                <div class="funnel-stage">
+                                    <div class="funnel-stage__meta">
+                                        <span class="funnel-stage__name">1. Applied Roles</span>
+                                        <span class="funnel-stage__hint">Total applications tracked</span>
+                                    </div>
+                                    <div class="funnel-stage__progress-wrap">
+                                        <div class="funnel-stage__progress-bar" style="width: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));"></div>
+                                    </div>
+                                </div>
+
+                                <div class="funnel-stage">
+                                    <div class="funnel-stage__meta">
+                                        <span class="funnel-stage__name">2. In-Review / Active</span>
+                                        <span class="funnel-stage__hint">Currently screening or active tests</span>
+                                    </div>
+                                    <div class="funnel-stage__progress-wrap">
+                                        <div class="funnel-stage__progress-bar" style="width: 60%; background: var(--cyan);"></div>
+                                    </div>
+                                </div>
+
+                                <div class="funnel-stage">
+                                    <div class="funnel-stage__meta">
+                                        <span class="funnel-stage__name">3. Interview Rounds</span>
+                                        <span class="funnel-stage__hint">Scheduled technical or HR rounds</span>
+                                    </div>
+                                    <div class="funnel-stage__progress-wrap">
+                                        <div class="funnel-stage__progress-bar" style="width: 32%; background: var(--color-warning);"></div>
+                                    </div>
+                                </div>
+
+                                <div class="funnel-stage">
+                                    <div class="funnel-stage__meta">
+                                        <span class="funnel-stage__name">4. Hired / Selected</span>
+                                        <span class="funnel-stage__hint">Offers accepted & selections cleared</span>
+                                    </div>
+                                    <div class="funnel-stage__progress-wrap">
+                                        <div class="funnel-stage__progress-bar" style="width: 16%; background: var(--color-success);"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="stat-card glass clickable-card" data-target-section="applications">
-                            <div class="stat-card__icon green"><i data-lucide="check-circle"></i></div>
-                            <div class="stat-card__meta">
-                                <div class="stat-card__label">Selected</div>
-                                <div class="stat-card__value" id="statSelected">6</div>
+
+                        <!-- Right Side: Platform Activity & Quick Links -->
+                        <div class="flex-column" style="gap: 16px;">
+                            <div class="card glass">
+                                <div class="card__header">
+                                    <div>
+                                        <div class="card__title">Platform Activity</div>
+                                        <div class="card__subtitle">Recent placement tracker events</div>
+                                    </div>
+                                </div>
+                                <div class="activity-timeline">
+                                    <div class="timeline-item">
+                                        <div class="timeline-item__badge green"><i data-lucide="check"></i></div>
+                                        <div class="timeline-item__meta">
+                                            <span class="timeline-item__title">Jane Doe selected at Google</span>
+                                            <span class="timeline-item__time">10 mins ago</span>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-item__badge blue"><i data-lucide="user-plus"></i></div>
+                                        <div class="timeline-item__meta">
+                                            <span class="timeline-item__title">New student account verified: student@test.com</span>
+                                            <span class="timeline-item__time">2 hours ago</span>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-item__badge pink"><i data-lucide="megaphone"></i></div>
+                                        <div class="timeline-item__meta">
+                                            <span class="timeline-item__title">TCS Campus Drive published globally</span>
+                                            <span class="timeline-item__time">1 day ago</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="stat-card glass clickable-card" data-target-section="applications">
-                            <div class="stat-card__icon red"><i data-lucide="x-circle"></i></div>
-                            <div class="stat-card__meta">
-                                <div class="stat-card__label">Rejected</div>
-                                <div class="stat-card__value" id="statRejected">9</div>
-                            </div>
-                        </div>
-                        <div class="stat-card glass clickable-card" data-target-section="applications">
-                            <div class="stat-card__icon amber"><i data-lucide="calendar"></i></div>
-                            <div class="stat-card__meta">
-                                <div class="stat-card__label">Interviews</div>
-                                <div class="stat-card__value" id="statInterviews">12</div>
-                            </div>
-                        </div>
-                        <div class="stat-card glass clickable-card" data-target-section="applications">
-                            <div class="stat-card__icon cyan"><i data-lucide="zap"></i></div>
-                            <div class="stat-card__meta">
-                                <div class="stat-card__label">Active</div>
-                                <div class="stat-card__value" id="statActive">23</div>
-                            </div>
-                        </div>
-                        <div class="stat-card glass clickable-card" data-target-section="students">
-                            <div class="stat-card__icon indigo"><i data-lucide="notebook"></i></div>
-                            <div class="stat-card__meta">
-                                <div class="stat-card__label">Total Notes</div>
-                                <div class="stat-card__value" id="statNotes">3</div>
-                            </div>
-                        </div>
-                        <div class="stat-card glass clickable-card" data-target-section="drives">
-                            <div class="stat-card__icon pink"><i data-lucide="map"></i></div>
-                            <div class="stat-card__meta">
-                                <div class="stat-card__label">Drives</div>
-                                <div class="stat-card__value" id="statDrives">4</div>
+
+                            <div class="card glass">
+                                <div class="card__header">
+                                    <div>
+                                        <div class="card__title">Quick Administrative Actions</div>
+                                        <div class="card__subtitle">Shortcuts to manage platform data</div>
+                                    </div>
+                                </div>
+                                <div class="quick-admin-actions">
+                                    <button class="qa-btn glassHover" type="button" onclick="document.querySelector('.nav__item[data-section=\'students\']').click()">
+                                        <i data-lucide="users"></i>
+                                        <span>Manage Candidates</span>
+                                    </button>
+                                    <button class="qa-btn glassHover" type="button" onclick="document.querySelector('.nav__item[data-section=\'applications\']').click()">
+                                        <i data-lucide="briefcase"></i>
+                                        <span>Review Applications</span>
+                                    </button>
+                                    <button class="qa-btn glassHover" type="button" onclick="document.querySelector('.nav__item[data-section=\'drives\']').click()">
+                                        <i data-lucide="plus-circle"></i>
+                                        <span>Launch Placement Drive</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

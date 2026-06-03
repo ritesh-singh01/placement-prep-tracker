@@ -224,79 +224,81 @@ function renderCharts(data) {
 
   // 3. Priority Mix (Bar)
   if (data.priorityDistribution && data.priorityDistribution.length > 0) {
-    restoreCanvas("priorityChart");
-    const ctx = qs("#priorityChart").getContext("2d");
-    const labels = data.priorityDistribution.map(item => item._id);
-    const values = data.priorityDistribution.map(item => item.count);
+    if (restoreCanvas("priorityChart")) {
+      const ctx = qs("#priorityChart").getContext("2d");
+      const labels = data.priorityDistribution.map(item => item._id);
+      const values = data.priorityDistribution.map(item => item.count);
 
-    if (charts.priority) charts.priority.destroy();
-    charts.priority = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [{
-          label: "Count",
-          data: values,
-          backgroundColor: rgba(cyan, 0.6),
-          borderColor: cyan,
-          borderWidth: 1,
-          borderRadius: 6,
-          barThickness: 24
-        }]
-      },
-      options: chartOptions
-    });
+      if (charts.priority) charts.priority.destroy();
+      charts.priority = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{
+            label: "Count",
+            data: values,
+            backgroundColor: rgba(cyan, 0.6),
+            borderColor: cyan,
+            borderWidth: 1,
+            borderRadius: 6,
+            barThickness: 24
+          }]
+        },
+        options: chartOptions
+      });
+    }
   } else {
     showEmptyState("priorityChart", "No Priority Data", "Categorize applications by priority.");
   }
 
   // 4. Company Chart (Horizontal Bar)
   if (data.companyDistribution && data.companyDistribution.length > 0) {
-    restoreCanvas("companyChart");
-    const ctx = qs("#companyChart").getContext("2d");
-    
-    // Truncate long company names
-    const labels = data.companyDistribution.map(item => {
-      const name = item._id || "Unknown";
-      return name.length > 12 ? name.substring(0, 10) + "..." : name;
-    });
-    const values = data.companyDistribution.map(item => item.count);
+    if (restoreCanvas("companyChart")) {
+      const ctx = qs("#companyChart").getContext("2d");
+      
+      // Truncate long company names
+      const labels = data.companyDistribution.map(item => {
+        const name = item._id || "Unknown";
+        return name.length > 12 ? name.substring(0, 10) + "..." : name;
+      });
+      const values = data.companyDistribution.map(item => item.count);
 
-    if (charts.company) charts.company.destroy();
-    charts.company = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [{
-          label: "Applications",
-          data: values,
-          backgroundColor: rgba(indigo, 0.6),
-          borderColor: indigo,
-          borderWidth: 1,
-          borderRadius: 6,
-          barThickness: 20
-        }]
-      },
-      options: {
-        ...chartOptions,
-        indexAxis: 'y',
-        scales: {
-          y: { 
-            grid: { display: false },
-            ticks: { color: textMuted, font: { size: 11 } }
-          },
-          x: { 
-            beginAtZero: true,
-            grid: { display: true, color: gridColor },
-            ticks: { 
-              color: textMuted, 
-              precision: 0,
-              font: { size: 11 }
+      if (charts.company) charts.company.destroy();
+      charts.company = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{
+            label: "Applications",
+            data: values,
+            backgroundColor: rgba(indigo, 0.6),
+            borderColor: indigo,
+            borderWidth: 1,
+            borderRadius: 6,
+            barThickness: 20
+          }]
+        },
+        options: {
+          ...chartOptions,
+          indexAxis: 'y',
+          scales: {
+            y: { 
+              grid: { display: false },
+              ticks: { color: textMuted, font: { size: 11 } }
+            },
+            x: { 
+              beginAtZero: true,
+              grid: { display: true, color: gridColor },
+              ticks: { 
+                color: textMuted, 
+                precision: 0,
+                font: { size: 11 }
+              }
             }
           }
         }
-      }
-    });
+      });
+    }
   } else {
     showEmptyState("companyChart", "No Company Data", "Apply to more companies to see this.");
   }
@@ -334,6 +336,15 @@ async function loadDashboardAnalytics() {
     animateValue("#mInterviews", 0, s.interviews, 1000);
     animateValue("#mSuccessRate", 0, s.successRate, 1000);
     animateValue("#mActive", 0, s.active, 1000);
+    
+    // Sync pipeline details and readiness bar
+    animateValue("#mSelectedText", 0, s.selected, 1000);
+    animateValue("#mActiveText", 0, s.active, 1000);
+    
+    const successRateBar = qs("#mSuccessRateBar");
+    if (successRateBar) {
+      successRateBar.style.width = `${s.successRate}%`;
+    }
 
     // Render Charts
     renderCharts(data);

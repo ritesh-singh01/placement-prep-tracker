@@ -99,191 +99,196 @@
         </header>
 
         <main class="main">
-          <!-- Statistics Cards -->
-          <section class="grid grid--cards">
-            <article class="card metric glass is-loading">
-              <div class="metric__meta">
-                <div class="metric__label">Total Applications</div>
-                <div class="metric__value skeleton" id="mTotal">0</div>
-                <div class="metric__delta" id="mTotalDelta">
-                   <i data-lucide="layers"></i>
-                   <span>Lifetime applications</span>
-                </div>
+          <!-- Student Career Workspace Hero -->
+          <div class="dashboard-hero student-hero glass">
+            <div class="dashboard-hero__glow" aria-hidden="true"></div>
+            <div class="student-hero__content">
+              <div class="student-hero__meta">
+                <span class="student-hero__greeting">Welcome back,</span>
+                <h1 class="student-hero__name" id="userNameDisplay">Student</h1>
+                <p class="student-hero__subtitle">Your preparation tracker is active. Maintain daily mock drills and revise core tech stacks.</p>
               </div>
-              <div class="metric__icon"><i data-lucide="briefcase"></i></div>
-            </article>
-
-            <article class="card metric glass is-loading">
-              <div class="metric__meta">
-                <div class="metric__label">Selected</div>
-                <div class="metric__value skeleton" id="mSelected">0</div>
-                <div class="metric__delta is-up">
-                  <i data-lucide="badge-check"></i>
-                  <span>Hired!</span>
-                </div>
-              </div>
-              <div class="metric__icon"><i data-lucide="award"></i></div>
-            </article>
-
-            <article class="card metric glass is-loading">
-              <div class="metric__meta">
-                <div class="metric__label">Rejected</div>
-                <div class="metric__value skeleton" id="mRejected">0</div>
-                <div class="metric__delta is-down">
-                  <i data-lucide="trending-down"></i>
-                  <span>Keep pushing</span>
-                </div>
-              </div>
-              <div class="metric__icon"><i data-lucide="x-circle"></i></div>
-            </article>
-
-            <article class="card metric glass is-loading">
-              <div class="metric__meta">
-                <div class="metric__label">Scheduled Interviews</div>
-                <div class="metric__value skeleton" id="mInterviews">0</div>
-                <div class="metric__delta is-up">
-                  <i data-lucide="calendar"></i>
-                  <span>Upcoming</span>
-                </div>
-              </div>
-              <div class="metric__icon"><i data-lucide="video"></i></div>
-            </article>
-
-            <article class="card metric glass is-loading">
-              <div class="metric__meta">
-                <div class="metric__label">Success Rate</div>
-                <div class="metric__value skeleton"><span id="mSuccessRate">0</span>%</div>
-                <div class="metric__delta">
-                  <i data-lucide="percent"></i>
-                  <span>Conversion rate</span>
-                </div>
-              </div>
-              <div class="metric__icon"><i data-lucide="pie-chart"></i></div>
-            </article>
-
-            <article class="card metric glass is-loading">
-              <div class="metric__meta">
-                <div class="metric__label">Active Apps</div>
-                <div class="metric__value skeleton" id="mActive">0</div>
-                <div class="metric__delta">
-                  <i data-lucide="activity"></i>
-                  <span>In progress</span>
-                </div>
-              </div>
-              <div class="metric__icon"><i data-lucide="flame"></i></div>
-            </article>
-          </section>
-
-          <!-- Charts Section -->
-          <section class="analytics-grid">
-            <article class="card chart-card glass is-loading">
-              <div class="card__header">
-                <div>
-                  <div class="card__title">Monthly Application Trend</div>
-                  <div class="card__subtitle">Your activity over time</div>
-                </div>
-              </div>
-              <div class="chart-container skeleton">
-                <canvas id="trendChart"></canvas>
-              </div>
-            </article>
-
-            <article class="card chart-card glass is-loading">
-              <div class="card__header">
-                <div>
-                  <div class="card__title">Application Status</div>
-                  <div class="card__subtitle">Current pipeline distribution</div>
-                </div>
-              </div>
-              <div class="chart-container skeleton">
-                <canvas id="statusChart"></canvas>
-              </div>
-            </article>
-
-            <article class="card chart-card glass is-loading">
-              <div class="card__header">
-                <div>
-                  <div class="card__title">Priority Mix</div>
-                  <div class="card__subtitle">Focus areas</div>
-                </div>
-              </div>
-              <div class="chart-container skeleton">
-                <canvas id="priorityChart"></canvas>
-              </div>
-            </article>
-
-            <article class="card chart-card glass is-loading">
-              <div class="card__header">
-                <div>
-                  <div class="card__title">Top Target Companies</div>
-                  <div class="card__subtitle">Most frequent applications</div>
-                </div>
-              </div>
-              <div class="chart-container skeleton">
-                <canvas id="companyChart"></canvas>
-              </div>
-            </article>
-          </section>
-
-          <!-- Recent Activity & Checklist -->
-          <section class="grid grid--activity">
-            <article class="card glass">
-              <div class="card__header">
-                <div>
-                  <div class="card__title">Quick Actions</div>
-                  <div class="card__subtitle">Stay in flow</div>
-                </div>
-              </div>
-              <div class="quickActions">
-                <button class="qa glassHover" type="button" data-action="addApplication">
-                  <div class="qa__icon"><i data-lucide="plus"></i></div>
-                  <div class="qa__meta">
-                    <div class="qa__title">Add Application</div>
-                    <div class="qa__hint">Track new application</div>
+              
+              <!-- Placement Readiness Gauge -->
+              <div class="readiness-panel">
+                <div class="readiness-header">
+                  <span class="readiness-title">Placement Readiness</span>
+                  <div class="readiness-score-wrap">
+                    <span class="readiness-score" id="mSuccessRate">0</span><span class="readiness-percent">%</span>
                   </div>
-                </button>
-                <button class="qa glassHover" type="button" data-action="addNote">
-                  <div class="qa__icon"><i data-lucide="sticky-note"></i></div>
-                  <div class="qa__meta">
-                    <div class="qa__title">Add Note</div>
-                    <div class="qa__hint">Save prep insights</div>
-                  </div>
-                </button>
-                <button class="qa glassHover" type="button" data-action="upcomingInterviews">
-                  <div class="qa__icon"><i data-lucide="calendar"></i></div>
-                  <div class="qa__meta">
-                    <div class="qa__title">Upcoming Interviews</div>
-                    <div class="qa__hint">View scheduled rounds</div>
-                  </div>
-                </button>
-                <button class="qa glassHover" type="button" data-action="checkATS">
-                  <div class="qa__icon"><i data-lucide="file-check"></i></div>
-                  <div class="qa__meta">
-                    <div class="qa__title">Resume / ATS Checker</div>
-                    <div class="qa__hint">Optimize alignment score</div>
-                  </div>
-                </button>
+                </div>
+                <div class="readiness-bar-wrap">
+                  <div class="readiness-bar" id="mSuccessRateBar" style="width: 0%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));"></div>
+                </div>
+                <div class="readiness-footer">Selection conversion based on active applications</div>
               </div>
-            </article>
+            </div>
+            
+            <div class="student-hero__stats">
+              <div class="student-hero-stat">
+                <span class="student-hero-stat__val" id="mTotal">0</span>
+                <span class="student-hero-stat__label">Total Apps</span>
+              </div>
+              <div class="student-hero-stat__sep" aria-hidden="true"></div>
+              <div class="student-hero-stat">
+                <span class="student-hero-stat__val" id="mSelected">0</span>
+                <span class="student-hero-stat__label">Selected</span>
+              </div>
+              <div class="student-hero-stat__sep" aria-hidden="true"></div>
+              <div class="student-hero-stat">
+                <span class="student-hero-stat__val" id="mActive">0</span>
+                <span class="student-hero-stat__label">Active</span>
+              </div>
+              <div class="student-hero-stat__sep" aria-hidden="true"></div>
+              <div class="student-hero-stat">
+                <span class="student-hero-stat__val" id="mInterviews">0</span>
+                <span class="student-hero-stat__label">Interviews</span>
+              </div>
+            </div>
+          </div>
 
-            <article class="card glass">
-              <div class="card__header">
-                <div>
-                  <div class="card__title">Focus</div>
-                  <div class="card__subtitle">Today’s prep checklist</div>
+          <!-- Two-column Workspace Grid -->
+          <div class="dashboard-grid">
+            <!-- Left Column: Pipeline Distribution & Application Trend -->
+            <div class="flex-column" style="gap: 20px;">
+              <!-- Application Pipeline -->
+              <div class="card glass flex-column" style="gap: 16px;">
+                <div class="card__header">
+                  <div>
+                    <div class="card__title">Application Pipeline</div>
+                    <div class="card__subtitle">Your status distribution across active roles</div>
+                  </div>
+                </div>
+                <div class="pipeline-content">
+                  <div class="chart-container" style="max-height: 180px; width: 100%; position: relative;">
+                    <canvas id="statusChart"></canvas>
+                  </div>
+                  <div class="pipeline-details">
+                    <div class="pipeline-detail-item">
+                      <span class="pipeline-detail-item__label">Selected / Hired</span>
+                      <span class="pipeline-detail-item__val text-green" id="mSelectedText">0</span>
+                    </div>
+                    <div class="pipeline-detail-item">
+                      <span class="pipeline-detail-item__label">Active In-Progress</span>
+                      <span class="pipeline-detail-item__val text-cyan" id="mActiveText">0</span>
+                    </div>
+                    <div class="pipeline-detail-item">
+                      <span class="pipeline-detail-item__label">Rejected Applications</span>
+                      <span class="pipeline-detail-item__val text-red" id="mRejected">0</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="checklist" id="focusChecklist">
-                <!-- Tasks will be rendered dynamically -->
+
+              <!-- Monthly Activity Trend -->
+              <div class="card glass">
+                <div class="card__header">
+                  <div>
+                    <div class="card__title">Monthly Application Trend</div>
+                    <div class="card__subtitle">Your application history timeline</div>
+                  </div>
+                </div>
+                <div class="chart-container" style="max-height: 200px;">
+                  <canvas id="trendChart"></canvas>
+                </div>
               </div>
-              <div style="padding: 0 14px 16px 14px;">
-                <button class="btn btn--secondary btn--sm" type="button" id="addTaskBtn" style="width: 100%;">
-                  <i data-lucide="plus"></i>
-                  <span>Add task</span>
-                </button>
+            </div>
+
+            <!-- Right Column: Quick Actions, Today's Focus, and Next Steps -->
+            <div class="flex-column" style="gap: 20px;">
+              <!-- Quick Actions -->
+              <div class="card glass">
+                <div class="card__header">
+                  <div>
+                    <div class="card__title">Quick Actions</div>
+                    <div class="card__subtitle">Essential shortcuts for daily routines</div>
+                  </div>
+                </div>
+                <div class="quickActions">
+                  <button class="qa glassHover" type="button" data-action="addApplication">
+                    <div class="qa__icon"><i data-lucide="plus"></i></div>
+                    <div class="qa__meta">
+                      <div class="qa__title">Add Application</div>
+                      <div class="qa__hint">Track a new company role</div>
+                    </div>
+                  </button>
+                  <button class="qa glassHover" type="button" data-action="addNote">
+                    <div class="qa__icon"><i data-lucide="sticky-note"></i></div>
+                    <div class="qa__meta">
+                      <div class="qa__title">Add Note</div>
+                      <div class="qa__hint">Create new prep concepts</div>
+                    </div>
+                  </button>
+                  <button class="qa glassHover" type="button" data-action="upcomingInterviews">
+                    <div class="qa__icon"><i data-lucide="calendar"></i></div>
+                    <div class="qa__meta">
+                      <div class="qa__title">Upcoming Rounds</div>
+                      <div class="qa__hint">View interviews schedule</div>
+                    </div>
+                  </button>
+                  <button class="qa glassHover" type="button" data-action="checkATS">
+                    <div class="qa__icon"><i data-lucide="file-check"></i></div>
+                    <div class="qa__meta">
+                      <div class="qa__title">ATS Optimizer</div>
+                      <div class="qa__hint">Audit keyword match density</div>
+                    </div>
+                  </button>
+                </div>
               </div>
-            </article>
-          </section>
+
+              <!-- Focus Prep Checklist -->
+              <div class="card glass">
+                <div class="card__header">
+                  <div>
+                    <div class="card__title">Daily Focus Checklist</div>
+                    <div class="card__subtitle">Your customized roadmap tasks</div>
+                  </div>
+                </div>
+                <div class="checklist" id="focusChecklist">
+                  <!-- Tasks will be rendered dynamically -->
+                </div>
+                <div style="padding: 0 14px 16px 14px;">
+                  <button class="btn btn--secondary btn--sm" type="button" id="addTaskBtn" style="width: 100%;">
+                    <i data-lucide="plus"></i>
+                    <span>Add task</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Recommended Next Steps -->
+              <div class="card glass">
+                <div class="card__header">
+                  <div>
+                    <div class="card__title">Recommended Next Steps</div>
+                    <div class="card__subtitle">Suggested actions to boost selection probability</div>
+                  </div>
+                </div>
+                <div class="activity-timeline">
+                  <div class="timeline-item">
+                    <div class="timeline-item__badge blue"><i data-lucide="code-2"></i></div>
+                    <div class="timeline-item__meta">
+                      <span class="timeline-item__title">Solve 3 DSA recursion problems</span>
+                      <span class="timeline-item__time">Prioritize dynamic programming & trees</span>
+                    </div>
+                  </div>
+                  <div class="timeline-item">
+                    <div class="timeline-item__badge pink"><i data-lucide="file-check"></i></div>
+                    <div class="timeline-item__meta">
+                      <span class="timeline-item__title">Scan resume using ATS checker</span>
+                      <span class="timeline-item__time">Target keyword optimization score &gt; 80%</span>
+                    </div>
+                  </div>
+                  <div class="timeline-item">
+                    <div class="timeline-item__badge green"><i data-lucide="database"></i></div>
+                    <div class="timeline-item__meta">
+                      <span class="timeline-item__title">Revise DBMS Joins and Normalization</span>
+                      <span class="timeline-item__time">Review system architecture basics</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </main>
       </div>
     </div>
