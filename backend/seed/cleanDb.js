@@ -27,31 +27,37 @@ async function main() {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("Connected to MongoDB successfully.");
 
+    const adminEmail = (process.env.ADMIN_EMAIL || "riteshthelegend10f@gmail.com").toLowerCase().trim();
+    const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
+    const adminName = process.env.ADMIN_NAME || "System Admin";
+
     // 1. Clean Collections
     console.log("Cleaning collections...");
-    await User.deleteMany({});
+    // Preserve the admin user, delete all other users
+    await User.deleteMany({ email: { $ne: adminEmail } });
     await Company.deleteMany({});
     await Note.deleteMany({});
     await Collection.deleteMany({});
     await Notification.deleteMany({});
     await PlacementDrive.deleteMany({});
-    console.log("All collections cleared.");
+    console.log("All collections cleared (except existing Admin user).");
 
     // 2. Seed Admin User
-    const adminEmail = process.env.ADMIN_EMAIL || "riteshthelegend10f@gmail.com";
-    const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
-    const adminName = process.env.ADMIN_NAME || "System Admin";
-    
-    console.log(`Creating Admin user: ${adminEmail}`);
-    const admin = await User.create({
-      name: adminName,
-      email: adminEmail,
-      password: adminPassword, // Raw password, hashed by pre-save hook
-      role: "admin",
-      isBlocked: false,
-      isVerified: true
-    });
-    console.log("Admin user created.");
+    let admin = await User.findOne({ email: adminEmail });
+    if (!admin) {
+      console.log(`[cleanDb.js] Admin account not found. Creating Admin user: ${adminEmail}. Startup code modified the admin record.`);
+      admin = await User.create({
+        name: adminName,
+        email: adminEmail,
+        password: adminPassword, // Raw password, hashed by pre-save hook
+        role: "admin",
+        isBlocked: false,
+        isVerified: true
+      });
+      console.log("Admin user created.");
+    } else {
+      console.log(`[cleanDb.js] Admin account with email ${adminEmail} already exists. Preserving existing Admin user. Startup code did NOT touch the admin record.`);
+    }
 
     // 3. Seed Clean Sample Student Account
     const studentEmail = "jane@example.com";

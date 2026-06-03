@@ -77,9 +77,9 @@ async function main() {
     const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
     const adminName = process.env.ADMIN_NAME || "System Admin";
 
-    let admin = await User.findOne({ email: adminEmail.toLowerCase().trim() }).select("+password");
+    let admin = await User.findOne({ email: adminEmail.toLowerCase().trim() });
     if (!admin) {
-      console.log(`Admin account not found. Seeding default admin: ${adminEmail}`);
+      console.log(`[cleanDemoData.js] Admin account not found. Seeding default admin: ${adminEmail}. Startup code modified the admin record.`);
       admin = await User.create({
         name: adminName,
         email: adminEmail,
@@ -90,17 +90,7 @@ async function main() {
       });
       console.log("Admin account created.");
     } else {
-      // Verify if password is correct (not double-hashed)
-      const isMatch = await admin.matchPassword(adminPassword);
-      if (!isMatch) {
-        console.log(`Admin password mismatch (possibly double-hashed). Resetting password...`);
-        admin.password = adminPassword; // Triggers pre-save hook on save
-        admin.isVerified = true;
-        await admin.save();
-        console.log("Admin password updated successfully.");
-      } else {
-        console.log(`Preserving Admin account: ${admin.email}`);
-      }
+      console.log(`[cleanDemoData.js] Admin account with email ${admin.email} already exists. Preserving Admin account. Startup code did NOT touch the admin record.`);
     }
 
     // --- 2. SEED CLEAN PRESENTATION STUDENT ---

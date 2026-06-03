@@ -48,8 +48,13 @@ async function main() {
       console.log("Admin account created.");
     } else {
       console.log("Admin account found. Ensuring verified status...");
-      admin.isVerified = true;
-      await admin.save();
+      if (!admin.isVerified) {
+        console.log(`[seedDemoStudent.js] Admin is not verified. Setting verified and saving. Startup code modified the admin record.`);
+        admin.isVerified = true;
+        await admin.save();
+      } else {
+        console.log(`[seedDemoStudent.js] Admin is already verified. Preserving existing Admin user. Startup code did NOT touch the admin record.`);
+      }
     }
 
     // 2. SEED/RESET STUDENT ACCOUNT

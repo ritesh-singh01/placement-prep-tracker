@@ -176,16 +176,22 @@ exports.login = async (req, res) => {
     // Normalization
     email = email.trim().toLowerCase();
 
+    console.log(`[Auth Login] Login email attempt received for: ${email}`);
+
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
+      console.log(`[Auth Login] User not found in database for email: ${email}. adminUserFound: false`);
       return res.status(401).json({
         success: false,
         message: "Invalid credentials",
       });
     }
+    const adminUserFound = user.role === "admin";
+    console.log(`[Auth Login] User found in database for email: ${email}. adminUserFound: ${adminUserFound}, role: ${user.role}`);
 
     const isMatch = await user.matchPassword(password);
+    console.log(`[Auth Login] Bcrypt password match result for ${email}: ${isMatch}`);
     
     if (!isMatch) {
       return res.status(401).json({
@@ -195,6 +201,7 @@ exports.login = async (req, res) => {
     }
 
     if (user.role === "admin" && !user.isVerified) {
+      console.log(`[Auth Login] Login blocked: Admin user ${email} is unverified.`);
       return res.status(403).json({
         success: false,
         message: "Please verify your email address before logging in.",
@@ -204,14 +211,18 @@ exports.login = async (req, res) => {
 
     // Role check validation
     const { expectedRole } = req.body;
-    if (expectedRole && user.role !== expectedRole) {
-      const msg = user.role === "admin"
-        ? "This is an admin account. Please use Admin Login."
-        : "This is a student account. Please use Student Login.";
-      return res.status(400).json({
-        success: false,
-        message: msg,
-      });
+    if (expectedRole) {
+      const roleMatches = user.role === expectedRole;
+      console.log(`[Auth Login] Role check validation - expectedRole: ${expectedRole}, actualRole: ${user.role}, roleMatches: ${roleMatches}`);
+      if (!roleMatches) {
+        const msg = user.role === "admin"
+          ? "This is an admin account. Please use Admin Login."
+          : "This is a student account. Please use Student Login.";
+        return res.status(400).json({
+          success: false,
+          message: msg,
+        });
+      }
     }
 
     if (user.isBlocked) {
@@ -692,6 +703,8 @@ exports.resetPassword = async (req, res) => {
     user.resetPasswordOTP = undefined;
     user.resetPasswordOTPExpires = undefined;
     await user.save();
+
+    console.log(`[Auth resetPassword] Password successfully reset for user: ${user.email}, role: ${user.role}. Password was modified by reset flow.`);
 
     res.status(200).json({ success: true, message: "Password reset successfully. You can now login." });
   } catch (err) {
