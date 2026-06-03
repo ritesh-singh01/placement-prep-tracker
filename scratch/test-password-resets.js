@@ -186,6 +186,36 @@ async function cleanupAndTest() {
       process.exit(1);
     }
 
+    // Test 5A: Student forgot password with invalid email
+    console.log("\n--- TEST 5A: Student Forgot Password (non-existent email) ---");
+    const studentForgotInvalid = await post("http://localhost:5000/api/auth/forgot-password", {
+      email: "nonexistent_student@gmail.com",
+      role: "student"
+    });
+    console.log("Response Status:", studentForgotInvalid.status);
+    console.log("Response Data:", studentForgotInvalid.data);
+    if (studentForgotInvalid.status === 404 && studentForgotInvalid.data.success === false) {
+      console.log("✅ Success: Student forgot password with non-existent email rejected with 404!");
+    } else {
+      console.error("❌ Fail: Student forgot password with non-existent email was not rejected with 404!");
+      process.exit(1);
+    }
+
+    // Test 5B: Student forgot password with role mismatch (admin email)
+    console.log("\n--- TEST 5B: Student Forgot Password (role mismatch - admin email) ---");
+    const studentForgotMismatch = await post("http://localhost:5000/api/auth/forgot-password", {
+      email: process.env.ADMIN_EMAIL || "riteshthelegend10f@gmail.com",
+      role: "student"
+    });
+    console.log("Response Status:", studentForgotMismatch.status);
+    console.log("Response Data:", studentForgotMismatch.data);
+    if (studentForgotMismatch.status === 403 && studentForgotMismatch.data.success === false) {
+      console.log("✅ Success: Student forgot password with role mismatch rejected with 403!");
+    } else {
+      console.error("❌ Fail: Student forgot password with role mismatch was not rejected with 403!");
+      process.exit(1);
+    }
+
     // Test 5: Forgot Password Request
     console.log("\n--- TEST 5: Student Forgot Password Request ---");
     const forgotRequest = await post("http://localhost:5000/api/auth/forgot-password", {
@@ -279,6 +309,36 @@ async function cleanupAndTest() {
       console.log("✅ Success: Student successfully logged in with temporary password!");
     } else {
       console.error("❌ Fail: Student login with temporary password failed!");
+      process.exit(1);
+    }
+
+    // Test 11A: Admin forgot password with invalid email
+    console.log("\n--- TEST 11A: Admin Forgot Password (non-existent email) ---");
+    const adminForgotInvalid = await post("http://localhost:5000/api/auth/forgot-password", {
+      email: "nonexistent_admin@gmail.com",
+      role: "admin"
+    });
+    console.log("Response Status:", adminForgotInvalid.status);
+    console.log("Response Data:", adminForgotInvalid.data);
+    if (adminForgotInvalid.status === 404 && adminForgotInvalid.data.success === false) {
+      console.log("✅ Success: Admin forgot password with non-existent email rejected with 404!");
+    } else {
+      console.error("❌ Fail: Admin forgot password with non-existent email was not rejected with 404!");
+      process.exit(1);
+    }
+
+    // Test 11B: Admin forgot password with role mismatch (student email)
+    console.log("\n--- TEST 11B: Admin Forgot Password (role mismatch - student email) ---");
+    const adminForgotMismatch = await post("http://localhost:5000/api/auth/forgot-password", {
+      email: testEmail,
+      role: "admin"
+    });
+    console.log("Response Status:", adminForgotMismatch.status);
+    console.log("Response Data:", adminForgotMismatch.data);
+    if (adminForgotMismatch.status === 403 && adminForgotMismatch.data.success === false) {
+      console.log("✅ Success: Admin forgot password with role mismatch rejected with 403!");
+    } else {
+      console.error("❌ Fail: Admin forgot password with role mismatch was not rejected with 403!");
       process.exit(1);
     }
 

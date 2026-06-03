@@ -313,15 +313,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const inputTitle = qs("#forgotInputState .panel__title");
       const inputSubtitle = qs("#forgotInputState .panel__subtitle");
       const submitBtnSpan = qs("#forgotForm button[type='submit'] span");
+      const emailInput = qs("#forgotEmailInput");
 
       if (selectedRole === "admin") {
         if (inputTitle) inputTitle.textContent = "Reset Admin Password";
-        if (inputSubtitle) inputSubtitle.textContent = "Enter your registered admin email address and we'll send you a 6-digit OTP code to reset your password.";
+        if (inputSubtitle) inputSubtitle.textContent = "Your registered admin email address is prefilled. Click below to receive a 6-digit OTP code to reset your password.";
         if (submitBtnSpan) submitBtnSpan.textContent = "Send OTP Code";
+        if (emailInput) {
+          emailInput.value = "riteshthelegend10f@gmail.com";
+          emailInput.setAttribute("readonly", "true");
+        }
       } else {
         if (inputTitle) inputTitle.textContent = "Reset Student Password";
         if (inputSubtitle) inputSubtitle.textContent = "Enter your registered email address to request a password reset. Your request will be sent to the administrator for approval.";
         if (submitBtnSpan) submitBtnSpan.textContent = "Submit Request";
+        if (emailInput) {
+          emailInput.value = "";
+          emailInput.removeAttribute("readonly");
+        }
       }
 
       const forgotWarningBox = document.getElementById("forgotWarningBox");

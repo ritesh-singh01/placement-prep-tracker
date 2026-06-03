@@ -575,14 +575,22 @@ exports.forgotPassword = async (req, res) => {
 
     // Branching by role: explicit detection, with fallback to user's database role or student
     const targetRole = role || (user ? user.role : "student");
-    console.log(`[Forgot Password] Branching to role: ${targetRole}`);
+    console.log(`[Forgot Password] Requested Email: ${email}, Requested Role: ${targetRole}`);
 
     if (targetRole === "admin") {
-      if (!user || user.role !== "admin") {
-        console.log("[Forgot Password Flow] Admin email not found. Return generic success message to prevent enumeration.");
-        return res.status(200).json({
-          success: true,
-          message: "Verification OTP code sent to your email."
+      if (!user) {
+        console.log(`[Forgot Password] Fail! Admin email verification failed for: ${email}. Reason: Admin user not found. Email sent: false`);
+        return res.status(404).json({
+          success: false,
+          message: "Administrator account not found with this email address."
+        });
+      }
+
+      if (user.role !== "admin") {
+        console.log(`[Forgot Password] Fail! Admin email verification failed for: ${email}. Reason: User is not an admin. Matched User Role: ${user.role}. Email sent: false`);
+        return res.status(403).json({
+          success: false,
+          message: "This email address is not registered as an administrator."
         });
       }
 
@@ -615,7 +623,7 @@ exports.forgotPassword = async (req, res) => {
           html: html
         });
 
-        console.log(`[Forgot Password] Reset email successfully sent to admin: ${user.email}`);
+        console.log(`[Forgot Password] Success! Admin recovery email sent to: ${user.email}, Matched User Role: ${user.role}, Email sent: true`);
         return res.status(200).json({
           success: true,
           message: "Verification OTP code sent to your email."
@@ -632,10 +640,18 @@ exports.forgotPassword = async (req, res) => {
     } else {
       // Student flow: Request to Admin
       if (!user) {
-        console.log("[Forgot Password Flow] Student user email not found in database. Still returning success to prevent enumeration.");
-        return res.status(200).json({
-          success: true,
-          message: "Your password reset request has been submitted to the administrator. Please contact your admin for a temporary password.",
+        console.log(`[Forgot Password] Fail! Student recovery failed for: ${email}. Reason: Student user not found. Email sent: false`);
+        return res.status(404).json({
+          success: false,
+          message: "Student account not found with this email address."
+        });
+      }
+
+      if (user.role !== "student") {
+        console.log(`[Forgot Password] Fail! Student recovery failed for: ${email}. Reason: User is not a student. Matched User Role: ${user.role}. Email sent: false`);
+        return res.status(403).json({
+          success: false,
+          message: "This email address is not registered as a student."
         });
       }
 
@@ -658,7 +674,7 @@ exports.forgotPassword = async (req, res) => {
         });
       }
 
-      console.log(`[Forgot Password] Admin notification filed for student ${user.email}`);
+      console.log(`[Forgot Password] Success! Student request logged for: ${user.email}, Matched User Role: ${user.role}, Email sent: false`);
 
       return res.status(200).json({
         success: true,
