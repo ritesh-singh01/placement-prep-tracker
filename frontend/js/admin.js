@@ -1044,16 +1044,17 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
         } else {
             container.innerHTML = list.map(item => `
-                <div class="drive-card glass">
-                    <div class="drive-card__header">
-                        <div class="drive-card__company">${item.title}</div>
+                <div class="announcement-card glass">
+                    <div class="announcement-card__header">
+                        <h3 class="announcement-card__title">${item.title}</h3>
                         <span class="badge badge--${item.type || 'info'}">${item.type || 'info'}</span>
                     </div>
-                    <div style="font-size: 14px; opacity: 0.8; line-height: 1.6; margin-bottom: 20px; min-height: 60px;">
-                        ${item.message}
-                    </div>
-                    <div class="drive-card__footer">
-                        <span style="font-size: 12px; opacity: 0.5;">${new Date(item.createdAt).toLocaleDateString()}</span>
+                    <p class="announcement-card__message">${item.message}</p>
+                    <div class="announcement-card__footer">
+                        <span class="announcement-card__date">
+                            <i data-lucide="calendar" style="width: 14px; height: 14px; opacity: 0.6;"></i>
+                            <span>${new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        </span>
                         <button class="btn btn--ghost btn--sm text-red delete-announcement" data-id="${item._id}">
                             <i data-lucide="trash-2"></i>
                             <span>Delete</span>
