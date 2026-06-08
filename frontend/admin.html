@@ -451,8 +451,12 @@
 
                 <!-- Reports Section -->
                 <section id="admin-reports" class="admin-section">
-                    <div class="section-header">
+                    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 12px;">
                         <h2 class="section-title">Reports & Analytics</h2>
+                        <button class="btn btn--primary btn--sm" id="exportPlacementReportBtn" style="gap: 6px; display: flex; align-items: center;">
+                            <i data-lucide="download"></i>
+                            <span>Export Complete Placement Report</span>
+                        </button>
                     </div>
                     <div class="stats-grid" id="reportsStats">
                         <!-- Loaded via JS -->
@@ -829,8 +833,11 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="js/config.js"></script>
+    <script src="js/pdfGenerator.js" defer></script>
     <script src="js/toast.js"></script>
     <script src="js/app.js" defer></script>
     <script src="js/admin.js" defer></script>

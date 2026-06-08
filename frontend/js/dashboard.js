@@ -729,6 +729,13 @@ document.addEventListener("DOMContentLoaded", () => {
   FocusManager.init();
   initATSChecker();
   
+  const dlBtn = qs("#downloadMyReportBtn");
+  if (dlBtn) {
+    dlBtn.addEventListener("click", () => {
+      window.PdfGenerator.triggerStudentDownload(null, dlBtn);
+    });
+  }
+  
   // Refresh on focus (keep data fresh)
   window.addEventListener("focus", () => {
     loadDashboardAnalytics();

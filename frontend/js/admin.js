@@ -231,6 +231,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         <button class="btn btn--ghost btn--sm block-toggle" data-id="${student._id}">
                             ${student.isBlocked ? 'Unblock' : 'Block'}
                         </button>
+                        <button class="btn btn--ghost btn--sm download-student-report" data-id="${student._id}" style="color: var(--accent-primary); border-color: rgba(var(--accent-primary-rgb), 0.2); gap: 4px; display: inline-flex; align-items: center;">
+                            <i data-lucide="download" style="width: 12px; height: 12px;"></i>
+                            <span>Report</span>
+                        </button>
                         <button class="btn btn--ghost btn--sm view-student" data-id="${student._id}">View</button>
                         <button class="btn btn--ghost btn--sm delete-student btn--danger" data-id="${student._id}" style="color: var(--bad); border-color: rgba(var(--color-danger-rgb), 0.2);">Delete</button>
                     </div>
@@ -274,6 +278,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (window.Toast) window.Toast.info("Demo Mode", `Toggled block for ${s.name}`);
                     }
                 }
+            });
+        });
+
+        // Download student report listener
+        qsa(".download-student-report").forEach(btn => {
+            btn.addEventListener("click", () => {
+                window.PdfGenerator.triggerStudentDownload(btn.dataset.id, btn);
             });
         });
 
@@ -1909,5 +1920,12 @@ document.addEventListener("DOMContentLoaded", () => {
     initStudentDetailFlow(); // NEW
     initClickableCards(); // NEW
     renderStats(); // Load default view
+    const exportBtn = qs("#exportPlacementReportBtn");
+    if (exportBtn) {
+        exportBtn.addEventListener("click", () => {
+            window.PdfGenerator.triggerConsolidatedDownload(exportBtn);
+        });
+    }
+
     if (window.lucide) window.lucide.createIcons();
 });

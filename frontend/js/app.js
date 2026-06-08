@@ -530,8 +530,16 @@ function initUserMenu() {
           <div class="modalForm__grid" id="profileFieldsContainer">
             <!-- Rendered dynamically -->
           </div>
-          <footer class="modal__footer" style="margin-top: 20px;">
-            <button class="btn btn--ghost" type="button" id="cancelProfileModal">Cancel</button>
+          <footer class="modal__footer" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn--ghost" type="button" id="cancelProfileModal">Cancel</button>
+              ${userRole === 'student' ? `
+                <button class="btn btn--secondary" type="button" id="downloadProfileReportBtn" style="gap: 6px; display: flex; align-items: center;">
+                  <i data-lucide="download"></i>
+                  <span>Download My Report</span>
+                </button>
+              ` : ''}
+            </div>
             <button class="btn btn--primary glowBtn" type="submit">
               <i data-lucide="check"></i>
               <span>Save Changes</span>
@@ -541,6 +549,13 @@ function initUserMenu() {
       </div>
     `;
     document.body.appendChild(pModal);
+
+    const dlProfileBtn = document.getElementById("downloadProfileReportBtn");
+    if (dlProfileBtn) {
+      dlProfileBtn.addEventListener("click", () => {
+        window.PdfGenerator.triggerStudentDownload(null, dlProfileBtn);
+      });
+    }
   }
 
   // 3. Inject Change Password Modal HTML
