@@ -1,7 +1,7 @@
 /**
- * Reset Password Script for you@college.edu
+ * Reset Password Script for abcde@gmail.com
  * 
- * Purpose: Resets the password for you@college.edu to Student@123 safely
+ * Purpose: Resets the password for abcde@gmail.com to Student@123 safely
  * using Mongoose model save (triggering pre-save password hashing).
  * Then verifies the credentials by testing login.
  */
@@ -25,7 +25,7 @@ async function main() {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("Connected to MongoDB.");
 
-    const email = "you@college.edu";
+    const email = "abcde@gmail.com";
     const newPassword = "Student@123";
 
     let user = await User.findOne({ email: email.toLowerCase().trim() });

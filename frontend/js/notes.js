@@ -482,22 +482,67 @@ document.addEventListener("DOMContentLoaded", () => {
       const collectionId = qs("#noteCollectionId").value;
       const content = qs("#noteContent").value.trim();
 
-      // Reset validation states
-      qs("#noteTitle").style.borderColor = "";
-      qs("#noteContent").style.borderColor = "";
+      const titleInput = qs("#noteTitle");
+      const contentInput = qs("#noteContent");
+      const errTitle = qs("#errNoteTitle");
+      const errContent = qs("#errNoteContent");
+
+      if (errTitle) errTitle.textContent = "";
+      if (errContent) errContent.textContent = "";
+      if (titleInput) {
+        titleInput.style.borderColor = "";
+        titleInput.classList.remove("is-invalid");
+      }
+      if (contentInput) {
+        contentInput.style.borderColor = "";
+        contentInput.classList.remove("is-invalid");
+      }
 
       let hasError = false;
+      let firstInvalid = null;
+
       if (!title) {
-        qs("#noteTitle").style.borderColor = "var(--bad)";
+        if (errTitle) errTitle.textContent = "Title is required.";
+        if (titleInput) {
+          titleInput.style.borderColor = "var(--bad)";
+          titleInput.classList.add("is-invalid");
+        }
         hasError = true;
+        if (!firstInvalid) firstInvalid = titleInput;
+      } else if (title.length > 100) {
+        if (errTitle) errTitle.textContent = "Title must not exceed 100 characters.";
+        if (titleInput) {
+          titleInput.style.borderColor = "var(--bad)";
+          titleInput.classList.add("is-invalid");
+        }
+        hasError = true;
+        if (!firstInvalid) firstInvalid = titleInput;
       }
+
       if (!content) {
-        qs("#noteContent").style.borderColor = "var(--bad)";
+        if (errContent) errContent.textContent = "Content is required.";
+        if (contentInput) {
+          contentInput.style.borderColor = "var(--bad)";
+          contentInput.classList.add("is-invalid");
+        }
         hasError = true;
+        if (!firstInvalid) firstInvalid = contentInput;
+      } else {
+        const contentErr = window.validateNotes(content, 5000);
+        if (contentErr) {
+          if (errContent) errContent.textContent = contentErr.replace("Notes", "Content");
+          if (contentInput) {
+            contentInput.style.borderColor = "var(--bad)";
+            contentInput.classList.add("is-invalid");
+          }
+          hasError = true;
+          if (!firstInvalid) firstInvalid = contentInput;
+        }
       }
 
       if (hasError) {
-        return toast("Title and content are required", "error");
+        if (firstInvalid) firstInvalid.focus();
+        return;
       }
 
       const body = { title, collectionId, content };
@@ -563,11 +608,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const color = qs("#collectionColor").value;
       const icon = qs("#collectionIcon").value;
 
-      qs("#collectionName").style.borderColor = "";
+      const nameInput = qs("#collectionName");
+      const errName = qs("#errCollectionName");
 
-      if (!name) {
-        qs("#collectionName").style.borderColor = "var(--bad)";
-        return toast("Collection name is required", "error");
+      if (errName) errName.textContent = "";
+      if (nameInput) {
+        nameInput.style.borderColor = "";
+        nameInput.classList.remove("is-invalid");
+      }
+
+      const nameErr = window.validateCompanyName(name);
+      if (nameErr) {
+        if (errName) errName.textContent = nameErr.replace("Company name", "Collection name");
+        if (nameInput) {
+          nameInput.style.borderColor = "var(--bad)";
+          nameInput.classList.add("is-invalid");
+          nameInput.focus();
+        }
+        return;
       }
 
       const body = { name, color, icon };

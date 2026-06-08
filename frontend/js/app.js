@@ -1,5 +1,70 @@
 /* Global UI behaviors (no frameworks). */
 
+// Global validation helpers
+window.validateCompanyName = function(name) {
+  name = (name || "").trim();
+  if (name.length < 2) {
+    return "Company name must be at least 2 characters.";
+  }
+  if (/^[+-]?\d+(\.\d+)?$/.test(name)) {
+    return "Company name cannot contain only numbers.";
+  }
+  if (/^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~\s]+$/.test(name)) {
+    return "Company name cannot contain only special characters.";
+  }
+  return null;
+};
+
+window.validateJobRole = function(role) {
+  role = (role || "").trim();
+  if (role.length < 2) {
+    return "Please enter a valid job role.";
+  }
+  if (/^[+-]?\d+(\.\d+)?$/.test(role)) {
+    return "Job role cannot contain only numbers.";
+  }
+  if (/^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~\s]+$/.test(role)) {
+    return "Job role cannot contain only special characters.";
+  }
+  return null;
+};
+
+window.validatePackage = function(pkg) {
+  pkg = (pkg || "").trim();
+  if (!pkg) return null; // optional
+  const num = Number(pkg);
+  if (isNaN(num) || !/^\d+(\.\d+)?$/.test(pkg)) {
+    return "Package must be a positive number.";
+  }
+  if (num <= 0) {
+    return "Package must be a positive number.";
+  }
+  if (num < 0.1 || num > 1000) {
+    return "Package must be between 0.1 and 1000 LPA.";
+  }
+  return null;
+};
+
+window.validateInterviewDate = function(dateStr) {
+  dateStr = (dateStr || "").trim();
+  if (!dateStr) return null; // optional
+  const selectedDate = new Date(dateStr + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (selectedDate < today) {
+    return "Interview date cannot be in the past.";
+  }
+  return null;
+};
+
+window.validateNotes = function(notes, maxLen = 5000) {
+  notes = notes || "";
+  if (notes.length > maxLen) {
+    return `Notes must not exceed ${maxLen} characters. Currently ${notes.length} characters.`;
+  }
+  return null;
+};
+
 window.openModalOverlay = function(overlay) {
   if (!overlay) return;
   overlay.hidden = false;
@@ -298,7 +363,7 @@ function renderProfileFields(role, data = {}) {
   let html = `
     <label class="modalField">
       <span class="modalField__label">Full Name <span class="req">*</span></span>
-      <input class="modalField__input" type="text" name="name" value="${getVal('name')}" required placeholder="Your Name" />
+      <input class="modalField__input" type="text" name="name" value="${getVal('name')}" required placeholder="Enter your full name" />
       <span class="modalField__error" id="errProfileName" style="color: var(--color-danger); font-size: 11px; margin-top: 4px; display: block;"></span>
     </label>
     <label class="modalField">
@@ -648,9 +713,27 @@ function initUserMenu() {
     const errName = document.getElementById("errProfileName");
     if (errName) errName.textContent = "";
 
-    if (!nameInput.value.trim()) {
-      if (errName) errName.textContent = "Name is required";
+    const nameErr = window.validateCompanyName(nameInput.value);
+    if (nameErr) {
+      if (errName) errName.textContent = nameErr.replace("Company name", "Full Name");
+      nameInput.classList.add("is-invalid");
+      nameInput.focus();
       return;
+    } else {
+      nameInput.classList.remove("is-invalid");
+    }
+
+    const bioInput = profileForm.querySelector("textarea[name='bio']");
+    if (bioInput) {
+      const bioErr = window.validateNotes(bioInput.value, 5000);
+      if (bioErr) {
+        window.Toast.error("Validation Error", bioErr.replace("Notes", "Short Bio"));
+        bioInput.classList.add("is-invalid");
+        bioInput.focus();
+        return;
+      } else {
+        bioInput.classList.remove("is-invalid");
+      }
     }
 
     const body = {};
@@ -709,19 +792,23 @@ function initUserMenu() {
     errConfirm.textContent = "";
 
     let hasErrors = false;
+    let firstInvalid = null;
 
     if (!currentPass) {
       errCurrent.textContent = "Current password is required";
       hasErrors = true;
+      if (!firstInvalid) firstInvalid = document.getElementById("currentPassword");
     }
 
     if (!newPass) {
       errNew.textContent = "New password is required";
       hasErrors = true;
+      if (!firstInvalid) firstInvalid = document.getElementById("newPassword");
     } else {
       if (newPass.length < 8) {
         errNew.textContent = "New password must be at least 8 characters";
         hasErrors = true;
+        if (!firstInvalid) firstInvalid = document.getElementById("newPassword");
       } else {
         const hasUppercase = /[A-Z]/.test(newPass);
         const hasLowercase = /[a-z]/.test(newPass);
@@ -729,6 +816,7 @@ function initUserMenu() {
         if (!hasUppercase || !hasLowercase || !hasNumber) {
           errNew.textContent = "Must contain uppercase, lowercase, and a number";
           hasErrors = true;
+          if (!firstInvalid) firstInvalid = document.getElementById("newPassword");
         }
       }
     }
@@ -736,17 +824,23 @@ function initUserMenu() {
     if (!confirmPass) {
       errConfirm.textContent = "Confirm password is required";
       hasErrors = true;
+      if (!firstInvalid) firstInvalid = document.getElementById("confirmPassword");
     } else if (newPass !== confirmPass) {
       errConfirm.textContent = "Passwords do not match";
       hasErrors = true;
+      if (!firstInvalid) firstInvalid = document.getElementById("confirmPassword");
     }
 
     if (newPass && currentPass && newPass === currentPass) {
       errNew.textContent = "New password cannot be same as current password";
       hasErrors = true;
+      if (!firstInvalid) firstInvalid = document.getElementById("newPassword");
     }
 
-    if (hasErrors) return;
+    if (hasErrors) {
+      if (firstInvalid) firstInvalid.focus();
+      return;
+    }
 
     try {
       const res = await profileRequest("/auth/change-password", {

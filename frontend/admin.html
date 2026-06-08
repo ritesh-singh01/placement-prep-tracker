@@ -248,14 +248,14 @@
                                     <div class="timeline-item">
                                         <div class="timeline-item__badge green"><i data-lucide="check"></i></div>
                                         <div class="timeline-item__meta">
-                                            <span class="timeline-item__title">Jane Doe selected at Google</span>
+                                            <span class="timeline-item__title">Ritesh Kumar selected at Google</span>
                                             <span class="timeline-item__time">10 mins ago</span>
                                         </div>
                                     </div>
                                     <div class="timeline-item">
                                         <div class="timeline-item__badge blue"><i data-lucide="user-plus"></i></div>
                                         <div class="timeline-item__meta">
-                                            <span class="timeline-item__title">New student account verified: student@test.com</span>
+                                            <span class="timeline-item__title">New student account verified: abcde@gmail.com</span>
                                             <span class="timeline-item__time">2 hours ago</span>
                                         </div>
                                     </div>
@@ -536,17 +536,20 @@
             </header>
             <form id="driveForm" class="modal__body">
                 <div class="form-group">
-                    <label>Company Name</label>
+                    <label>Company Name <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
                     <input type="text" name="companyName" required class="glass-input">
+                    <span class="field-error" id="errDriveCompanyName" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                 </div>
                 <div class="form-group">
-                    <label>Job Role</label>
+                    <label>Job Role <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
                     <input type="text" name="role" required class="glass-input">
+                    <span class="field-error" id="errDriveRole" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Package (LPA)</label>
                         <input type="text" name="package" class="glass-input">
+                        <span class="field-error" id="errDrivePackage" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                     </div>
                     <div class="form-group">
                         <label>Location</label>
@@ -557,6 +560,7 @@
                     <div class="form-group">
                         <label>Drive Date</label>
                         <input type="date" name="driveDate" class="glass-input">
+                        <span class="field-error" id="errDriveDate" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                     </div>
                     <div class="form-group">
                         <label>Status</label>
@@ -583,6 +587,7 @@
                 <div class="form-group">
                     <label>Description & Requirements</label>
                     <textarea name="description" rows="3" placeholder="Enter key requirements and responsibilities..." class="glass-input" style="resize: vertical; min-height: 80px;"></textarea>
+                    <span class="field-error" id="errDriveDescription" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                 </div>
                 <footer class="modal__footer">
                     <button type="submit" class="btn btn--primary">Save Drive</button>
@@ -603,13 +608,15 @@
             </div>
 
             <div class="admin-form-group">
-                <label for="announcementTitle">Title</label>
+                <label for="announcementTitle">Title <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
                 <input id="announcementTitle" type="text" placeholder="Enter announcement title" />
+                <span class="field-error" id="errAnnouncementTitle" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
             </div>
 
             <div class="admin-form-group">
-                <label for="announcementMessage">Message</label>
+                <label for="announcementMessage">Message <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
                 <textarea id="announcementMessage" rows="5" placeholder="Write announcement message"></textarea>
+                <span class="field-error" id="errAnnouncementMessage" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
             </div>
 
             <div class="admin-form-group">
@@ -634,8 +641,8 @@
         <div class="admin-modal-card sd-modal-card">
             <div class="admin-modal-header sd-modal-header">
                 <div>
-                    <h2 id="sdName" class="sd-modal-title">Student Name</h2>
-                    <p id="sdEmail" class="sd-modal-subtitle">student@email.com</p>
+                    <h2 id="sdName" class="sd-modal-title">Ritesh Kumar</h2>
+                    <p id="sdEmail" class="sd-modal-subtitle">abcde@gmail.com</p>
                 </div>
                 <button id="closeStudentDetailModal" type="button" class="modal-close-btn">×</button>
             </div>
@@ -736,11 +743,13 @@
                 <!-- Admin Action and Send Notification -->
                 <div class="sd-admin-actions-section">
                     <div>
-                        <h4 class="sd-notif-title-label">Send Notification to Student</h4>
+                        <h4 class="sd-notif-title-label">Send Notification to Student <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></h4>
                         <div class="sd-notif-row">
                             <div class="sd-notif-inputs">
                                 <input type="text" id="sdNotifTitle" placeholder="Notification Title (e.g. Schedule Interview)" />
+                                <span class="field-error" id="errSdNotifTitle" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                                 <textarea id="sdNotifMessage" rows="2" placeholder="Notification Message..."></textarea>
+                                <span class="field-error" id="errSdNotifMessage" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                             </div>
                             <div class="sd-notif-controls">
                                 <select id="sdNotifPriority">

@@ -288,6 +288,7 @@
             <label class="modalField">
               <span class="modalField__label">Package (LPA)</span>
               <input class="modalField__input" type="text" name="package" id="fieldPackage" placeholder="e.g. 18–22" inputmode="decimal" />
+              <span class="modalField__error" id="errPackage" role="alert" style="color: var(--color-danger); font-size: 11px; margin-top: 4px; display: block;"></span>
             </label>
             <label class="modalField">
               <span class="modalField__label">Status <span class="req">*</span></span>
@@ -302,6 +303,7 @@
             <label class="modalField">
               <span class="modalField__label">Interview date</span>
               <input class="modalField__input" type="date" name="interviewDate" id="fieldInterview" />
+              <span class="modalField__error" id="errInterviewDate" role="alert" style="color: var(--color-danger); font-size: 11px; margin-top: 4px; display: block;"></span>
             </label>
             <label class="modalField">
               <span class="modalField__label">Priority <span class="req">*</span></span>
@@ -314,6 +316,7 @@
             <label class="modalField modalField--full">
               <span class="modalField__label">Notes</span>
               <textarea class="modalField__input modalField__input--textarea" name="notes" id="fieldNotes" rows="3" placeholder="Prep focus, links, recruiter details…"></textarea>
+              <span class="modalField__error" id="errNotes" role="alert" style="color: var(--color-danger); font-size: 11px; margin-top: 4px; display: block;"></span>
             </label>
           </div>
           <footer class="modal__footer">

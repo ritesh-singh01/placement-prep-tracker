@@ -18,13 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const fallbackStudents = [
-        { _id: '1', name: 'John Doe', email: 'john@example.com', role: 'student', isBlocked: false, applicationCount: 15, selectedCount: 2 },
-        { _id: '2', name: 'Jane Smith', email: 'jane@example.com', role: 'student', isBlocked: true, applicationCount: 23, selectedCount: 4 }
+        { _id: '1', name: 'Ritesh Kumar', email: 'abcde@gmail.com', role: 'student', isBlocked: false, applicationCount: 15, selectedCount: 2 },
+        { _id: '2', name: 'Aarav Sharma', email: 'aarav@example.com', role: 'student', isBlocked: true, applicationCount: 23, selectedCount: 4 }
     ];
 
     const fallbackApps = [
-        { _id: 'a1', user: { name: 'John Doe', email: 'john@example.com' }, companyName: 'Google', role: 'SDE', status: 'Selected', priority: 'High', appliedDate: new Date() },
-        { _id: 'a2', user: { name: 'Jane Smith', email: 'jane@example.com' }, companyName: 'Meta', role: 'Frontend Eng', status: 'Interview Scheduled', priority: 'Medium', appliedDate: new Date() }
+        { _id: 'a1', user: { name: 'Ritesh Kumar', email: 'abcde@gmail.com' }, companyName: 'Google', role: 'SDE', status: 'Selected', priority: 'High', appliedDate: new Date() },
+        { _id: 'a2', user: { name: 'Aarav Sharma', email: 'aarav@example.com' }, companyName: 'Meta', role: 'Frontend Eng', status: 'Interview Scheduled', priority: 'Medium', appliedDate: new Date() }
     ];
 
     const fallbackDrives = [
@@ -510,12 +510,51 @@ document.addEventListener("DOMContentLoaded", () => {
         const sendNotifBtn = qs("#sdSendNotifBtn");
         if (sendNotifBtn) {
             sendNotifBtn.onclick = async () => {
+                const errTitle = qs("#errSdNotifTitle");
+                const errMsg = qs("#errSdNotifMessage");
+                if (errTitle) errTitle.textContent = "";
+                if (errMsg) errMsg.textContent = "";
+                if (titleInput) titleInput.classList.remove("is-invalid");
+                if (msgInput) msgInput.classList.remove("is-invalid");
+
                 const title = titleInput.value.trim();
                 const message = msgInput.value.trim();
                 const priority = prioritySelect.value;
 
-                if (!title || !message) {
-                    if (window.Toast) window.Toast.error("Validation Error", "Title and Message are required.");
+                let ok = true;
+                let firstInvalid = null;
+
+                const titleErr = window.validateCompanyName(title);
+                if (titleErr) {
+                    ok = false;
+                    if (errTitle) errTitle.textContent = titleErr.replace("Company name", "Notification Title");
+                    if (titleInput) {
+                        titleInput.classList.add("is-invalid");
+                        if (!firstInvalid) firstInvalid = titleInput;
+                    }
+                }
+
+                if (!message) {
+                    ok = false;
+                    if (errMsg) errMsg.textContent = "Notification Message is required.";
+                    if (msgInput) {
+                        msgInput.classList.add("is-invalid");
+                        if (!firstInvalid) firstInvalid = msgInput;
+                    }
+                } else {
+                    const msgErr = window.validateNotes(message, 1000); // custom limit for notification
+                    if (msgErr) {
+                        ok = false;
+                        if (errMsg) errMsg.textContent = msgErr.replace("Notes", "Notification Message");
+                        if (msgInput) {
+                            msgInput.classList.add("is-invalid");
+                            if (!firstInvalid) firstInvalid = msgInput;
+                        }
+                    }
+                }
+
+                if (!ok) {
+                    if (firstInvalid) firstInvalid.focus();
                     return;
                 }
 
@@ -1566,8 +1605,81 @@ document.addEventListener("DOMContentLoaded", () => {
         if (driveForm) {
             driveForm.addEventListener("submit", async (e) => {
                 e.preventDefault();
+
+                // Clear previous errors
+                driveForm.querySelectorAll(".field-error").forEach(el => el.textContent = "");
+                driveForm.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+
                 const formData = new FormData(driveForm);
                 const body = Object.fromEntries(formData.entries());
+
+                let ok = true;
+                let firstInvalid = null;
+
+                const nameErr = window.validateCompanyName(body.companyName);
+                if (nameErr) {
+                    ok = false;
+                    const errEl = qs("#errDriveCompanyName");
+                    if (errEl) errEl.textContent = nameErr;
+                    const inputEl = driveForm.querySelector("input[name='companyName']");
+                    if (inputEl) {
+                        inputEl.classList.add("is-invalid");
+                        if (!firstInvalid) firstInvalid = inputEl;
+                    }
+                }
+
+                const roleErr = window.validateJobRole(body.role);
+                if (roleErr) {
+                    ok = false;
+                    const errEl = qs("#errDriveRole");
+                    if (errEl) errEl.textContent = roleErr;
+                    const inputEl = driveForm.querySelector("input[name='role']");
+                    if (inputEl) {
+                        inputEl.classList.add("is-invalid");
+                        if (!firstInvalid) firstInvalid = inputEl;
+                    }
+                }
+
+                const pkgErr = window.validatePackage(body.package);
+                if (pkgErr) {
+                    ok = false;
+                    const errEl = qs("#errDrivePackage");
+                    if (errEl) errEl.textContent = pkgErr;
+                    const inputEl = driveForm.querySelector("input[name='package']");
+                    if (inputEl) {
+                        inputEl.classList.add("is-invalid");
+                        if (!firstInvalid) firstInvalid = inputEl;
+                    }
+                }
+
+                const dateErr = window.validateInterviewDate(body.driveDate);
+                if (dateErr) {
+                    ok = false;
+                    const errEl = qs("#errDriveDate");
+                    if (errEl) errEl.textContent = dateErr.replace("Interview date", "Drive date");
+                    const inputEl = driveForm.querySelector("input[name='driveDate']");
+                    if (inputEl) {
+                        inputEl.classList.add("is-invalid");
+                        if (!firstInvalid) firstInvalid = inputEl;
+                    }
+                }
+
+                const descErr = window.validateNotes(body.description, 5000);
+                if (descErr) {
+                    ok = false;
+                    const errEl = qs("#errDriveDescription");
+                    if (errEl) errEl.textContent = descErr.replace("Notes", "Description");
+                    const inputEl = driveForm.querySelector("textarea[name='description']");
+                    if (inputEl) {
+                        inputEl.classList.add("is-invalid");
+                        if (!firstInvalid) firstInvalid = inputEl;
+                    }
+                }
+
+                if (!ok) {
+                    if (firstInvalid) firstInvalid.focus();
+                    return;
+                }
                 
                 // Format the driveDate properly as ISO string
                 if (body.driveDate) {
@@ -1651,12 +1763,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const titleInput = document.getElementById("announcementTitle");
         const msgInput = document.getElementById("announcementMessage");
         const typeSelect = document.getElementById("announcementType");
+        const errTitle = document.getElementById("errAnnouncementTitle");
+        const errMessage = document.getElementById("errAnnouncementMessage");
 
+        if (errTitle) errTitle.textContent = "";
+        if (errMessage) errMessage.textContent = "";
         if (titleInput) {
+            titleInput.classList.remove("is-invalid");
             titleInput.value = "";
             titleInput.focus();
         }
-        if (msgInput) msgInput.value = "";
+        if (msgInput) {
+            msgInput.classList.remove("is-invalid");
+            msgInput.value = "";
+        }
         if (typeSelect) typeSelect.value = "info";
     }
 
@@ -1694,13 +1814,55 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (publishBtn) {
             publishBtn.addEventListener("click", async () => {
-                const title = document.getElementById("announcementTitle")?.value.trim();
-                const message = document.getElementById("announcementMessage")?.value.trim();
-                const type = document.getElementById("announcementType")?.value;
+                const titleInput = document.getElementById("announcementTitle");
+                const msgInput = document.getElementById("announcementMessage");
+                const typeSelect = document.getElementById("announcementType");
+                const errTitle = document.getElementById("errAnnouncementTitle");
+                const errMessage = document.getElementById("errAnnouncementMessage");
 
-                if (!title || !message) {
-                    if (window.Toast) window.Toast.error("Validation Error", "Title and Message are required.");
-                    else alert("Please fill title and message.");
+                if (errTitle) errTitle.textContent = "";
+                if (errMessage) errMessage.textContent = "";
+                if (titleInput) titleInput.classList.remove("is-invalid");
+                if (msgInput) msgInput.classList.remove("is-invalid");
+
+                const title = titleInput ? titleInput.value.trim() : "";
+                const message = msgInput ? msgInput.value.trim() : "";
+                const type = typeSelect ? typeSelect.value : "info";
+
+                let ok = true;
+                let firstInvalid = null;
+
+                const titleErr = window.validateCompanyName(title);
+                if (titleErr) {
+                    ok = false;
+                    if (errTitle) errTitle.textContent = titleErr.replace("Company name", "Announcement Title");
+                    if (titleInput) {
+                        titleInput.classList.add("is-invalid");
+                        if (!firstInvalid) firstInvalid = titleInput;
+                    }
+                }
+
+                if (!message) {
+                    ok = false;
+                    if (errMessage) errMessage.textContent = "Announcement Message is required.";
+                    if (msgInput) {
+                        msgInput.classList.add("is-invalid");
+                        if (!firstInvalid) firstInvalid = msgInput;
+                    }
+                } else {
+                    const msgErr = window.validateNotes(message, 5000);
+                    if (msgErr) {
+                        ok = false;
+                        if (errMessage) errMessage.textContent = msgErr.replace("Notes", "Announcement Message");
+                        if (msgInput) {
+                            msgInput.classList.add("is-invalid");
+                            if (!firstInvalid) firstInvalid = msgInput;
+                        }
+                    }
+                }
+
+                if (!ok) {
+                    if (firstInvalid) firstInvalid.focus();
                     return;
                 }
 

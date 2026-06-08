@@ -156,6 +156,7 @@
               <label class="modalField">
                 <span class="modalField__label">Title <span class="req">*</span></span>
                 <input class="modalField__input" type="text" id="noteTitle" required />
+                <span class="modalField__error" id="errNoteTitle" style="color: var(--color-danger); font-size: 11px; margin-top: 4px; display: block;"></span>
               </label>
 
               <label class="modalField">
@@ -168,6 +169,7 @@
             <label class="modalField">
               <span class="modalField__label">Content <span class="req">*</span></span>
               <textarea class="modalField__input" id="noteContent" rows="6" required></textarea>
+              <span class="modalField__error" id="errNoteContent" style="color: var(--color-danger); font-size: 11px; margin-top: 4px; display: block;"></span>
             </label>
           </form>
         </div>
@@ -203,6 +205,7 @@
             <div class="modalField" style="margin-bottom: 12px;">
               <span class="modalField__label">Name <span class="req">*</span></span>
               <input class="modalField__input" type="text" id="collectionName" placeholder="e.g. System Design" required />
+              <span class="modalField__error" id="errCollectionName" style="color: var(--color-danger); font-size: 11px; margin-top: 4px; display: block;"></span>
             </div>
 
             <div class="modalForm__grid">

@@ -703,28 +703,67 @@
 
     clearFormErrors();
     var ok = true;
+    var firstInvalid = null;
+
     var n = fieldName && fieldName.value.trim();
     var r = fieldRole && fieldRole.value.trim();
-    if (!n) {
+    var pack = fieldPackage ? fieldPackage.value.trim() : "";
+    var intvRaw = fieldInterview && fieldInterview.value ? fieldInterview.value.trim() : "";
+    var notes = fieldNotes ? fieldNotes.value.trim() : "";
+
+    var nameErr = window.validateCompanyName(n);
+    if (nameErr) {
       ok = false;
       if (fieldName) fieldName.classList.add("is-invalid");
       var en = qs("#errName");
-      if (en) en.textContent = "Company name is required.";
+      if (en) en.textContent = nameErr;
+      if (!firstInvalid) firstInvalid = fieldName;
     }
-    if (!r) {
+
+    var roleErr = window.validateJobRole(r);
+    if (roleErr) {
       ok = false;
       if (fieldRole) fieldRole.classList.add("is-invalid");
       var er = qs("#errRole");
-      if (er) er.textContent = "Job role is required.";
+      if (er) er.textContent = roleErr;
+      if (!firstInvalid) firstInvalid = fieldRole;
     }
-    if (!ok) return;
+
+    var pkgErr = window.validatePackage(pack);
+    if (pkgErr) {
+      ok = false;
+      if (fieldPackage) fieldPackage.classList.add("is-invalid");
+      var ep = qs("#errPackage");
+      if (ep) ep.textContent = pkgErr;
+      if (!firstInvalid) firstInvalid = fieldPackage;
+    }
+
+    var dateErr = window.validateInterviewDate(intvRaw);
+    if (dateErr) {
+      ok = false;
+      if (fieldInterview) fieldInterview.classList.add("is-invalid");
+      var ed = qs("#errInterviewDate");
+      if (ed) ed.textContent = dateErr;
+      if (!firstInvalid) firstInvalid = fieldInterview;
+    }
+
+    var notesErr = window.validateNotes(notes, 5000);
+    if (notesErr) {
+      ok = false;
+      if (fieldNotes) fieldNotes.classList.add("is-invalid");
+      var et = qs("#errNotes");
+      if (et) et.textContent = notesErr;
+      if (!firstInvalid) firstInvalid = fieldNotes;
+    }
+
+    if (!ok) {
+      if (firstInvalid) firstInvalid.focus();
+      return;
+    }
 
     var editId = editIdField && editIdField.value;
-    var pack = fieldPackage ? fieldPackage.value.trim() : "";
     var st = fieldStatus ? fieldStatus.value : "Applied";
     var pri = fieldPriority ? fieldPriority.value : "Medium";
-    var intvRaw = fieldInterview && fieldInterview.value ? fieldInterview.value.trim() : "";
-    var notes = fieldNotes ? fieldNotes.value.trim() : "";
 
     var body = {
       companyName: n,

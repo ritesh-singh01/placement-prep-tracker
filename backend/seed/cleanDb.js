@@ -62,7 +62,7 @@ async function main() {
     // 3. Seed Clean Sample Student Account
     const studentEmail = "jane@example.com";
     const studentPassword = "password123";
-    const studentName = "Jane Doe";
+    const studentName = "Ritesh Kumar";
 
     console.log(`Creating Sample Student: ${studentEmail}`);
     const student = await User.create({

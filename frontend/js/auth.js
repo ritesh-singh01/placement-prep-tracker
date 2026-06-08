@@ -389,11 +389,18 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const emailInput = qs("#forgotEmailInput");
       const email = emailInput ? emailInput.value.trim() : "";
+      const errEmail = qs("#errForgotEmail");
+      if (errEmail) errEmail.textContent = "";
+
       if (!email) {
-        return toast("Please enter your email address.", "error");
+        if (errEmail) errEmail.textContent = "Please enter your email address.";
+        if (emailInput) emailInput.focus();
+        return;
       }
       if (!isValidEmail(email)) {
-        return toast("Please enter a valid email address.", "error");
+        if (errEmail) errEmail.textContent = "Please enter a valid email address.";
+        if (emailInput) emailInput.focus();
+        return;
       }
 
       const forgotWarningBox = document.getElementById("forgotWarningBox");
@@ -462,17 +469,61 @@ document.addEventListener("DOMContentLoaded", () => {
       const confirmPasswordInput = qs("#forgotConfirmPasswordInput");
       const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : "";
 
-      if (!otp || !newPassword || !confirmPassword) {
-        return toast("Please fill in all fields.", "error");
+      const errOtp = qs("#errForgotOtp");
+      const errNew = qs("#errForgotNewPassword");
+      const errConfirm = qs("#errForgotConfirmPassword");
+
+      if (errOtp) errOtp.textContent = "";
+      if (errNew) errNew.textContent = "";
+      if (errConfirm) errConfirm.textContent = "";
+
+      let hasErrors = false;
+      let firstInvalid = null;
+
+      if (!otp) {
+        if (errOtp) errOtp.textContent = "OTP is required.";
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = otpInput;
+      } else if (otp.length !== 6 || !/^\d+$/.test(otp)) {
+        if (errOtp) errOtp.textContent = "OTP must be a 6-digit number.";
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = otpInput;
       }
-      if (otp.length !== 6 || !/^\d+$/.test(otp)) {
-        return toast("OTP must be a 6-digit number.", "error");
+
+      if (!newPassword) {
+        if (errNew) errNew.textContent = "New password is required.";
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = newPasswordInput;
+      } else {
+        if (newPassword.length < 8) {
+          if (errNew) errNew.textContent = "New password must be at least 8 characters.";
+          hasErrors = true;
+          if (!firstInvalid) firstInvalid = newPasswordInput;
+        } else {
+          const hasUppercase = /[A-Z]/.test(newPassword);
+          const hasLowercase = /[a-z]/.test(newPassword);
+          const hasNumber = /[0-9]/.test(newPassword);
+          if (!hasUppercase || !hasLowercase || !hasNumber) {
+            if (errNew) errNew.textContent = "Must contain uppercase, lowercase, and a number.";
+            hasErrors = true;
+            if (!firstInvalid) firstInvalid = newPasswordInput;
+          }
+        }
       }
-      if (newPassword !== confirmPassword) {
-        return toast("Passwords do not match.", "error");
+
+      if (!confirmPassword) {
+        if (errConfirm) errConfirm.textContent = "Confirm password is required.";
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = confirmPasswordInput;
+      } else if (newPassword !== confirmPassword) {
+        if (errConfirm) errConfirm.textContent = "Passwords do not match.";
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = confirmPasswordInput;
       }
-      if (newPassword.length < 6) {
-        return toast("Password must be at least 6 characters.", "error");
+
+      if (hasErrors) {
+        if (firstInvalid) firstInvalid.focus();
+        return;
       }
 
       try {
@@ -591,27 +642,61 @@ document.addEventListener("DOMContentLoaded", () => {
   if (authForm) {
     authForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      
+
+      const errName = qs("#errAuthName");
+      const errEmail = qs("#errAuthEmail");
+      const errPassword = qs("#errAuthPassword");
+
+      if (errName) errName.textContent = "";
+      if (errEmail) errEmail.textContent = "";
+      if (errPassword) errPassword.textContent = "";
+
       let email = authForm.email.value.trim();
       const password = authForm.password.value;
-      
-      // Email validation
-      if (!isValidEmail(email)) {
-        return toast("Please enter a valid email address without spaces.", "error");
+      const name = authForm.name ? authForm.name.value.trim() : "";
+
+      let hasErrors = false;
+      let firstInvalid = null;
+
+      if (currentMode === "signup") {
+        const nameErr = window.validateCompanyName(name);
+        if (nameErr) {
+          if (errName) errName.textContent = nameErr.replace("Company name", "Full Name");
+          hasErrors = true;
+          if (!firstInvalid) firstInvalid = authForm.name;
+        }
       }
 
-      // Normalize email to lowercase
+      if (!email) {
+        if (errEmail) errEmail.textContent = "Email is required.";
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = authForm.email;
+      } else if (!isValidEmail(email)) {
+        if (errEmail) errEmail.textContent = "Please enter a valid email address without spaces.";
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = authForm.email;
+      }
+
+      if (!password) {
+        if (errPassword) errPassword.textContent = "Password is required.";
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = authForm.password;
+      } else if (currentMode === "signup" && !isValidPassword(password)) {
+        if (errPassword) errPassword.textContent = "Password must be at least 8 characters long, and contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = authForm.password;
+      }
+
+      if (hasErrors) {
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
+
       email = email.toLowerCase();
       
       if (currentMode === "login") {
-        if (!email || !password) return toast("Fill all fields", "error");
         handleAuth(`${API_BASE}/login`, { email, password, expectedRole: selectedRole });
       } else {
-        const name = authForm.name.value.trim();
-        if (!name || !email || !password) return toast("Fill all fields", "error");
-        if (!isValidPassword(password)) {
-          return toast("Password must be at least 8 characters long, and contain at least one uppercase letter, one lowercase letter, one number, and one special character.", "error");
-        }
         handleSignup(`${API_BASE}/signup`, { name, email, password });
       }
     });
@@ -694,12 +779,18 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const otpInput = qs("#emailVerifyOtpInput");
       const otp = otpInput ? otpInput.value.trim() : "";
+      const errOtp = qs("#errVerifyOtp");
+      if (errOtp) errOtp.textContent = "";
       
       if (!otp) {
-        return toast("Please enter the 6-digit verification code.", "error");
+        if (errOtp) errOtp.textContent = "Please enter the 6-digit verification code.";
+        if (otpInput) otpInput.focus();
+        return;
       }
       if (otp.length !== 6 || !/^\d+$/.test(otp)) {
-        return toast("Verification code must be a 6-digit number.", "error");
+        if (errOtp) errOtp.textContent = "Verification code must be a 6-digit number.";
+        if (otpInput) otpInput.focus();
+        return;
       }
 
       const submitBtn = qs("#emailVerifyOtpSubmitBtn");

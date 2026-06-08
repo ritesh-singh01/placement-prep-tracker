@@ -1,7 +1,7 @@
 /**
- * Seed Demo Student Script
+ * Seed Ritesh Kumar Student Script
  * 
- * Purpose: Seeds the student account you@colleges.edu with realistic presentation-ready data:
+ * Purpose: Seeds the student account abcde@gmail.com with realistic presentation-ready data:
  * - 8 company applications (Google, Microsoft, TCS, Infosys, Wipro, Accenture, Deloitte, Amazon)
  * - 5 interview notes (DSA, DBMS, HR, MERN, Aptitude)
  * - 2 announcements (Placement season, TCS Campus Drive)
@@ -58,9 +58,9 @@ async function main() {
     }
 
     // 2. SEED/RESET STUDENT ACCOUNT
-    const studentEmail = "you@colleges.edu";
+    const studentEmail = "abcde@gmail.com";
     const studentPassword = "Student@123";
-    const studentName = "Demo Student";
+    const studentName = "Ritesh Kumar";
 
     let student = await User.findOne({ email: studentEmail.toLowerCase().trim() });
     if (!student) {
@@ -294,7 +294,7 @@ async function main() {
     const finalNoteCount = await Note.countDocuments({ user: student._id });
     console.log(`Total Company applications seeded: ${finalCompCount}`);
     console.log(`Total Notes seeded: ${finalNoteCount}`);
-    console.log("Demo Student seeding successfully completed!");
+    console.log("Ritesh Kumar student seeding successfully completed!");
 
   } catch (error) {
     console.error("Seeding failed:", error);

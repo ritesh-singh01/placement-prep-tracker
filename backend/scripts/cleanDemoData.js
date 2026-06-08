@@ -7,7 +7,7 @@
  * Preserves:
  * 1. All administrator accounts (role === "admin")
  * 2. Real students registered (not matching test/QA patterns)
- * 3. Optional clean Demo Student (student@test.com)
+ * 3. Optional clean student account (student@test.com)
  * 
  * Usage:
  * Run `npm run clean:demo` from the backend directory.
@@ -40,11 +40,11 @@ const isDemoOrTestUser = (user) => {
   const email = (user.email || "").toLowerCase().trim();
   const name = (user.name || "").toLowerCase().trim();
 
-  // Preserved Demo Students
-  if (email === "student@test.com" || email === "you@college.edu") return false;
+  // Preserved student accounts
+  if (email === "student@test.com" || email === "abcde@gmail.com") return false;
 
   // Pattern Match lists
-  const badNames = ["qa student", "qa tester", "test student", "normal student", "jane doe"];
+  const badNames = ["qa student", "qa tester", "test student", "normal student", "temp student"];
   const badEmailKeywords = ["qa_", "test_", "teststudent", "qa-student", "test-student"];
   
   // Check names
@@ -96,7 +96,7 @@ async function main() {
     // --- 2. SEED CLEAN PRESENTATION STUDENT ---
     const demoStudentEmail = "student@test.com";
     const demoStudentPassword = "Student@123";
-    const demoStudentName = "Demo Student";
+    const demoStudentName = "Ritesh Kumar";
 
     let demoStudent = await User.findOne({ email: demoStudentEmail }).select("+password");
     if (!demoStudent) {
@@ -109,9 +109,9 @@ async function main() {
         isBlocked: false,
         isVerified: true
       });
-      console.log("Clean Demo Student created.");
+      console.log("Clean student Ritesh Kumar created.");
 
-      // Seed collections for the demo student
+      // Seed collections for the student
       const collections = await Collection.insertMany([
         { name: "General", user: demoStudent._id, icon: "sparkles", color: "muted" },
         { name: "Company-wise", user: demoStudent._id, icon: "building-2", color: "blue" },
@@ -119,11 +119,11 @@ async function main() {
         { name: "DBMS", user: demoStudent._id, icon: "database", color: "purple" },
         { name: "OS + CN", user: demoStudent._id, icon: "globe", color: "amber" },
       ]);
-      console.log("Seeded 5 collections for Demo Student.");
+      console.log("Seeded 5 collections for Ritesh Kumar.");
 
       const generalCol = collections.find(c => c.name === "General");
 
-      // Seed notes for the demo student
+      // Seed notes for the student
       await Note.insertMany([
         {
           title: "System Design Cheat Sheet",
@@ -138,9 +138,9 @@ async function main() {
           user: demoStudent._id
         }
       ]);
-      console.log("Seeded sample notes for Demo Student.");
+      console.log("Seeded sample notes for Ritesh Kumar.");
 
-      // Seed sample applications for the demo student
+      // Seed sample applications for the student
       await Company.insertMany([
         {
           companyName: "Google",
@@ -176,7 +176,7 @@ async function main() {
           isDemo: false
         }
       ]);
-      console.log("Seeded sample applications for Demo Student.");
+      console.log("Seeded sample applications for Ritesh Kumar.");
 
       // Seed notification
       await Notification.insertMany([
@@ -189,18 +189,18 @@ async function main() {
           read: false
         }
       ]);
-      console.log("Seeded sample notifications for Demo Student.");
+      console.log("Seeded sample notifications for Ritesh Kumar.");
     } else {
       // Verify if password is correct (not double-hashed)
       const isMatch = await demoStudent.matchPassword(demoStudentPassword);
       if (!isMatch) {
-        console.log(`Demo student password mismatch (possibly double-hashed). Resetting password...`);
+        console.log(`Ritesh Kumar student password mismatch (possibly double-hashed). Resetting password...`);
         demoStudent.password = demoStudentPassword; // Triggers pre-save hook on save
         demoStudent.isVerified = true;
         await demoStudent.save();
-        console.log("Demo student password updated successfully.");
+        console.log("Ritesh Kumar student password updated successfully.");
       } else {
-        console.log(`Preserving Demo Student account: ${demoStudent.email}`);
+        console.log(`Preserving Ritesh Kumar student account: ${demoStudent.email}`);
       }
     }
 
@@ -238,7 +238,7 @@ async function main() {
       console.log("Seeded sample placement drives.");
     }
 
-    // --- 3. SCRUB UNWANTED TEST/DEMO STUDENTS ---
+    // --- 3. SCRUB UNWANTED TEST STUDENTS ---
     const allUsers = await User.find({});
     const usersToDelete = allUsers.filter(isDemoOrTestUser);
     const userIdsToDelete = usersToDelete.map(u => u._id);
