@@ -907,7 +907,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Show Modal
                 const modal = qs("#driveModal");
-                if (modal) modal.style.display = "flex";
+                if (modal) window.openModalOverlay(modal);
             });
         });
 
@@ -1509,13 +1509,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 const modalTitle = qs("#driveModalTitle");
                 if (modalTitle) modalTitle.textContent = "New Placement Drive";
                 if (driveForm) driveForm.reset();
-                driveModal.style.display = "flex";
+                window.openModalOverlay(driveModal);
             });
         }
 
         if (closeBtn && driveModal) {
             closeBtn.addEventListener("click", () => {
-                driveModal.style.display = "none";
+                window.closeModalOverlay(driveModal);
                 editingDriveId = null;
                 if (driveForm) driveForm.reset();
             });
@@ -1525,7 +1525,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (driveModal) {
             driveModal.addEventListener("click", (e) => {
                 if (e.target === driveModal) {
-                    driveModal.style.display = "none";
+                    window.closeModalOverlay(driveModal);
                     editingDriveId = null;
                     if (driveForm) driveForm.reset();
                 }
@@ -1619,6 +1619,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (driveForm) {
             driveForm.addEventListener("submit", async (e) => {
+                console.log("[driveForm submit] Handler started. Preventing default...");
                 e.preventDefault();
 
                 // Clear previous errors
@@ -1627,6 +1628,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const formData = new FormData(driveForm);
                 const body = Object.fromEntries(formData.entries());
+                console.log("[driveForm submit] Parsed form body:", JSON.stringify(body));
 
                 let ok = true;
                 let firstInvalid = null;
@@ -1715,52 +1717,82 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
 
+                console.log("[driveForm submit] Validation ok state:", ok);
                 if (!ok) {
+                    console.log("[driveForm submit] Validation failed! First invalid element:", firstInvalid);
                     if (firstInvalid) firstInvalid.focus();
                     return;
                 }
+
+                // Show loading state
+                const submitBtn = driveForm.querySelector("button[type='submit']");
+                const originalBtnText = submitBtn ? submitBtn.textContent : "Save Drive";
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = "Saving...";
+                }
+                const inputs = driveForm.querySelectorAll("input, select, textarea");
+                inputs.forEach(input => input.disabled = true);
                 
                 // Format the driveDate properly as ISO string
                 if (body.driveDate) {
                     body.driveDate = new Date(body.driveDate).toISOString();
                 }
+                console.log("[driveForm submit] Formatting completed. Body to send:", JSON.stringify(body));
 
-                let res;
-                if (editingDriveId) {
-                    // Update mode
-                    res = await adminApi.put(`/drives/${editingDriveId}`, body);
-                    if (res && res.success) {
-                        if (window.Toast) window.Toast.success("Success", "Drive updated successfully");
+                try {
+                    let res;
+                    if (editingDriveId) {
+                        // Update mode
+                        res = await adminApi.put(`/drives/${editingDriveId}`, body);
+                        if (res && res.success) {
+                            if (window.Toast) window.Toast.success("Success", "Drive updated successfully");
+                        } else {
+                            // Local fallback
+                            const localDrives = JSON.parse(localStorage.getItem("demo_drives") || "[]");
+                            const index = localDrives.findIndex(d => d._id === editingDriveId);
+                            if (index !== -1) {
+                                localDrives[index] = { ...localDrives[index], ...body };
+                                localStorage.setItem("demo_drives", JSON.stringify(localDrives));
+                                if (window.Toast) window.Toast.info("Demo Mode", "Drive updated in session storage.");
+                            } else {
+                                if (window.Toast) window.Toast.error("Error", "Failed to update drive");
+                            }
+                        }
                     } else {
-                        // Local fallback
-                        const localDrives = JSON.parse(localStorage.getItem("demo_drives") || "[]");
-                        const index = localDrives.findIndex(d => d._id === editingDriveId);
-                        if (index !== -1) {
-                            localDrives[index] = { ...localDrives[index], ...body };
+                        // Create mode
+                        console.log("[driveForm submit] Calling POST /api/admin/drives...");
+                        res = await adminApi.post("/drives", body);
+                        console.log("[driveForm submit] POST /api/admin/drives response:", JSON.stringify(res));
+                        if (res && res.success) {
+                            if (window.Toast) window.Toast.success("Success", "Drive created successfully");
+                        } else {
+                            console.log("[driveForm submit] API failed. Using local fallback.");
+                            // Local fallback
+                            body.createdAt = new Date().toISOString();
+                            body._id = "d" + Date.now().toString();
+                            const localDrives = JSON.parse(localStorage.getItem("demo_drives") || "[]");
+                            localDrives.unshift(body);
                             localStorage.setItem("demo_drives", JSON.stringify(localDrives));
-                            if (window.Toast) window.Toast.info("Demo Mode", "Drive updated in session storage.");
+                            if (window.Toast) window.Toast.info("Demo Mode", "Drive created in session storage.");
                         }
                     }
-                } else {
-                    // Create mode
-                    res = await adminApi.post("/drives", body);
-                    if (res && res.success) {
-                        if (window.Toast) window.Toast.success("Success", "Drive created successfully");
-                    } else {
-                        // Local fallback
-                        body.createdAt = new Date().toISOString();
-                        body._id = "d" + Date.now().toString();
-                        const localDrives = JSON.parse(localStorage.getItem("demo_drives") || "[]");
-                        localDrives.unshift(body);
-                        localStorage.setItem("demo_drives", JSON.stringify(localDrives));
-                        if (window.Toast) window.Toast.info("Demo Mode", "Drive created in session storage.");
-                    }
-                }
 
-                driveModal.style.display = "none";
-                editingDriveId = null;
-                driveForm.reset();
-                renderDrives();
+                    window.closeModalOverlay(driveModal);
+                    editingDriveId = null;
+                    driveForm.reset();
+                    renderDrives();
+                } catch (err) {
+                    console.error("[driveForm submit] Error saving drive:", err);
+                    if (window.Toast) window.Toast.error("Error", err.message || "An unexpected error occurred while saving.");
+                } finally {
+                    // Restore loading state
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalBtnText;
+                    }
+                    inputs.forEach(input => input.disabled = false);
+                }
             });
         }
     };
