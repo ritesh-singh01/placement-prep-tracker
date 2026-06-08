@@ -551,20 +551,20 @@
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Package (LPA)</label>
-                        <input type="text" name="package" class="glass-input" inputmode="decimal">
+                        <label>Package (LPA) <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
+                        <input type="text" name="package" required class="glass-input" inputmode="decimal">
                         <span class="field-error" id="errDrivePackage" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                     </div>
                     <div class="form-group">
-                        <label>Location</label>
-                        <input type="text" name="location" class="glass-input">
+                        <label>Location <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
+                        <input type="text" name="location" required class="glass-input">
                         <span class="field-error" id="errDriveLocation" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                     </div>
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Drive Date</label>
-                        <input type="date" name="driveDate" class="glass-input">
+                        <label>Drive Date <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
+                        <input type="date" name="driveDate" required class="glass-input">
                         <span class="field-error" id="errDriveDate" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                     </div>
                     <div class="form-group">
@@ -577,8 +577,8 @@
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Eligibility Criteria</label>
-                        <input type="text" name="eligibility" placeholder="e.g. B.Tech CSE, 7+ CGPA" class="glass-input">
+                        <label>Eligibility Criteria <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
+                        <input type="text" name="eligibility" required placeholder="e.g. B.Tech CSE, 7+ CGPA" class="glass-input">
                         <span class="field-error" id="errDriveEligibility" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                     </div>
                     <div class="form-group">

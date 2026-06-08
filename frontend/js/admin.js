@@ -1657,7 +1657,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
 
-                const pkgErr = window.Validators.validatePackage(body.package);
+                const pkgErr = window.Validators.validatePackage(body.package, true);
                 if (pkgErr) {
                     ok = false;
                     const errEl = qs("#errDrivePackage");
@@ -1669,7 +1669,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
 
-                const dateErr = window.Validators.validateDate(body.driveDate, false, "Drive date");
+                const dateErr = window.Validators.validateDate(body.driveDate, true, true, "Drive date");
                 if (dateErr) {
                     ok = false;
                     const errEl = qs("#errDriveDate");
@@ -1693,7 +1693,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
 
-                const locErr = window.Validators.validateProfileText(body.location, "Location", false, 2, 100);
+                const locErr = window.Validators.validateProfileText(body.location, "Location", true, 2, 100);
                 if (locErr) {
                     ok = false;
                     const errEl = qs("#errDriveLocation");
@@ -1705,7 +1705,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
 
-                const eligErr = window.Validators.validateProfileText(body.eligibility, "Eligibility criteria", false, 2, 200);
+                const eligErr = window.Validators.validateProfileText(body.eligibility, "Eligibility criteria", true, 2, 200);
                 if (eligErr) {
                     ok = false;
                     const errEl = qs("#errDriveEligibility");

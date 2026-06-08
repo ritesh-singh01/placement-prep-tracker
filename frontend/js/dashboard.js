@@ -404,28 +404,45 @@ const FocusManager = {
   },
   
   load() {
-    const saved = localStorage.getItem("placement_focus_tasks");
+    const userStr = localStorage.getItem("user");
+    let email = "default";
+    try {
+      if (userStr) {
+        const u = JSON.parse(userStr);
+        if (u && u.email) email = u.email;
+      }
+    } catch (e) {}
+
+    this.storageKey = `placement_focus_tasks_${email}`;
+    const saved = localStorage.getItem(this.storageKey);
     if (saved) {
       try {
         this.tasks = JSON.parse(saved);
       } catch (e) {
-        this.tasks = this.getDefaultTasks();
+        this.tasks = [];
       }
     } else {
-      this.tasks = this.getDefaultTasks();
+      // Migrate from old global key if present
+      const globalSaved = localStorage.getItem("placement_focus_tasks");
+      if (globalSaved) {
+        try {
+          this.tasks = JSON.parse(globalSaved);
+        } catch (e) {
+          this.tasks = [];
+        }
+        this.save();
+        localStorage.removeItem("placement_focus_tasks");
+      } else {
+        this.tasks = [];
+        this.save();
+      }
     }
   },
   
-  getDefaultTasks() {
-    return [
-      { id: Date.now() + 1, text: "Revise DBMS notes", completed: true },
-      { id: Date.now() + 2, text: "Solve 3 DSA problems", completed: false },
-      { id: Date.now() + 3, text: "Mock interview (30 min)", completed: false }
-    ];
-  },
-  
   save() {
-    localStorage.setItem("placement_focus_tasks", JSON.stringify(this.tasks));
+    if (this.storageKey) {
+      localStorage.setItem(this.storageKey, JSON.stringify(this.tasks));
+    }
   },
   
   bindEvents() {
@@ -436,25 +453,31 @@ const FocusManager = {
     this.container.innerHTML = "";
     
     if (this.tasks.length === 0) {
-      this.container.innerHTML = `<div style="padding: 10px 14px; opacity: 0.5; font-size: 13px;">No tasks for today.</div>`;
-    }
-    
-    this.tasks.forEach(task => {
-      const label = document.createElement("label");
-      label.className = "check";
-      label.innerHTML = `
-        <input type="checkbox" ${task.completed ? "checked" : ""} data-id="${task.id}" />
-        <span>${task.text}</span>
+      this.container.innerHTML = `
+        <div class="empty-state" style="padding: 20px; text-align: center; opacity: 0.6;">
+          <i data-lucide="check-square" style="width: 24px; height: 24px; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;"></i>
+          <div style="font-size: 13px; font-weight: 500;">No tasks for today</div>
+          <div style="font-size: 11px; margin-top: 4px;">Click the button below to add your first checklist item.</div>
+        </div>
       `;
-      
-      const input = label.querySelector("input");
-      input.addEventListener("change", () => {
-        task.completed = input.checked;
-        this.save();
+    } else {
+      this.tasks.forEach(task => {
+        const label = document.createElement("label");
+        label.className = "check";
+        label.innerHTML = `
+          <input type="checkbox" ${task.completed ? "checked" : ""} data-id="${task.id}" />
+          <span>${task.text}</span>
+        `;
+        
+        const input = label.querySelector("input");
+        input.addEventListener("change", () => {
+          task.completed = input.checked;
+          this.save();
+        });
+        
+        this.container.appendChild(label);
       });
-      
-      this.container.appendChild(label);
-    });
+    }
     
     if (window.lucide) window.lucide.createIcons();
   },
@@ -466,6 +489,7 @@ const FocusManager = {
     form.className = "checklist__form";
     form.innerHTML = `
       <input type="text" class="checklist__input" placeholder="What needs to be done?" id="taskInput" />
+      <span class="field-error" id="errTaskInput" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
       <div class="checklist__actions">
         <button class="btn btn--ghost btn--sm" id="cancelTask">Cancel</button>
         <button class="btn btn--primary btn--sm" id="saveTask">Add</button>
@@ -490,10 +514,19 @@ const FocusManager = {
   
   handleAddTask() {
     const input = qs("#taskInput");
+    const errSpan = qs("#errTaskInput");
+    if (errSpan) errSpan.textContent = "";
+    if (input) input.classList.remove("is-invalid");
+
     const text = input.value.trim();
     
-    if (!text) {
-      if (window.Toast) window.Toast.error("Error", "Task name cannot be empty.");
+    const taskErr = window.Validators.validateChecklistTask(text);
+    if (taskErr) {
+      if (errSpan) errSpan.textContent = taskErr;
+      if (input) {
+        input.classList.add("is-invalid");
+        input.focus();
+      }
       return;
     }
     

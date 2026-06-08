@@ -199,8 +199,37 @@
       if (!isPdf && !isTrustedDomain) {
         return `${label} must point to a PDF file or a trusted hosting service (Google Drive, Dropbox, OneDrive, or GitHub).`;
       }
+
+      if (hostname.endsWith("github.com")) {
+        const isRawOrBlob = path.includes("/raw/") || path.includes("/blob/") || path.includes("/releases/download/");
+        if (!isPdf && !isRawOrBlob) {
+          return `${label} on GitHub must point to a specific file (e.g., a PDF in a repository).`;
+        }
+      }
     }
 
+    return null;
+  };
+
+  // 4c. Checklist Tasks
+  Validators.validateChecklistTask = function(text) {
+    text = (text || "").trim();
+    if (!text) {
+      return "Task name is required.";
+    }
+    if (text.length < 3 || text.length > 100) {
+      return "Task name must be between 3 and 100 characters.";
+    }
+    if (/^\d+$/.test(text)) {
+      return "Task name cannot contain only numbers.";
+    }
+    if (!/[a-zA-Z0-9]/.test(text)) {
+      return "Task name must contain alphanumeric characters.";
+    }
+    const uniqueChars = new Set(text.replace(/\s/g, ''));
+    if (uniqueChars.size === 1 && !/[a-zA-Z0-9]/.test([...uniqueChars][0])) {
+      return "Task name contains repeated symbol spam.";
+    }
     return null;
   };
 
@@ -269,9 +298,12 @@
   };
 
   // 8. Dates
-  Validators.validateDate = function(dateStr, isFutureRequired = false, label = "Date") {
+  Validators.validateDate = function(dateStr, isRequired = false, isFutureRequired = false, label = "Date") {
     dateStr = (dateStr || "").trim();
-    if (!dateStr) return null;
+    if (!dateStr) {
+      if (isRequired) return `${label} is required.`;
+      return null;
+    }
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) {
       return `Invalid ${label.toLowerCase()}.`;

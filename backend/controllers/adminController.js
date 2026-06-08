@@ -122,19 +122,19 @@ const validateDriveInput = (body) => {
   const roleErr = Validators.validateJobRole(body.role);
   if (roleErr) return roleErr;
 
-  const pkgErr = Validators.validatePackage(body.package, false);
+  const pkgErr = Validators.validatePackage(body.package, true);
   if (pkgErr) return pkgErr;
 
-  const dateErr = Validators.validateDate(body.driveDate, false, "Drive date");
+  const dateErr = Validators.validateDate(body.driveDate, true, true, "Drive date");
   if (dateErr) return dateErr;
 
   const descErr = Validators.validateLongText(body.description, 5000, "Description");
   if (descErr) return descErr;
 
-  const locErr = Validators.validateProfileText(body.location, "Location", false, 2, 100);
+  const locErr = Validators.validateProfileText(body.location, "Location", true, 2, 100);
   if (locErr) return locErr;
 
-  const eligErr = Validators.validateProfileText(body.eligibility, "Eligibility criteria", false, 2, 200);
+  const eligErr = Validators.validateProfileText(body.eligibility, "Eligibility criteria", true, 2, 200);
   if (eligErr) return eligErr;
 
   const statusErr = Validators.validateDropdown(body.status || "Open", ["Open", "Closed"], "Status");
