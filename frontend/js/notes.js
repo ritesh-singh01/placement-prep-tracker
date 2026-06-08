@@ -242,12 +242,21 @@ function renderNotes() {
   const container = qs("#notesContainer");
   if (!container) return;
 
-  const filtered = activeCollectionId === "all" 
+  const query = qs("#noteSearch") ? qs("#noteSearch").value.trim().toLowerCase() : "";
+  let filtered = activeCollectionId === "all" 
     ? notesList 
     : notesList.filter(n => {
         const colId = n.collectionId && (typeof n.collectionId === "object" ? n.collectionId._id : n.collectionId);
         return colId === activeCollectionId;
       });
+
+  if (query) {
+    filtered = filtered.filter(n => {
+      const title = (n.title || "").toLowerCase();
+      const content = (n.content || "").toLowerCase();
+      return title.includes(query) || content.includes(query);
+    });
+  }
 
   if (filtered.length === 0) {
     container.innerHTML = "<div style='grid-column: 1 / -1; padding: 2rem; text-align: center; color: var(--text-muted); opacity: 0.7;'>No notes found in this collection. Create your first note!</div>";
@@ -517,6 +526,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         hasError = true;
         if (!firstInvalid) firstInvalid = titleInput;
+      } else {
+        const hasScript = /<script\b[^>]*>|javascript:|on\w+\s*=/i.test(title);
+        if (hasScript) {
+          if (errTitle) errTitle.textContent = "Title contains forbidden script content.";
+          if (titleInput) {
+            titleInput.style.borderColor = "var(--bad)";
+            titleInput.classList.add("is-invalid");
+          }
+          hasError = true;
+          if (!firstInvalid) firstInvalid = titleInput;
+        }
       }
 
       if (!content) {
@@ -617,6 +637,24 @@ document.addEventListener("DOMContentLoaded", () => {
         nameInput.classList.remove("is-invalid");
       }
 
+      if (!name) {
+        if (errName) errName.textContent = "Collection name is required.";
+        if (nameInput) {
+          nameInput.style.borderColor = "var(--bad)";
+          nameInput.classList.add("is-invalid");
+          nameInput.focus();
+        }
+        return;
+      }
+      if (name.length < 2 || name.length > 100) {
+        if (errName) errName.textContent = "Collection name must be between 2 and 100 characters.";
+        if (nameInput) {
+          nameInput.style.borderColor = "var(--bad)";
+          nameInput.classList.add("is-invalid");
+          nameInput.focus();
+        }
+        return;
+      }
       const nameErr = window.validateCompanyName(name);
       if (nameErr) {
         if (errName) errName.textContent = nameErr.replace("Company name", "Collection name");
@@ -670,6 +708,13 @@ document.addEventListener("DOMContentLoaded", () => {
       } finally {
         btn.disabled = false;
       }
+    });
+  }
+
+  const noteSearchEl = qs("#noteSearch");
+  if (noteSearchEl) {
+    noteSearchEl.addEventListener("input", () => {
+      renderNotes();
     });
   }
 

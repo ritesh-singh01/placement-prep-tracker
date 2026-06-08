@@ -345,9 +345,10 @@
 
   function getFilteredSorted() {
     var searchEl = qs("#companySearch");
+    var topbarSearchEl = qs("#topbarCompanySearch");
     var filterEl = qs("#filterStatus");
     var sortEl = qs("#sortBy");
-    var q = (searchEl && searchEl.value ? searchEl.value : "").trim().toLowerCase();
+    var q = ((searchEl && searchEl.value) || (topbarSearchEl && topbarSearchEl.value) || "").trim().toLowerCase();
     var filter = filterEl ? filterEl.value : "all";
     var sortKey = sortEl ? sortEl.value : "applied-desc";
 
@@ -1081,9 +1082,19 @@
 
   function wireFilters() {
     var search = qs("#companySearch");
+    var topbarSearch = qs("#topbarCompanySearch");
     var filter = qs("#filterStatus");
     var sort = qs("#sortBy");
-    if (search) search.addEventListener("input", renderTable);
+
+    function handleSearchInput(e) {
+      var val = e.target.value;
+      if (search && search !== e.target) search.value = val;
+      if (topbarSearch && topbarSearch !== e.target) topbarSearch.value = val;
+      renderTable();
+    }
+
+    if (search) search.addEventListener("input", handleSearchInput);
+    if (topbarSearch) topbarSearch.addEventListener("input", handleSearchInput);
     if (filter) filter.addEventListener("change", renderTable);
     if (sort) sort.addEventListener("change", renderTable);
   }

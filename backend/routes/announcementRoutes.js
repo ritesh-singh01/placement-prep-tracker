@@ -22,14 +22,44 @@ router.post("/", protect, admin, async (req, res) => {
   try {
     const { title, message, type } = req.body;
 
-    if (!title || !message) {
-      return res.status(400).json({ success: false, message: "Title and message are required" });
+    const trimmedTitle = (title || "").trim();
+    if (!trimmedTitle) {
+      return res.status(400).json({ success: false, message: "Announcement Title is required." });
+    }
+    if (trimmedTitle.length < 2 || trimmedTitle.length > 100) {
+      return res.status(400).json({ success: false, message: "Announcement Title must be between 2 and 100 characters." });
+    }
+    if (/^[+-]?\d+(\.\d+)?$/.test(trimmedTitle)) {
+      return res.status(400).json({ success: false, message: "Announcement Title cannot contain only numbers." });
+    }
+    if (!/^[a-zA-Z0-9\s&.\-']+$/.test(trimmedTitle)) {
+      return res.status(400).json({ success: false, message: "Announcement Title contains invalid characters." });
+    }
+    if (!/[a-zA-Z0-9]/.test(trimmedTitle)) {
+      return res.status(400).json({ success: false, message: "Announcement Title cannot consist only of special characters." });
+    }
+
+    const trimmedMsg = (message || "").trim();
+    if (!trimmedMsg) {
+      return res.status(400).json({ success: false, message: "Announcement Message is required." });
+    }
+    if (trimmedMsg.length > 5000) {
+      return res.status(400).json({ success: false, message: "Announcement Message must not exceed 5000 characters." });
+    }
+    if (/<script\b[^>]*>|javascript:|on\w+\s*=/i.test(trimmedMsg)) {
+      return res.status(400).json({ success: false, message: "Announcement Message contains forbidden script content." });
+    }
+
+    const validTypes = ["info", "success", "warning", "urgent"];
+    const t = (type || "info").toLowerCase();
+    if (!validTypes.includes(t)) {
+      return res.status(400).json({ success: false, message: "Invalid announcement type." });
     }
 
     const announcement = await Announcement.create({
-      title,
-      message,
-      type,
+      title: trimmedTitle,
+      message: trimmedMsg,
+      type: t,
       createdBy: req.user._id,
     });
 

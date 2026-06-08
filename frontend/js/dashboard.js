@@ -552,6 +552,27 @@ function initATSChecker() {
     if (e.target === modal) closeModal();
   });
   
+  const validateFile = (file) => {
+    if (!file) return false;
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      if (window.Toast) {
+        window.Toast.error("Upload Error", "File size must not exceed 5MB.");
+      }
+      return false;
+    }
+    const name = file.name || "";
+    const ext = name.slice(name.lastIndexOf(".")).toLowerCase();
+    const validExtensions = [".pdf", ".docx", ".txt"];
+    if (!validExtensions.includes(ext)) {
+      if (window.Toast) {
+        window.Toast.error("Upload Error", "Invalid file format. Only PDF, DOCX, and TXT files are allowed.");
+      }
+      return false;
+    }
+    return true;
+  };
+
   // Drag and Drop
   if (uploadZone) {
     ["dragenter", "dragover"].forEach(eventName => {
@@ -572,7 +593,9 @@ function initATSChecker() {
       const dt = e.dataTransfer;
       const files = dt.files;
       if (files.length > 0) {
-        startATSScanning(files[0]);
+        if (validateFile(files[0])) {
+          startATSScanning(files[0]);
+        }
       }
     });
   }
@@ -583,7 +606,9 @@ function initATSChecker() {
     });
     fileInput.addEventListener("change", () => {
       if (fileInput.files.length > 0) {
-        startATSScanning(fileInput.files[0]);
+        if (validateFile(fileInput.files[0])) {
+          startATSScanning(fileInput.files[0]);
+        }
       }
     });
   }

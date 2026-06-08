@@ -92,6 +92,20 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ success: false, message: "Please provide all required fields" });
     }
 
+    const trimmedName = (name || "").trim();
+    if (trimmedName.length < 2 || trimmedName.length > 100) {
+      return res.status(400).json({ success: false, message: "Full Name must be between 2 and 100 characters." });
+    }
+    if (/^[+-]?\d+(\.\d+)?$/.test(trimmedName)) {
+      return res.status(400).json({ success: false, message: "Full Name cannot contain only numbers." });
+    }
+    if (!/^[a-zA-Z0-9\s&.\-']+$/.test(trimmedName)) {
+      return res.status(400).json({ success: false, message: "Full Name contains invalid characters." });
+    }
+    if (!/[a-zA-Z0-9]/.test(trimmedName)) {
+      return res.status(400).json({ success: false, message: "Full Name cannot consist only of special characters." });
+    }
+
     // Validation
     if (!isValidEmail(email)) {
       return res.status(400).json({ success: false, message: "Please enter a valid email address." });
@@ -286,25 +300,104 @@ exports.updateProfile = async (req, res) => {
       if (!trimmedName) {
         return res.status(400).json({ success: false, message: "Name cannot be empty" });
       }
+      if (trimmedName.length < 2 || trimmedName.length > 100) {
+        return res.status(400).json({ success: false, message: "Full Name must be between 2 and 100 characters." });
+      }
+      if (/^[+-]?\d+(\.\d+)?$/.test(trimmedName)) {
+        return res.status(400).json({ success: false, message: "Full Name cannot contain only numbers." });
+      }
+      if (!/^[a-zA-Z0-9\s&.\-']+$/.test(trimmedName)) {
+        return res.status(400).json({ success: false, message: "Full Name contains invalid characters." });
+      }
+      if (!/[a-zA-Z0-9]/.test(trimmedName)) {
+        return res.status(400).json({ success: false, message: "Full Name cannot consist only of special characters." });
+      }
       user.name = trimmedName;
     }
     
-    if (req.body.phoneNumber !== undefined) user.phoneNumber = req.body.phoneNumber.trim();
-    if (req.body.bio !== undefined) user.bio = req.body.bio.trim();
+    if (req.body.phoneNumber !== undefined) {
+      const ph = req.body.phoneNumber.trim();
+      if (ph) {
+        if (ph.length < 7 || ph.length > 15) {
+          return res.status(400).json({ success: false, message: "Phone number must be between 7 and 15 digits." });
+        }
+        if (!/^\+?[0-9\s]+$/.test(ph)) {
+          return res.status(400).json({ success: false, message: "Phone number can only contain digits, spaces, and an optional leading '+'." });
+        }
+      }
+      user.phoneNumber = ph;
+    }
+
+    if (req.body.bio !== undefined) {
+      const bio = req.body.bio.trim();
+      if (bio) {
+        const hasScript = /<script\b[^>]*>|javascript:|on\w+\s*=/i.test(bio);
+        if (hasScript) {
+          return res.status(400).json({ success: false, message: "Short Bio contains forbidden script content." });
+        }
+        if (bio.length > 5000) {
+          return res.status(400).json({ success: false, message: "Short Bio must not exceed 5000 characters." });
+        }
+      }
+      user.bio = bio;
+    }
 
     if (user.role === "student") {
-      if (req.body.collegeName !== undefined) user.collegeName = req.body.collegeName.trim();
-      if (req.body.course !== undefined) user.course = req.body.course.trim();
-      if (req.body.branch !== undefined) user.branch = req.body.branch.trim();
-      if (req.body.graduationYear !== undefined) user.graduationYear = req.body.graduationYear.trim();
-      if (req.body.skills !== undefined) user.skills = req.body.skills.trim();
-      if (req.body.linkedinUrl !== undefined) user.linkedinUrl = req.body.linkedinUrl.trim();
-      if (req.body.githubUrl !== undefined) user.githubUrl = req.body.githubUrl.trim();
-      if (req.body.resumeUrl !== undefined) user.resumeUrl = req.body.resumeUrl.trim();
+      const textFields = ["collegeName", "course", "branch", "skills"];
+      for (const field of textFields) {
+        if (req.body[field] !== undefined) {
+          const val = req.body[field].trim();
+          if (val.length > 150) {
+            return res.status(400).json({ success: false, message: `${field} must not exceed 150 characters.` });
+          }
+          user[field] = val;
+        }
+      }
+
+      if (req.body.graduationYear !== undefined) {
+        const year = req.body.graduationYear.trim();
+        if (year) {
+          if (!/^\d{4}$/.test(year)) {
+            return res.status(400).json({ success: false, message: "Graduation year must be a 4-digit number." });
+          }
+          const num = Number(year);
+          if (num < 1900 || num > 2100) {
+            return res.status(400).json({ success: false, message: "Graduation year must be between 1900 and 2100." });
+          }
+        }
+        user.graduationYear = year;
+      }
+
+      const urlFields = [
+        { key: "linkedinUrl", label: "LinkedIn URL" },
+        { key: "githubUrl", label: "GitHub URL" },
+        { key: "resumeUrl", label: "Resume URL" }
+      ];
+      for (const field of urlFields) {
+        if (req.body[field.key] !== undefined) {
+          const url = req.body[field.key].trim();
+          if (url) {
+            if (url.length > 500) {
+              return res.status(400).json({ success: false, message: `${field.label} must not exceed 500 characters.` });
+            }
+            if (!/^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(url)) {
+              return res.status(400).json({ success: false, message: `${field.label} must be a valid URL starting with http:// or https://.` });
+            }
+          }
+          user[field.key] = url;
+        }
+      }
     } else if (user.role === "admin") {
-      if (req.body.department !== undefined) user.department = req.body.department.trim();
-      if (req.body.designation !== undefined) user.designation = req.body.designation.trim();
-      if (req.body.officeLocation !== undefined) user.officeLocation = req.body.officeLocation.trim();
+      const adminTextFields = ["department", "designation", "officeLocation"];
+      for (const field of adminTextFields) {
+        if (req.body[field] !== undefined) {
+          const val = req.body[field].trim();
+          if (val.length > 150) {
+            return res.status(400).json({ success: false, message: `${field} must not exceed 150 characters.` });
+          }
+          user[field] = val;
+        }
+      }
     }
 
     await user.save();

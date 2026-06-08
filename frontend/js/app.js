@@ -82,6 +82,43 @@ window.validateNotes = function(notes, maxLen = 1000) {
   return null;
 };
 
+window.validatePhoneNumber = function(phone) {
+  phone = (phone || "").trim();
+  if (!phone) return null;
+  if (phone.length < 7 || phone.length > 15) {
+    return "Phone number must be between 7 and 15 digits.";
+  }
+  if (!/^\+?[0-9\s]+$/.test(phone)) {
+    return "Phone number can only contain digits, spaces, and an optional leading '+'.";
+  }
+  return null;
+};
+
+window.validateGraduationYear = function(year) {
+  year = (year || "").trim();
+  if (!year) return null;
+  if (!/^\d{4}$/.test(year)) {
+    return "Graduation year must be a 4-digit number.";
+  }
+  const num = Number(year);
+  if (num < 1900 || num > 2100) {
+    return "Graduation year must be between 1900 and 2100.";
+  }
+  return null;
+};
+
+window.validateUrl = function(url, label) {
+  url = (url || "").trim();
+  if (!url) return null;
+  if (url.length > 500) {
+    return `${label} must not exceed 500 characters.`;
+  }
+  if (!/^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(url)) {
+    return `${label} must be a valid URL starting with http:// or https://.`;
+  }
+  return null;
+};
+
 window.openModalOverlay = function(overlay) {
   if (!overlay) return;
   overlay.hidden = false;
@@ -745,14 +782,95 @@ function initUserMenu() {
     const errName = document.getElementById("errProfileName");
     if (errName) errName.textContent = "";
 
+    let hasErrors = false;
+    let firstInvalid = null;
+
+    profileForm.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+
     const nameErr = window.validateCompanyName(nameInput.value);
     if (nameErr) {
       if (errName) errName.textContent = nameErr.replace("Company name", "Full Name");
       nameInput.classList.add("is-invalid");
-      nameInput.focus();
-      return;
-    } else {
-      nameInput.classList.remove("is-invalid");
+      hasErrors = true;
+      if (!firstInvalid) firstInvalid = nameInput;
+    }
+
+    const phoneInput = profileForm.querySelector("input[name='phoneNumber']");
+    if (phoneInput) {
+      const phoneErr = window.validatePhoneNumber(phoneInput.value);
+      if (phoneErr) {
+        window.Toast.error("Validation Error", phoneErr);
+        phoneInput.classList.add("is-invalid");
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = phoneInput;
+      }
+    }
+
+    const gradInput = profileForm.querySelector("input[name='graduationYear']");
+    if (gradInput) {
+      const gradErr = window.validateGraduationYear(gradInput.value);
+      if (gradErr) {
+        window.Toast.error("Validation Error", gradErr);
+        gradInput.classList.add("is-invalid");
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = gradInput;
+      }
+    }
+
+    const linkedinInput = profileForm.querySelector("input[name='linkedinUrl']");
+    if (linkedinInput) {
+      const linkErr = window.validateUrl(linkedinInput.value, "LinkedIn URL");
+      if (linkErr) {
+        window.Toast.error("Validation Error", linkErr);
+        linkedinInput.classList.add("is-invalid");
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = linkedinInput;
+      }
+    }
+
+    const githubInput = profileForm.querySelector("input[name='githubUrl']");
+    if (githubInput) {
+      const gitErr = window.validateUrl(githubInput.value, "GitHub URL");
+      if (gitErr) {
+        window.Toast.error("Validation Error", gitErr);
+        githubInput.classList.add("is-invalid");
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = githubInput;
+      }
+    }
+
+    const resumeInput = profileForm.querySelector("input[name='resumeUrl']");
+    if (resumeInput) {
+      const resErr = window.validateUrl(resumeInput.value, "Resume URL");
+      if (resErr) {
+        window.Toast.error("Validation Error", resErr);
+        resumeInput.classList.add("is-invalid");
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = resumeInput;
+      }
+    }
+
+    const textLimits = [
+      { name: "collegeName", label: "College Name", max: 150 },
+      { name: "course", label: "Course / Degree", max: 150 },
+      { name: "branch", label: "Branch / Department", max: 150 },
+      { name: "skills", label: "Skills", max: 150 },
+      { name: "department", label: "Department", max: 150 },
+      { name: "designation", label: "Designation", max: 150 },
+      { name: "officeLocation", label: "Office Location", max: 150 }
+    ];
+
+    for (const item of textLimits) {
+      const input = profileForm.querySelector(`input[name='${item.name}']`);
+      if (input) {
+        const val = input.value.trim();
+        if (val.length > item.max) {
+          window.Toast.error("Validation Error", `${item.label} must not exceed ${item.max} characters.`);
+          input.classList.add("is-invalid");
+          hasErrors = true;
+          if (!firstInvalid) firstInvalid = input;
+        }
+      }
     }
 
     const bioInput = profileForm.querySelector("textarea[name='bio']");
@@ -761,11 +879,14 @@ function initUserMenu() {
       if (bioErr) {
         window.Toast.error("Validation Error", bioErr.replace("Notes", "Short Bio"));
         bioInput.classList.add("is-invalid");
-        bioInput.focus();
-        return;
-      } else {
-        bioInput.classList.remove("is-invalid");
+        hasErrors = true;
+        if (!firstInvalid) firstInvalid = bioInput;
       }
+    }
+
+    if (hasErrors) {
+      if (firstInvalid) firstInvalid.focus();
+      return;
     }
 
     const body = {};
@@ -845,8 +966,9 @@ function initUserMenu() {
         const hasUppercase = /[A-Z]/.test(newPass);
         const hasLowercase = /[a-z]/.test(newPass);
         const hasNumber = /[0-9]/.test(newPass);
-        if (!hasUppercase || !hasLowercase || !hasNumber) {
-          errNew.textContent = "Must contain uppercase, lowercase, and a number";
+        const hasSpecial = /[^A-Za-z0-9]/.test(newPass);
+        if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+          errNew.textContent = "Must contain uppercase, lowercase, a number, and a special character.";
           hasErrors = true;
           if (!firstInvalid) firstInvalid = document.getElementById("newPassword");
         }

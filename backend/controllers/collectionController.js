@@ -36,14 +36,40 @@ exports.getCollections = async (req, res) => {
 exports.createCollection = async (req, res) => {
   try {
     const { name, color, icon } = req.body;
-    if (!name) {
+    const trimmedName = (name || "").trim();
+    if (!trimmedName) {
       return res.status(400).json({ success: false, message: "Collection name is required" });
+    }
+    if (trimmedName.length < 2 || trimmedName.length > 100) {
+      return res.status(400).json({ success: false, message: "Collection name must be between 2 and 100 characters." });
+    }
+    if (/^[+-]?\d+(\.\d+)?$/.test(trimmedName)) {
+      return res.status(400).json({ success: false, message: "Collection name cannot contain only numbers." });
+    }
+    if (!/^[a-zA-Z0-9\s&.\-']+$/.test(trimmedName)) {
+      return res.status(400).json({ success: false, message: "Collection name contains invalid characters." });
+    }
+    if (!/[a-zA-Z0-9]/.test(trimmedName)) {
+      return res.status(400).json({ success: false, message: "Collection name cannot consist only of special characters." });
+    }
+
+    const cColor = color || "muted";
+    const cIcon = icon || "folder";
+
+    const validColors = ["muted", "good", "blue", "purple", "amber", "bad"];
+    const validIcons = ["folder", "code-2", "database", "globe", "building-2", "briefcase", "sparkles", "book"];
+
+    if (!validColors.includes(cColor)) {
+      return res.status(400).json({ success: false, message: "Invalid collection color." });
+    }
+    if (!validIcons.includes(cIcon)) {
+      return res.status(400).json({ success: false, message: "Invalid collection icon." });
     }
 
     const collection = await Collection.create({
-      name: name.trim(),
-      color: color || "muted",
-      icon: icon || "folder",
+      name: trimmedName,
+      color: cColor,
+      icon: cIcon,
       user: req.user._id,
     });
 
@@ -59,9 +85,48 @@ exports.updateCollection = async (req, res) => {
     const { id } = req.params;
     const { name, color, icon } = req.body;
 
+    const updateFields = {};
+
+    if (name !== undefined) {
+      const trimmedName = (name || "").trim();
+      if (!trimmedName) {
+        return res.status(400).json({ success: false, message: "Collection name is required." });
+      }
+      if (trimmedName.length < 2 || trimmedName.length > 100) {
+        return res.status(400).json({ success: false, message: "Collection name must be between 2 and 100 characters." });
+      }
+      if (/^[+-]?\d+(\.\d+)?$/.test(trimmedName)) {
+        return res.status(400).json({ success: false, message: "Collection name cannot contain only numbers." });
+      }
+      if (!/^[a-zA-Z0-9\s&.\-']+$/.test(trimmedName)) {
+        return res.status(400).json({ success: false, message: "Collection name contains invalid characters." });
+      }
+      if (!/[a-zA-Z0-9]/.test(trimmedName)) {
+        return res.status(400).json({ success: false, message: "Collection name cannot consist only of special characters." });
+      }
+      updateFields.name = trimmedName;
+    }
+
+    const validColors = ["muted", "good", "blue", "purple", "amber", "bad"];
+    const validIcons = ["folder", "code-2", "database", "globe", "building-2", "briefcase", "sparkles", "book"];
+
+    if (color !== undefined) {
+      if (!validColors.includes(color)) {
+        return res.status(400).json({ success: false, message: "Invalid collection color." });
+      }
+      updateFields.color = color;
+    }
+
+    if (icon !== undefined) {
+      if (!validIcons.includes(icon)) {
+        return res.status(400).json({ success: false, message: "Invalid collection icon." });
+      }
+      updateFields.icon = icon;
+    }
+
     const collection = await Collection.findOneAndUpdate(
       { _id: id, user: req.user._id },
-      { name, color, icon },
+      updateFields,
       { new: true, runValidators: true }
     );
 

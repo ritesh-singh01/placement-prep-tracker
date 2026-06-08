@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const tbody = qs("#studentsTableBody");
         if (!tbody) return;
 
-        const query = qs("#studentSearch") ? qs("#studentSearch").value.trim().toLowerCase() : "";
+        const query = ((qs("#studentSearch") && qs("#studentSearch").value) || (qs("#globalSearch") && qs("#globalSearch").value) || "").trim().toLowerCase();
         const filteredStudents = students.filter(student => 
             (student.name || "").toLowerCase().includes(query) || 
             (student.email || "").toLowerCase().includes(query)
@@ -1484,11 +1484,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         const studentSearch = qs("#studentSearch");
-        if (studentSearch) {
-            studentSearch.addEventListener("input", () => {
-                renderStudents();
-            });
-        }
+        const globalSearch = qs("#globalSearch");
+
+        const handleStudentSearch = (e) => {
+            const val = e.target.value;
+            if (studentSearch && studentSearch !== e.target) studentSearch.value = val;
+            if (globalSearch && globalSearch !== e.target) globalSearch.value = val;
+            renderStudents();
+        };
+
+        if (studentSearch) studentSearch.addEventListener("input", handleStudentSearch);
+        if (globalSearch) globalSearch.addEventListener("input", handleStudentSearch);
     };
 
     // --- MODALS ---

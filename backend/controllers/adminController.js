@@ -114,8 +114,87 @@ exports.getDrives = async (req, res) => {
   }
 };
 
+const validateDriveInput = (body) => {
+  const companyName = (body.companyName || "").trim();
+  if (!companyName) {
+    return "Company name is required.";
+  }
+  if (companyName.length < 2 || companyName.length > 100) {
+    return "Company name must be between 2 and 100 characters.";
+  }
+  if (/^[+-]?\d+(\.\d+)?$/.test(companyName)) {
+    return "Company name cannot contain only numbers.";
+  }
+  if (!/^[a-zA-Z0-9\s&.\-']+$/.test(companyName)) {
+    return "Company name contains invalid characters.";
+  }
+  if (!/[a-zA-Z0-9]/.test(companyName)) {
+    return "Company name cannot consist only of special characters.";
+  }
+
+  const role = (body.role || "").trim();
+  if (!role) {
+    return "Job role is required.";
+  }
+  if (role.length < 2 || role.length > 80) {
+    return "Job role must be between 2 and 80 characters.";
+  }
+  if (/^[+-]?\d+(\.\d+)?$/.test(role)) {
+    return "Job role cannot contain only numbers.";
+  }
+  if (!/[a-zA-Z0-9]/.test(role)) {
+    return "Job role cannot consist only of special characters.";
+  }
+
+  const pkg = (body.package || "").trim();
+  if (pkg) {
+    const num = Number(pkg);
+    if (isNaN(num) || !/^\d+(\.\d+)?$/.test(pkg)) {
+      return "Package must be a valid positive number.";
+    }
+    if (num <= 0) {
+      return "Package must be greater than 0.";
+    }
+    if (num > 100) {
+      return "Package must not exceed 100 LPA.";
+    }
+  }
+
+  const driveDate = (body.driveDate || "").trim();
+  if (driveDate) {
+    const selectedDate = new Date(driveDate);
+    if (isNaN(selectedDate.getTime())) {
+      return "Invalid interview date.";
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const compareDate = new Date(selectedDate);
+    compareDate.setHours(0, 0, 0, 0);
+    if (compareDate < today) {
+      return "Interview date cannot be in the past.";
+    }
+  }
+
+  const description = (body.description || "").trim();
+  if (description) {
+    if (/<script\b[^>]*>|javascript:|on\w+\s*=/i.test(description)) {
+      return "Description contains forbidden script content.";
+    }
+    if (description.length > 5000) {
+      return "Description must not exceed 5000 characters.";
+    }
+  }
+
+  return null;
+};
+
 exports.createDrive = async (req, res) => {
   try {
+    const driveErr = validateDriveInput(req.body);
+    if (driveErr) {
+      return res.status(400).json({ success: false, message: driveErr });
+    }
+
     const drive = await PlacementDrive.create({
       ...req.body,
       createdBy: req.user._id
@@ -128,6 +207,11 @@ exports.createDrive = async (req, res) => {
 
 exports.updateDrive = async (req, res) => {
   try {
+    const driveErr = validateDriveInput(req.body);
+    if (driveErr) {
+      return res.status(400).json({ success: false, message: driveErr });
+    }
+
     const drive = await PlacementDrive.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -187,9 +271,35 @@ exports.getStudentNotes = async (req, res) => {
 exports.sendStudentNotification = async (req, res) => {
   try {
     const { title, message, priority } = req.body;
-    if (!title || !message) {
-      return res.status(400).json({ success: false, message: "Please provide title and message" });
+
+    const trimmedTitle = (title || "").trim();
+    if (!trimmedTitle) {
+      return res.status(400).json({ success: false, message: "Notification title is required." });
     }
+    if (trimmedTitle.length > 100) {
+      return res.status(400).json({ success: false, message: "Notification title must not exceed 100 characters." });
+    }
+    if (/<script\b[^>]*>|javascript:|on\w+\s*=/i.test(trimmedTitle)) {
+      return res.status(400).json({ success: false, message: "Notification title contains forbidden script content." });
+    }
+
+    const trimmedMsg = (message || "").trim();
+    if (!trimmedMsg) {
+      return res.status(400).json({ success: false, message: "Notification message is required." });
+    }
+    if (trimmedMsg.length > 1000) {
+      return res.status(400).json({ success: false, message: "Notification message must not exceed 1000 characters." });
+    }
+    if (/<script\b[^>]*>|javascript:|on\w+\s*=/i.test(trimmedMsg)) {
+      return res.status(400).json({ success: false, message: "Notification message contains forbidden script content." });
+    }
+
+    const validPriorities = ["low", "medium", "high"];
+    const p = (priority || "low").toLowerCase();
+    if (!validPriorities.includes(p)) {
+      return res.status(400).json({ success: false, message: "Invalid priority value." });
+    }
+
     const student = await User.findOne({ _id: req.params.id, role: "student" });
     if (!student) {
       return res.status(404).json({ success: false, message: "Student not found" });
@@ -199,9 +309,9 @@ exports.sendStudentNotification = async (req, res) => {
     const notification = await Notification.create({
       user: req.params.id,
       type: "system",
-      title,
-      message,
-      priority: priority || "low",
+      title: trimmedTitle,
+      message: trimmedMsg,
+      priority: p,
     });
 
     res.status(201).json({ success: true, message: "Notification sent successfully", data: notification });

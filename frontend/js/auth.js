@@ -490,7 +490,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!firstInvalid) firstInvalid = otpInput;
       }
 
-      if (!newPassword) {
+      if (!newPassword || !newPassword.trim()) {
         if (errNew) errNew.textContent = "New password is required.";
         hasErrors = true;
         if (!firstInvalid) firstInvalid = newPasswordInput;
@@ -503,8 +503,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const hasUppercase = /[A-Z]/.test(newPassword);
           const hasLowercase = /[a-z]/.test(newPassword);
           const hasNumber = /[0-9]/.test(newPassword);
-          if (!hasUppercase || !hasLowercase || !hasNumber) {
-            if (errNew) errNew.textContent = "Must contain uppercase, lowercase, and a number.";
+          const hasSpecial = /[^A-Za-z0-9]/.test(newPassword);
+          if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+            if (errNew) errNew.textContent = "Must contain uppercase, lowercase, a number, and a special character.";
             hasErrors = true;
             if (!firstInvalid) firstInvalid = newPasswordInput;
           }
@@ -677,7 +678,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!firstInvalid) firstInvalid = authForm.email;
       }
 
-      if (!password) {
+      if (!password || !password.trim()) {
         if (errPassword) errPassword.textContent = "Password is required.";
         hasErrors = true;
         if (!firstInvalid) firstInvalid = authForm.password;

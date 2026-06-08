@@ -21,12 +21,30 @@ exports.createNote = async (req, res) => {
   try {
     let { title, content, collectionId, pinned } = req.body;
 
-    if (!title || !content) {
-      return res.status(400).json({
-        success: false,
-        message: "Title and content are required.",
-      });
+    const trimmedTitle = (title || "").trim();
+    if (!trimmedTitle) {
+      return res.status(400).json({ success: false, message: "Title is required." });
     }
+    if (trimmedTitle.length > 100) {
+      return res.status(400).json({ success: false, message: "Title must not exceed 100 characters." });
+    }
+    if (/<script\b[^>]*>|javascript:|on\w+\s*=/i.test(trimmedTitle)) {
+      return res.status(400).json({ success: false, message: "Title contains forbidden script content." });
+    }
+
+    const trimmedContent = (content || "").trim();
+    if (!trimmedContent) {
+      return res.status(400).json({ success: false, message: "Content is required." });
+    }
+    if (trimmedContent.length > 5000) {
+      return res.status(400).json({ success: false, message: "Content must not exceed 5000 characters." });
+    }
+    if (/<script\b[^>]*>|javascript:|on\w+\s*=/i.test(trimmedContent)) {
+      return res.status(400).json({ success: false, message: "Content contains forbidden script content." });
+    }
+
+    title = trimmedTitle;
+    content = trimmedContent;
 
     const isValidCol = mongoose.Types.ObjectId.isValid(collectionId);
     if (!collectionId || !isValidCol) {
@@ -65,8 +83,32 @@ exports.updateNote = async (req, res) => {
     let { title, content, collectionId, pinned } = req.body;
 
     const updateFields = {};
-    if (title !== undefined) updateFields.title = title;
-    if (content !== undefined) updateFields.content = content;
+    if (title !== undefined) {
+      const trimmedTitle = title.trim();
+      if (!trimmedTitle) {
+        return res.status(400).json({ success: false, message: "Title cannot be empty." });
+      }
+      if (trimmedTitle.length > 100) {
+        return res.status(400).json({ success: false, message: "Title must not exceed 100 characters." });
+      }
+      if (/<script\b[^>]*>|javascript:|on\w+\s*=/i.test(trimmedTitle)) {
+        return res.status(400).json({ success: false, message: "Title contains forbidden script content." });
+      }
+      updateFields.title = trimmedTitle;
+    }
+    if (content !== undefined) {
+      const trimmedContent = content.trim();
+      if (!trimmedContent) {
+        return res.status(400).json({ success: false, message: "Content cannot be empty." });
+      }
+      if (trimmedContent.length > 5000) {
+        return res.status(400).json({ success: false, message: "Content must not exceed 5000 characters." });
+      }
+      if (/<script\b[^>]*>|javascript:|on\w+\s*=/i.test(trimmedContent)) {
+        return res.status(400).json({ success: false, message: "Content contains forbidden script content." });
+      }
+      updateFields.content = trimmedContent;
+    }
     if (pinned !== undefined) updateFields.pinned = !!pinned;
 
     if (req.body.hasOwnProperty("collectionId")) {
