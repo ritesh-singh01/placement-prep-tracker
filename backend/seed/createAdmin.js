@@ -35,6 +35,7 @@ const seedAdmin = async () => {
     });
 
     if (admin) {
+      console.log(`[Admin User Creation] Admin user created via seed/createAdmin.js: ${admin.email}`);
       console.log("Admin account created successfully:");
       console.log(`Name: ${admin.name}`);
       console.log(`Email: ${admin.email}`);

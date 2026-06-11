@@ -88,6 +88,7 @@ async function main() {
         isBlocked: false,
         isVerified: true
       });
+      console.log(`[Admin User Creation] Admin user created via scripts/cleanDemoData.js: ${admin.email}`);
       console.log("Admin account created.");
     } else {
       console.log(`[cleanDemoData.js] Admin account with email ${admin.email} already exists. Preserving Admin account. Startup code did NOT touch the admin record.`);

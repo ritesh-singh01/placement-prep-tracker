@@ -164,10 +164,18 @@ exports.login = async (req, res) => {
       });
     }
     const adminUserFound = user.role === "admin";
-    console.log(`[Auth Login] User found in database for email: ${email}. adminUserFound: ${adminUserFound}, role: ${user.role}`);
+    if (adminUserFound) {
+      console.log(`[Admin Login Comparison] Comparing password for admin user: ${email}. Provided raw password length: ${password ? password.length : 0}`);
+    } else {
+      console.log(`[Auth Login] User found in database for email: ${email}. adminUserFound: ${adminUserFound}, role: ${user.role}`);
+    }
 
     const isMatch = await user.matchPassword(password);
-    console.log(`[Auth Login] Bcrypt password match result for ${email}: ${isMatch}`);
+    if (adminUserFound) {
+      console.log(`[Admin Login Comparison] Bcrypt password match result for admin ${email}: ${isMatch}`);
+    } else {
+      console.log(`[Auth Login] Bcrypt password match result for ${email}: ${isMatch}`);
+    }
     
     if (!isMatch) {
       return res.status(401).json({
@@ -403,9 +411,17 @@ exports.changePassword = async (req, res) => {
     }
 
     user.password = newPassword;
-    console.log(`[Auth changePassword] User ${user.email} is updating their password via Profile settings.`);
+    if (user.role === "admin") {
+      console.log(`[Admin Password Update] Admin user ${user.email} is changing their password via Profile settings.`);
+    } else {
+      console.log(`[Auth changePassword] User ${user.email} is updating their password via Profile settings.`);
+    }
     await user.save();
-    console.log(`[Auth changePassword] Password change successful for user: ${user.email}.`);
+    if (user.role === "admin") {
+      console.log(`[Admin Password Update] Admin password change successful for user: ${user.email}.`);
+    } else {
+      console.log(`[Auth changePassword] Password change successful for user: ${user.email}.`);
+    }
 
     res.status(200).json({
       success: true,
@@ -762,9 +778,17 @@ exports.resetPassword = async (req, res) => {
     user.password = newPassword;
     user.resetPasswordOTP = undefined;
     user.resetPasswordOTPExpires = undefined;
-    console.log(`[Auth resetPassword] User ${user.email} is resetting their password using the OTP verification flow.`);
+    if (user.role === "admin") {
+      console.log(`[Admin Password Update] Admin user ${user.email} is resetting their password using the OTP verification flow.`);
+    } else {
+      console.log(`[Auth resetPassword] User ${user.email} is resetting their password using the OTP verification flow.`);
+    }
     await user.save();
-    console.log(`[Auth resetPassword] Password successfully reset for user: ${user.email}, role: ${user.role}. Password was modified by reset flow.`);
+    if (user.role === "admin") {
+      console.log(`[Admin Password Update] Admin password successfully reset for user: ${user.email}.`);
+    } else {
+      console.log(`[Auth resetPassword] Password successfully reset for user: ${user.email}, role: ${user.role}. Password was modified by reset flow.`);
+    }
 
     res.status(200).json({ success: true, message: "Password reset successfully. You can now login." });
   } catch (err) {

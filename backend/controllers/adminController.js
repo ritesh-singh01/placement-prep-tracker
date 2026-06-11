@@ -455,6 +455,11 @@ exports.approveReset = async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
+    if (user.role === "admin") {
+      console.error(`[Admin Reset approveReset] CRITICAL ERROR: Attempted to reset admin password via student approval endpoint for: ${user.email}`);
+      return res.status(403).json({ success: false, message: "Cannot reset admin password via student reset flow." });
+    }
+
     // Generate secure temporary password satisfying strong criteria
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let randomStr = "";

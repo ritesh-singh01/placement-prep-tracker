@@ -39,7 +39,7 @@ async function main() {
     console.log(`[seedDemoStudent.js] Admin user exists before seeding: ${!!admin}`);
 
     if (!admin) {
-      console.log(`Admin account not found. Seeding default admin...`);
+      console.log("Admin account not found. Seeding default admin...");
       admin = await User.create({
         name: process.env.ADMIN_NAME || "System Admin",
         email: adminEmail,
@@ -48,6 +48,7 @@ async function main() {
         isBlocked: false,
         isVerified: true
       });
+      console.log(`[Admin User Creation] Admin user created via scripts/seedDemoStudent.js: ${admin.email}`);
       console.log("Admin account created.");
     } else {
       console.log(`[seedDemoStudent.js] Admin account with email ${admin.email} already exists. Preserving admin credentials without any modifications.`);

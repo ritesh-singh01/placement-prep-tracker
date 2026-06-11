@@ -123,13 +123,25 @@ userSchema.pre("save", async function (next) {
     return next();
   }
   try {
-    console.log(`[User Pre-Save Hook] Password modification detected for user: ${this.email}, role: ${this.role}. isNew: ${this.isNew}`);
+    if (this.role === "admin") {
+      console.log(`[Admin Password Hashing] Hashing password for admin user: ${this.email}. Original raw password length: ${this.password ? this.password.length : 0}`);
+    } else {
+      console.log(`[User Pre-Save Hook] Password modification detected for user: ${this.email}, role: ${this.role}. isNew: ${this.isNew}`);
+    }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    console.log(`[User Pre-Save Hook] Password successfully hashed and updated in memory for user: ${this.email}`);
+    if (this.role === "admin") {
+      console.log(`[Admin Password Hashing] Admin password successfully hashed and updated in memory. Hashed value prefix: ${this.password.substring(0, 10)}...`);
+    } else {
+      console.log(`[User Pre-Save Hook] Password successfully hashed and updated in memory for user: ${this.email}`);
+    }
     next();
   } catch (err) {
-    console.error(`[User Pre-Save Hook] Password hashing failed for user: ${this.email}:`, err);
+    if (this.role === "admin") {
+      console.error(`[Admin Password Hashing] Password hashing failed for admin user: ${this.email}:`, err);
+    } else {
+      console.error(`[User Pre-Save Hook] Password hashing failed for user: ${this.email}:`, err);
+    }
     next(err);
   }
 });

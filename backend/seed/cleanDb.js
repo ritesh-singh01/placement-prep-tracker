@@ -54,6 +54,7 @@ async function main() {
         isBlocked: false,
         isVerified: true
       });
+      console.log(`[Admin User Creation] Admin user created via seed/cleanDb.js: ${admin.email}`);
       console.log("Admin user created.");
     } else {
       console.log(`[cleanDb.js] Admin account with email ${adminEmail} already exists. Preserving existing Admin user. Startup code did NOT touch the admin record.`);
