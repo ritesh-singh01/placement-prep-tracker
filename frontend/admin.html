@@ -538,62 +538,64 @@
                 <h3 class="modal__title" id="driveModalTitle">New Placement Drive</h3>
                 <button class="iconBtn" id="closeDriveModal"><i data-lucide="x"></i></button>
             </header>
-            <form id="driveForm" class="modal__body">
-                <div class="form-group">
-                    <label>Company Name <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
-                    <input type="text" name="companyName" required class="glass-input">
-                    <span class="field-error" id="errDriveCompanyName" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
-                </div>
-                <div class="form-group">
-                    <label>Job Role <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
-                    <input type="text" name="role" required class="glass-input">
-                    <span class="field-error" id="errDriveRole" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
-                </div>
-                <div class="form-grid">
+            <form id="driveForm" class="modalForm">
+                <div class="modal__body">
                     <div class="form-group">
-                        <label>Package (LPA) <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
-                        <input type="text" name="package" required class="glass-input" inputmode="decimal">
-                        <span class="field-error" id="errDrivePackage" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
+                        <label>Company Name <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
+                        <input type="text" name="companyName" required class="glass-input">
+                        <span class="field-error" id="errDriveCompanyName" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                     </div>
                     <div class="form-group">
-                        <label>Location <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
-                        <input type="text" name="location" required class="glass-input">
-                        <span class="field-error" id="errDriveLocation" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
+                        <label>Job Role <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
+                        <input type="text" name="role" required class="glass-input">
+                        <span class="field-error" id="errDriveRole" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                     </div>
-                </div>
-                <div class="form-grid">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Package (LPA) <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
+                            <input type="text" name="package" required class="glass-input" inputmode="decimal">
+                            <span class="field-error" id="errDrivePackage" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Location <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
+                            <input type="text" name="location" required class="glass-input">
+                            <span class="field-error" id="errDriveLocation" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Drive Date <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
+                            <input type="date" name="driveDate" required class="glass-input">
+                            <span class="field-error" id="errDriveDate" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select name="status" class="glass-input">
+                                <option value="Open">Open</option>
+                                <option value="Closed">Closed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Eligibility Criteria <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
+                            <input type="text" name="eligibility" required placeholder="e.g. B.Tech CSE, 7+ CGPA" class="glass-input">
+                            <span class="field-error" id="errDriveEligibility" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Mode</label>
+                            <select name="mode" class="glass-input">
+                                <option value="Online">Online</option>
+                                <option value="Offline">Offline</option>
+                                <option value="Hybrid">Hybrid</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group">
-                        <label>Drive Date <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
-                        <input type="date" name="driveDate" required class="glass-input">
-                        <span class="field-error" id="errDriveDate" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
+                        <label>Description & Requirements</label>
+                        <textarea name="description" rows="3" placeholder="Enter key requirements and responsibilities..." class="glass-input" style="resize: vertical; min-height: 80px;"></textarea>
+                        <span class="field-error" id="errDriveDescription" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                     </div>
-                    <div class="form-group">
-                        <label>Status</label>
-                        <select name="status" class="glass-input">
-                            <option value="Open">Open</option>
-                            <option value="Closed">Closed</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Eligibility Criteria <span class="req" style="color: var(--color-danger); margin-left: 2px;">*</span></label>
-                        <input type="text" name="eligibility" required placeholder="e.g. B.Tech CSE, 7+ CGPA" class="glass-input">
-                        <span class="field-error" id="errDriveEligibility" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
-                    </div>
-                    <div class="form-group">
-                        <label>Mode</label>
-                        <select name="mode" class="glass-input">
-                            <option value="Online">Online</option>
-                            <option value="Offline">Offline</option>
-                            <option value="Hybrid">Hybrid</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Description & Requirements</label>
-                    <textarea name="description" rows="3" placeholder="Enter key requirements and responsibilities..." class="glass-input" style="resize: vertical; min-height: 80px;"></textarea>
-                    <span class="field-error" id="errDriveDescription" style="color: var(--color-danger); font-size: 11.5px; margin-top: 4px; display: block;"></span>
                 </div>
                 <footer class="modal__footer">
                     <button type="button" class="btn btn--ghost" id="cancelDriveModal">Cancel</button>

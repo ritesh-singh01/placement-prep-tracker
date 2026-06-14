@@ -1541,6 +1541,27 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
+        // Ensure pressing Enter inside any input or textarea submits the form naturally
+        if (driveForm) {
+            const inputsAndTextareas = driveForm.querySelectorAll("input, select, textarea");
+            inputsAndTextareas.forEach(el => {
+                el.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        if (typeof driveForm.requestSubmit === "function") {
+                            driveForm.requestSubmit();
+                        } else {
+                            const submitEvent = new Event("submit", { cancelable: true, bubbles: true });
+                            driveForm.dispatchEvent(submitEvent);
+                            if (!submitEvent.defaultPrevented) {
+                                driveForm.submit();
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
         // --- TEMPORARY PASSWORD MODAL WIRING ---
         const closeTempModal = qs("#closeTempPasswordModal");
         const doneTempBtn = qs("#doneTempPasswordBtn");
