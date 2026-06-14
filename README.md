@@ -2,6 +2,10 @@
 
 A full-stack web application designed to help students manage placement preparation efficiently. The platform allows users to organize companies, track preparation progress, manage interview notes, and monitor placement-related activities in one place.
 
+## Live Demo
+
+[Visit the live project](https://placement-prep-tracker-za1w.onrender.com)
+
 ---
 
 # Features
